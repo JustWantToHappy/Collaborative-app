@@ -8,6 +8,8 @@ import appConfig from './config/app.config';
 import { APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './auth/auth/auth.module';
 import { UserModule } from './resources/user/user.module';
+import { SystemModule } from './resources/system/system.module';
+import { TeamModule } from './resources/team/team.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
  * providers数组中。
@@ -38,11 +40,13 @@ import { UserModule } from './resources/user/user.module';
         password: process.env.DATEBASE_PASSWORD,
         database: process.env.DATEBASE_NAME,
         autoLoadEntities: true,
-        synchronize: true, //保证TypeORM实体每次运行应用程序时都会与数据库同步
+        //保证TypeORM实体每次运行应用程序时都会与数据库同步(开启为true，生产环境下必须设置为false)
+        synchronize: true,
       }),
     }),
     UserModule,
-    //CommonModule,
+    SystemModule,
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [
