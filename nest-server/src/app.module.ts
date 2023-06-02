@@ -8,9 +8,9 @@ import appConfig from './config/app.config';
 import { APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './auth/auth/auth.module';
 import { UserModule } from './resources/user/user.module';
-import { SystemModule } from './resources/system/system.module';
 import { TeamModule } from './resources/team/team.module';
 import { UserTeamModule } from './resources/user-team/user-team.module';
+import { BaseModule } from './resources/base/base.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
  * providers数组中。
@@ -46,9 +46,9 @@ import { UserTeamModule } from './resources/user-team/user-team.module';
       }),
     }),
     UserModule,
-    SystemModule,
     TeamModule,
     UserTeamModule,
+    BaseModule,
   ],
   controllers: [AppController],
   providers: [

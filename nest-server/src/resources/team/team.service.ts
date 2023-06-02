@@ -14,6 +14,7 @@ export class TeamService {
     private readonly dataSource: DataSource,
     private readonly userTeamService: UserTeamService,
   ) {}
+
   async create(createTeamDto: CreateTeamDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,12 +17,23 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  findAll(paginationQuery: PaginationQueryDto) {
+    const { current, pagesize } = paginationQuery;
+    if (!current || !pagesize) {
+      return this.userRepository.find();
+    }
+    return this.userRepository.find({
+      skip: (current - 1) * pagesize,
+      take: pagesize,
+    });
   }
 
-  findOne(id: number) {
-    return { password: '', userId: 1, username: 'sdf' };
+  async findOne(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      //throw new
+    }
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
