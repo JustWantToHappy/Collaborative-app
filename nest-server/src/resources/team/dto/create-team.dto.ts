@@ -1,10 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
-import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { IsDate, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
+import { BaseDto } from 'src/common/base/base.dto';
 
-export class CreateTeamDto {
-  readonly id: number;
-
+export class CreateTeamDto extends BaseDto {
   @IsNumber()
   leader_id: number;
 
@@ -16,15 +13,4 @@ export class CreateTeamDto {
 
   @IsString()
   avatar: string;
-
-  @Transform((value: TransformFnParams) => {
-    const date = new Date(value.obj.create_at);
-    if (isNaN(date.getTime())) {
-      throw new BadRequestException(`${value} is not a valid date`);
-    }
-    return date;
-  })
-  @Type(() => Date)
-  @IsDate()
-  create_at: Date;
 }

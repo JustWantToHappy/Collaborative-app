@@ -1,11 +1,8 @@
-import { BadRequestException } from '@nestjs/common';
-import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { IsDate, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
+import { Base } from 'src/common/base/base.entity';
 import { YesNotState } from 'src/common/enum';
 
-export class CreateKnowledgeBaseDto {
-  readonly id: number;
-
+export class CreateKnowledgeBaseDto extends Base {
   @IsString()
   title: string;
 
@@ -15,15 +12,5 @@ export class CreateKnowledgeBaseDto {
   @IsNumber()
   is_shared: YesNotState;
 
-  @Transform((value: TransformFnParams) => {
-    const date = new Date(value.obj.create_at);
-    if (isNaN(date.getTime())) {
-      throw new BadRequestException(`${value} is not a valid date`);
-    }
-    return date;
-  })
-  @Type(() => Date)
-  @IsDate()
-  create_at: Date;
   is_deleted: YesNotState;
 }

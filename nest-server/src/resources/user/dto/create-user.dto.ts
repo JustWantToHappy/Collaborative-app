@@ -1,7 +1,7 @@
 import { IsString } from 'class-validator';
+import { BaseDto } from 'src/common/base/base.dto';
 
-export class CreateUserDto {
-  readonly id: number;
+export class CreateUserDto extends BaseDto {
   @IsString()
   name: string;
 
