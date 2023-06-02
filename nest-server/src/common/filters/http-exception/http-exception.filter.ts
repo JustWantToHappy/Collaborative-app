@@ -20,8 +20,8 @@ export class HttpExceptionFilter<T extends HttpException>
     const error =
       typeof response === 'string'
         ? { message: exceptionResponse }
-        : (exceptionResponse as Object);
-    console.info(error, 'test');
+        : (exceptionResponse as object);
+    console.info(error);
     response.status(status).json({
       ...(typeof error === 'string' ? { error } : error),
       time: new Date().toISOString(),

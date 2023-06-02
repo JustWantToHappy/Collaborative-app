@@ -1,5 +1,5 @@
 import { IsNumber } from 'class-validator';
-import { CareState } from 'src/common/enum';
+import { YesNotState } from 'src/common/enum';
 
 export class CreateContactDto {
   readonly id: number;
@@ -8,5 +8,5 @@ export class CreateContactDto {
   user_id: number;
 
   @IsNumber()
-  is_care: CareState;
+  is_care: YesNotState;
 }
