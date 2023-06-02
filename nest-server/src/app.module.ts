@@ -10,7 +10,11 @@ import { AuthModule } from './auth/auth/auth.module';
 import { UserModule } from './resources/user/user.module';
 import { TeamModule } from './resources/team/team.module';
 import { UserTeamModule } from './resources/user-team/user-team.module';
-import { BaseModule } from './resources/base/base.module';
+import { ContactModule } from './resources/contact/contact.module';
+import { ChatModule } from './resources/chat/chat.module';
+import { FileModule } from './resources/file/file.module';
+import { SharedModule } from './resources/shared/shared.module';
+import { KnowledgeBaseModule } from './resources/knowledge-base/knowledge-base.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
  * providers数组中。
@@ -48,7 +52,11 @@ import { BaseModule } from './resources/base/base.module';
     UserModule,
     TeamModule,
     UserTeamModule,
-    BaseModule,
+    ContactModule,
+    ChatModule,
+    FileModule,
+    SharedModule,
+    KnowledgeBaseModule,
   ],
   controllers: [AppController],
   providers: [
