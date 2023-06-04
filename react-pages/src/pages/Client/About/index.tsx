@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button, Input, Popover } from 'antd';
 import StyleDiv from './style';
+import Login from '@/components/Login';
+import { Button, Popover } from 'antd';
+import Header from '@/components/Header';
 import LogoSvg from '@/assets/logo/logo.svg';
 import GitHubSvg from '@/assets/logo/github.svg';
-import { Link } from 'react-router-dom';
-import Login from '@/components/Login';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 
 const content = (
   <div>
@@ -13,14 +14,17 @@ const content = (
 );
 export default function Index() {
   const [showLogin, setShowLogin] = React.useState(false);
+  const { pathname } = useLocation();
+
   const handleLoginCancel = () => {
     setShowLogin(false);
   };
   const handleLoginOk = () => {
     setShowLogin(true);
   };
-  return (
-    <StyleDiv>
+
+  if (pathname === '/') {
+    return <StyleDiv>
       <header>
         <Link to='/' title=""> <img src={LogoSvg} /></Link>
         <Button type="primary" onClick={() => setShowLogin(true)}>登录 / 注册</Button>
@@ -43,6 +47,11 @@ export default function Index() {
       <footer>
         <Link to='https://github.com/JustWantToHappy/Collaborative-app' title='项目地址' target='_blank'><img src={GitHubSvg} alt='项目地址' /></Link>
       </footer>
-    </StyleDiv>
-  );
+    </StyleDiv>;
+  } else {
+    return <>
+      <Header />
+      <Outlet />
+    </>;
+  }
 }

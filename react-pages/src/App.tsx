@@ -2,23 +2,23 @@ import React, { Suspense } from 'react';
 import { ConfigProvider } from 'antd';
 import { useRoutes } from 'react-router-dom';
 import { routes } from './layout';
+import { defaultCssStyles } from './utils';
 
-type ThemeData = {
-  borderRadius: number;
-  colorPrimary: string;
-};
-
-const defaultData: ThemeData = {
-  borderRadius: 6,
-  colorPrimary: '#00B96B',
-};
 
 function App() {
   const element = useRoutes(routes);
-  const [data, setData] = React.useState<ThemeData>(defaultData);
+  const [data] = React.useState(defaultCssStyles);
 
   return (
-    <ConfigProvider theme={{ token: { colorPrimary: data.colorPrimary, borderRadius: data.borderRadius } }}>
+    <ConfigProvider theme={{
+      token: {
+        colorPrimary: data.colorPrimary,
+        borderRadius: data.borderRadius,
+        colorLink: data.colorLink,
+        colorLinkActive: data.colorPrimary,
+        colorLinkHover: data.colorPrimary
+      }
+    }}>
       <div className="app">
         <Suspense fallback={<h1>Loading...</h1>}>
           {element}
