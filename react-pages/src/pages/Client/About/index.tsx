@@ -1,7 +1,7 @@
 import React from 'react';
+import { Button, Popover } from 'antd';
 import StyleDiv from './style';
 import Login from '@/components/Login';
-import { Button, Popover } from 'antd';
 import Header from '@/components/Header';
 import LogoSvg from '@/assets/logo/logo.svg';
 import GitHubSvg from '@/assets/logo/github.svg';

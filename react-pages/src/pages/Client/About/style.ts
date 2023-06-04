@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
+
 const StyleDiv = styled('div')`
-  header{
+  &>header{
     display:flex;
     justify-content: space-between;
-    height:4rem;
+    height:var(--ab-nav-height);
     padding:0 var(--ab-padding-x);
     align-items: center;
   }
@@ -17,7 +18,7 @@ const StyleDiv = styled('div')`
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    height:calc(100vh - 4rem);
+    margin:5rem;
     &>h1{
       letter-spacing: .5rem;
       white-space: nowrap;

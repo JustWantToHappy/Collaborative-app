@@ -3,9 +3,13 @@ import { lazy } from 'react';
 import type { Router } from '../types';
 //前台路由
 const About = lazy(() => import('../pages/Client/About'));
-const Home = lazy(() => import('../pages/Client/Home'));
-const WorkSpace = lazy(() => import('../pages/Client/WorkSpace'));
-const PageNotFound = lazy(() => import('../pages/PageNotFound'));
+import Chat from '../pages/Client/Chat';
+import WorkSpace from '../pages/Client/WorkSpace';
+import CloudDocument from '../pages/Client/CloudDocument';
+import SharedSpace from '../pages/Client/SharedSpace';
+import AddressBook from '../pages/Client/AdressBook';
+import PageNotFound from '../pages/PageNotFound';
+
 //后台路由
 import Test from '../pages/Admin/Test';
 import AuthRoute from './AuthRoute';
@@ -20,10 +24,10 @@ export const routes: Array<Router> = [
     element: <About />,
     children: [
       {
-        name: '首页',
-        path: '/home',
+        name: '聊天列表',
+        path: '/chat',
         element: <AuthRoute redirect='/'>
-          <Home />
+          <Chat />
         </AuthRoute>
       },
       {
@@ -31,6 +35,27 @@ export const routes: Array<Router> = [
         path: '/work',
         element: <AuthRoute redirect='/'>
           <WorkSpace />
+        </AuthRoute>
+      },
+      {
+        name: '云文档',
+        path: '/cloud',
+        element: <AuthRoute redirect='/'>
+          <CloudDocument />
+        </AuthRoute>
+      },
+      {
+        name: '共享空间',
+        path: '/shared',
+        element: <AuthRoute redirect='/'>
+          <SharedSpace />
+        </AuthRoute>
+      },
+      {
+        name: '通讯录',
+        path: '/address',
+        element: <AuthRoute redirect='/'>
+          <AddressBook />
         </AuthRoute>
       }
     ]

@@ -1,8 +1,8 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: light dark;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,21 +17,26 @@
   --ab-green-600:#00B96B;
   --ab-green-700:#009456;
   --ab-green-800:#00663B;
-
+  
   --ab-white-100:#fff;
   --ab-white-200:#e9ecef;
-
+  
   --ab-grey-100:#dee2e6;
   --ab-grey-200:#ced4da;
   --ab-grey-300:#adb5bd;
-
+  
   --ab-black-100:#495057;
   --ab-black-200:#343a40;
   --ab-black-300:#212529;
-
+  
   --ab-theme:var(--ab-green-600);
-
+  
   --ab-padding-x:2rem;
+  --ab-nav-height:4rem;
+}
+
+*{
+  box-sizing: border-box;
 }
 
 body {
@@ -43,10 +48,15 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-  letter-spacing: 2px;
 }
 h1,h2,h3,h4,h5,h6{
   margin:1rem;
+  letter-spacing: 2px;
+}
+
+.app{
+  /*background-color:#000;*/
+  /*color:#fff;*/
 }
 
 @media screen and (max-width:768px) {
