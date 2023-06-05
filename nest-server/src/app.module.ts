@@ -15,6 +15,7 @@ import { ChatModule } from './resources/chat/chat.module';
 import { FileModule } from './resources/file/file.module';
 import { SharedModule } from './resources/shared/shared.module';
 import { KnowledgeBaseModule } from './resources/knowledge-base/knowledge-base.module';
+import { CommonModule } from './common/common.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
  * providers数组中。
@@ -22,6 +23,7 @@ import { KnowledgeBaseModule } from './resources/knowledge-base/knowledge-base.m
 @Dependencies(DataSource)
 @Module({
   imports: [
+    CommonModule,
     /**
      * 从默认位置加载和解析.env文件(也就是从项目根目录)
      * ConfigModule还将.env文件中的键值对与分配给process.env的环境变量进行合并
