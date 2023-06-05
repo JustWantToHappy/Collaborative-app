@@ -9,15 +9,16 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signIn(username, password) {
-    const user = await this.userService.findOne(username);
+  async signIn(email: string, password: string) {
+    const user = await this.userService.findOnyByEmail(email);
     if (user?.password !== password) {
       throw new UnauthorizedException();
     }
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { username: user.email, sub: user.id };
     return {
       access_token: await this.jwtService.signAsync(payload, {
         secret: process.env.SECRET_KEY,
+        algorithm: 'HS256', // 加密算法
         expiresIn: '1800s',
       }),
     };

@@ -23,6 +23,7 @@ export default function Index() {
     setShowLogin(true);
   };
 
+
   if (pathname === '/') {
     return <StyleDiv>
       <header>
