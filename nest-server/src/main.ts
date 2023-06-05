@@ -32,7 +32,7 @@ async function bootstrap() {
   );
 
   const options = new DocumentBuilder()
-    .setTitle('管理系统接口文档')
+    .setTitle('在线文档协同平台系统接口文档')
     .setDescription('')
     .setVersion('1.0')
     .addTag('')

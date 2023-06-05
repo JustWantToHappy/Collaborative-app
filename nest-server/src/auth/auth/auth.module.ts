@@ -9,7 +9,11 @@ import { UserService } from 'src/resources/user/user.service';
 import { UserModule } from 'src/resources/user/user.module';
 
 @Module({
-  imports: [PassportModule, JwtModule, UserModule],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule,
+    UserModule,
+  ],
   providers: [
     AuthService,
     LocalStrategy,

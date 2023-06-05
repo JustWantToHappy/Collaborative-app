@@ -27,7 +27,6 @@ import { KnowledgeBaseModule } from './resources/knowledge-base/knowledge-base.m
      * ConfigModule还将.env文件中的键值对与分配给process.env的环境变量进行合并
      */
     ConfigModule.forRoot({
-      //ignoreEnvFile: true,生产环境下可能不需要配置文件
       //全局环境配置
       load: [appConfig],
     }),
