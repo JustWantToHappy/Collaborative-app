@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { Repository } from 'typeorm';
@@ -55,10 +50,7 @@ export class UserService {
   async findOnyByEmail(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      throw new HttpException(
-        `user ${email} is not found.`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException(`user ${email} is not found.`);
     }
     return user;
   }
