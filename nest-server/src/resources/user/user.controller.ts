@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,8 +16,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthService } from 'src/auth/auth/auth.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enum';
 
 @Controller('user')
 export class UserController {
@@ -26,18 +25,19 @@ export class UserController {
   ) {}
 
   @Post()
-  @Roles(Role.Admin)
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
+    if (Object.prototype.toString.call(id) !== '[Object Number]') {
+      throw new BadRequestException(`params ${id} is not a number`);
+    }
     return this.userService.findOne(+id);
   }
 
   @Get()
-  @Roles()
   findAll(@Query() paginationQuery: PaginationQueryDto) {
     return this.userService.findAll(paginationQuery);
   }

@@ -78,7 +78,7 @@ const StyleDiv = styled('div')<Props>`
         display: ${props=>props.wide?'block':'none'};
       }
       &:hover{
-        background-color: var(--ab-grey-100);
+        background-color: var(--ab-grey-300);
         cursor: pointer;
       }
     }

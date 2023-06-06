@@ -14,16 +14,17 @@ export class AuthService {
     if (user?.password !== password) {
       throw new UnauthorizedException();
     }
+    //payload中username和sub字段必须是用户名和Id
     const payload = {
       username: user.email,
       sub: user.id,
       roles: user.roles,
     };
     return {
-      access_token: await this.jwtService.signAsync(payload, {
+      jwt_token: await this.jwtService.signAsync(payload, {
         secret: process.env.SECRET_KEY,
         algorithm: 'HS256', // 加密算法
-        expiresIn: '1800s',
+        expiresIn: 7 * 24 * 60 * 60, //token过期时间一个星期
       }),
     };
   }

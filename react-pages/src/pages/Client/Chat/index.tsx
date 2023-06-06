@@ -21,6 +21,7 @@ export default function Index() {
           dsf
         </div>
         <div className='chat_container'>
+          dsfdf
           {pathname === '/chat' && <div style={{ marginTop: '100vh' }}>tst</div>}
           <Outlet />
         </div>

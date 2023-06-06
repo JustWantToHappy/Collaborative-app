@@ -32,7 +32,7 @@ export default function Index(props: IProps) {
             key={index}
             className='chat_item'
             onClick={() => setActive(index)}
-            style={{ backgroundColor: active === index ? '#C7F0DF' : '' }}
+            style={{ backgroundColor: active === index ? '#00B96B' : '' }}
           >
             <div className='chat_item_avatar'>
               <Avatar

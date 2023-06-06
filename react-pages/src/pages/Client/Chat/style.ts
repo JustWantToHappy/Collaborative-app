@@ -8,18 +8,20 @@ const StyleDiv = styled('div')<Props>`
   position: absolute;
   display: flex;
   top:var(--ab-nav-height);
+  width: 100%;
 
   main{
     position: absolute;
     left:${props => props.wide ? '15rem' : '6rem'};
+    width: 100%;
     transition: all 200ms ease;
-    height:calc(100vh - var(--ab-nav-height));
     flex:1;
   }
   .chat_header{
+    position: fixed;
     width:100%;
-    height:12%;
-    box-shadow: 0 1px 2px -1px var(--ab-green-300);
+    height: 3rem;
+    border-bottom:1px solid var(--ab-grey-100);
   }
 `;
 
