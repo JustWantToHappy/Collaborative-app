@@ -8,12 +8,12 @@ import { Socket } from 'socket.io';
 
 @WebSocketGateway({ cors: true, port: 8080 })
 export class CommonGateWay {
-  handleConnection(client: any, ...args: any[]) {
-    console.log('Client connected');
+  handleConnection(client: Socket) {
+    console.log('Client connected' + client.id);
   }
 
-  handleDisconnect(client: any) {
-    console.log('Client disconnected');
+  handleDisconnect(client: Socket) {
+    console.log('Client disconnected' + client.id);
   }
 
   @SubscribeMessage('events')

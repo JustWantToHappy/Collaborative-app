@@ -7,3 +7,10 @@ export enum Role {
   User = 'User',
   Admin = 'Admin',
 }
+//聊天指令
+export enum Chat {
+  Group_Join = 'group join',
+  Group_Message = 'group message',
+  Group_Leave = 'group leave',
+  Private_Chat = 'private chat',
+}
