@@ -6,3 +6,7 @@ export enum Role{
   User = 'User',
   Admin='Admin'
 }
+
+export enum Config{
+  WsUrl='http://localhost:8080'
+}

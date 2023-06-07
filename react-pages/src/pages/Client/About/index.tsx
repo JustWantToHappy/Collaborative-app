@@ -1,10 +1,13 @@
 import React from 'react';
 import { isLogin } from '@/utils';
+import { Config } from '@/enums';
 import StyleDiv from './style';
 import Login from '@/components/Login';
 import Header from '@/components/Header';
 import { Button, Popover } from 'antd';
+import { io } from 'socket.io-client';
 import LogoSvg from '@/assets/logo/logo.svg';
+import type { Socket } from 'socket.io-client';
 import GitHubSvg from '@/assets/logo/github.svg';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 
@@ -14,9 +17,10 @@ const content = (
   </div>
 );
 export default function Index() {
-  const [showLogin, setShowLogin] = React.useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [socket, setSocket] = React.useState<Socket>();
+  const [showLogin, setShowLogin] = React.useState(false);
 
   const handleLoginCancel = () => {
     setShowLogin(false);
@@ -28,6 +32,17 @@ export default function Index() {
       navigate('/', { replace: true });
     }
   }, [navigate]);
+
+  React.useEffect(() => {
+    const socket = io(Config.WsUrl);
+    setSocket(socket);
+    socket.on('disconnect', () => {
+      console.log(socket.id);
+    });
+    return function () {
+      socket.disconnect();
+    };
+  }, []);
 
   if (pathname === '/') {
     return <StyleDiv>
