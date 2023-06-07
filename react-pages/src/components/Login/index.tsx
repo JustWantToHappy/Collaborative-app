@@ -72,8 +72,6 @@ const Index: React.FC<IProps> = (props) => {
         ref={formRef}
         name="basic"
         labelCol={{ span: 5 }}
-        style={{ width: '100%' }}
-        initialValues={{ remember: true }}
         onFinish={onFinish}
         autoComplete="off"
       >

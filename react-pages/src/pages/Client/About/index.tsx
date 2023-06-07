@@ -25,7 +25,7 @@ export default function Index() {
 
   React.useLayoutEffect(() => {
     if (!isLogin()) {
-      navigate('/');
+      navigate('/', { replace: true });
     }
   }, [navigate]);
 
@@ -56,7 +56,9 @@ export default function Index() {
   } else {
     return <>
       <Header />
-      <Outlet />
+      <div className='ab_container'>
+        <Outlet />
+      </div>
     </>;
   }
 }

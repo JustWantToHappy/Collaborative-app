@@ -5,31 +5,36 @@ interface Props{
 }
 
 const StyleDiv = styled('div') <Props>`
-  --main-header-height:3rem;
-  position: absolute;
-  display: flex;
-  top:var(--ab-nav-height);
-  width: 100%;
-
   main{
     position: absolute;
-    left:${props => props.wide ? '15rem' : '6rem'};
-    /*top:var(--main-header-height);*/
     width: 100%;
-    transition: all 200ms ease;
+    left:${props => props.wide ? '16rem' : '6rem'};
     flex:1;
   }
   .chat_header{
     background-color: #fff;
+    width:${props=>props.wide?'calc(100% - 16rem)':'calc(100% - 6rem)'};
     position: fixed;
     z-index:999;
-    width:100%;
-    height: var(--main-header-height);
+    height: var(--chat-header-height);
     border-bottom:1px solid var(--ab-grey-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   .chat_container{
-    position: absolute;
-    top:var(--main-header-height);
+    padding:1rem 2rem;
+    margin-top: var(--chat-header-height);
+    width:${props=>props.wide?'calc(100vw - 16rem)':'calc(100vw - 6rem)'};
+    display: flex;
+  }
+  .chat_welcome{
+    display: flex;
+    width:100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top:20vh;
   }
 `;
 

@@ -22,7 +22,7 @@ export default function Index() {
             <NavLink to={route.path}>
               <Button type='link'
                 onClick={() => setActive(route.path)}
-                style={{ color: active === route.path ? defaultCssStyles.colorPrimary : '' }}>
+                style={{ color: route.path.includes(active) ? defaultCssStyles.colorPrimary : '' }}>
                 {route.name}
               </Button>
             </NavLink>

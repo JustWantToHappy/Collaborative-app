@@ -5,13 +5,13 @@ interface Props{
 }
 
 const StyleDiv = styled('div')<Props>`
-  transition: all 200ms ease;
+  transition: width 200ms ease;
   display: block;
   top:var(--ab-nav-height);
   position: fixed;
   height:calc(100vh - var(--ab-nav-height));
   box-shadow: var(--ab-green-200) 1px 4px 4px;
-  width:${props => props.wide ? '15rem' : '6rem'};
+  width:${props => props.wide ? '16rem' : '6rem'};
   overflow: hidden;
 
   i{
@@ -38,7 +38,7 @@ const StyleDiv = styled('div')<Props>`
   }
   
   .chat{
-    &_container{
+    &_aside{
       width:100%;
       height:90%;
       overflow: auto;
@@ -55,7 +55,8 @@ const StyleDiv = styled('div')<Props>`
       column-gap:.5rem;
       height:4rem;
       overflow: hidden;
-      
+      transition: background-color 100ms linear;
+
       &>div{
         grid-column: 1/2;
         grid-row:1/3;
@@ -93,19 +94,19 @@ const StyleDiv = styled('div')<Props>`
     }
   }
   
-  .chat_container::-webkit-scrollbar {
+ /* .chat_aside::-webkit-scrollbar {
     width:6px;
   }
-  .chat_container::-webkit-scrollbar-track {
+  .chat_aside::-webkit-scrollbar-track {
     border-radius:4px;
   }
-  .chat_container::-webkit-scrollbar-thumb {
+  .chat_aside::-webkit-scrollbar-thumb {
     border-radius:10px;
     background:var(--ab-green-400);
   }
-  .chat_container::-webkit-scrollbar-thumb:window-inactive {
+  .chat_aside::-webkit-scrollbar-thumb:window-inactive {
     background:var(--ab-green-400);
-  }
+  }*/
 
 `;
 

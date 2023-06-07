@@ -5,10 +5,11 @@ import type { Router } from '../types';
 const About = lazy(() => import('../pages/Client/About'));
 import Chat from '../pages/Client/Chat';
 import WorkSpace from '../pages/Client/WorkSpace';
+import PageNotFound from '../pages/PageNotFound';
+import UserInfo from '../pages/Client/UserInfo';
 import CloudDocument from '../pages/Client/CloudDocument';
 import SharedSpace from '../pages/Client/SharedSpace';
 import AddressBook from '../pages/Client/AdressBook';
-import PageNotFound from '../pages/PageNotFound';
 
 //后台路由
 import Test from '../pages/Admin/Test';
@@ -25,10 +26,10 @@ export const routes: Array<Router> = [
     children: [
       {
         name: '聊天列表',
-        path: '/chat',
+        path: '/chat/:id?',
         element: <AuthRoute redirect='/'>
           <Chat />
-        </AuthRoute>
+        </AuthRoute>,
       },
       {
         name: '工作台',
@@ -57,7 +58,7 @@ export const routes: Array<Router> = [
         element: <AuthRoute redirect='/'>
           <AddressBook />
         </AuthRoute>
-      }
+      },
     ]
   },
   {

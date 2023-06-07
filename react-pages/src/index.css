@@ -33,6 +33,8 @@
   
   --ab-padding-x:2rem;
   --ab-nav-height:4rem;
+  /* Chat组件 */
+  --chat-header-height:3rem;
 }
 
 *{
@@ -63,6 +65,12 @@ ul{
 .app{
   /*background-color:#000;*/
   /*color:#fff;*/
+}
+
+.ab_container{
+  position: absolute;
+  top:var(--ab-nav-height);
+  left:0;
 }
 
 @media screen and (max-width:768px) {

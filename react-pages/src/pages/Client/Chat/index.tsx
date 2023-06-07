@@ -1,7 +1,8 @@
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import StyleDiv from './style';
-import ChatAside from '@/components/ChatAside';
+import ChatHeader from './components/ChatHeader';
+import ChatAside from '@/pages/Client/Chat/components/ChatAside';
 
 export default function Index() {
   const { pathname } = useLocation();
@@ -17,13 +18,12 @@ export default function Index() {
         <ChatAside wide={wide} changeWide={changeWide} />
       </aside>
       <main>
-        <div className='chat_header'>
-          dsf
-        </div>
+       <ChatHeader wide={wide} />
         <div className='chat_container'>
-          dsfdf
-          {pathname === '/chat' && <div style={{ marginTop: '100vh' }}>tst</div>}
-          <Outlet />
+          {pathname === '/chat' && <div className='chat_welcome'>
+            <h2>欢迎使用</h2>
+            <small>点击左边用户头像框即可开始聊天</small>
+          </div>}
         </div>
       </main>
     </StyleDiv>

@@ -33,6 +33,7 @@ const StyleDiv = styled('div')`
     right:2rem;
     border-radius: 50%;
   }
+
 `;
 
 export default StyleDiv;
