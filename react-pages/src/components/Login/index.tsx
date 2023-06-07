@@ -1,30 +1,63 @@
 import React from 'react';
+import { User } from '@/types';
 import StyleDiv from './style';
+import { login, register } from '@/api';
+import { useLocalStorage } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Input, message, Modal } from 'antd';
+import { LocalStorageKey, Role } from '@/enums';
+import type { FormInstance } from 'antd/es/form';
+import { Button, Form, Input, Modal, message } from 'antd';
 
 type IProps = {
   show: boolean;
-  handleOk: () => void;
   handleCancel: () => void;
 }
 
 const Index: React.FC<IProps> = (props) => {
-  const { show, handleCancel, handleOk } = props;
-  const [title, setTitle] = React.useState('登录');
   const navigate = useNavigate();
+  const formRef = React.useRef<FormInstance>(null);
+  const { show, handleCancel } = props;
+  const [title, setTitle] = React.useState('登录');
+  const [, setToken] = useLocalStorage(LocalStorageKey.User_Info, '');
 
-  const onFinish = (values: any) => {
-    //console.log('Success:', values);
-    const login = true;
-    if (!login) {
-      message.error({ content: '你还未注册账号，请先注册' });
-      setTitle('注册');
-    } else {
-      navigate('/home', { replace: true });
+  const userLogin = async (user: User) => {
+    try {
+      const { statusCode, data } = await login(user);
+      if (statusCode === 200) {
+        const storeUserInfo = {
+          jwt_token: data?.jwt_token,
+          email: data?.email,
+          name: data?.name
+        };
+        setToken(storeUserInfo);
+        navigate('/chat', { replace: true });
+      } else {
+        //
+      }
+    } catch (err) {
+      console.info(err);
     }
   };
 
+  const userRegister = async (user: User) => {
+    try {
+      await register(Object.assign(user, { roles: [Role.User] }));
+      message.success({ content: '注册成功!' });
+      handleCancel();
+      setTitle('登录');
+      formRef.current?.resetFields();
+    } catch (err) {
+      console.info(err);
+    }
+  };
+
+  const onFinish = async (values: User) => {
+    title === '登录' ? userLogin(values) : userRegister(values);
+  };
+
+  React.useEffect(() => {
+    formRef.current?.resetFields();
+  }, [title]);
 
   return <Modal
     title={title}
@@ -36,6 +69,7 @@ const Index: React.FC<IProps> = (props) => {
   >
     <StyleDiv>
       <Form
+        ref={formRef}
         name="basic"
         labelCol={{ span: 5 }}
         style={{ width: '100%' }}
@@ -73,6 +107,28 @@ const Index: React.FC<IProps> = (props) => {
           </Button>
         </Form.Item>
       </Form>
+      <div className='selected'>
+        {title === '登录' && <p>
+          没有账号?前往
+          <Button
+            onClick={() => setTitle('注册')}
+            type='link'
+            style={{ padding: '0' }}
+          >
+            <span style={{ textDecoration: 'underline', textUnderlineOffset: '3px' }}>注册</span>
+          </Button>
+        </p>}
+        {title === '注册' && <p>
+          已有账号?前往
+          <Button
+            onClick={() => setTitle('登录')}
+            type='link'
+            style={{ padding: '0' }}
+          >
+            <span style={{ textDecoration: 'underline', textUnderlineOffset: '3px' }}>登录</span>
+          </Button>
+        </p>}
+      </div>
     </StyleDiv>
   </Modal>;
 };

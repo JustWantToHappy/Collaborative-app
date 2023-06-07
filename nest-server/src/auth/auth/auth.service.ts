@@ -21,6 +21,9 @@ export class AuthService {
       roles: user.roles,
     };
     return {
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
       jwt_token: await this.jwtService.signAsync(payload, {
         secret: process.env.SECRET_KEY,
         algorithm: 'HS256', // 加密算法

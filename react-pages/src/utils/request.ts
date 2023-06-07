@@ -1,19 +1,25 @@
 import axios from 'axios';
-import { message } from 'antd';
+import { message} from 'antd';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse,AxiosError } from 'axios';
 
 export interface ResponseData<T> {
     statusCode: number;
     data: T;
-    message?: string;
-    error?: string;
+    time: string;
 }
 
-export class Request{
+export interface ResponseErr{
+    statusCode: number;
+    message: string;
+    error: string;
+    time: string;
+}
+
+class Request{
     instance: AxiosInstance;
     baseConfig: AxiosRequestConfig = {
          baseURL:'/api',
-        timeout: 5000,
+         timeout: 5000,
          withCredentials: true
     };
     
@@ -31,50 +37,21 @@ export class Request{
         this.instance.interceptors.request.use(config => {
             return config;
         }, (err: AxiosError) => {
-            message.error({ content: err.message, duration: 1 });
-            return Promise.reject(err);
+            return Promise.reject(err.response?.data);
         });
 
         this.instance.interceptors.response.use((res:AxiosResponse) => {
             return res.data;
         }, (err: AxiosError) => {
-            console.info('状态码:', err.response?.status);
-            this.handleStatusCode(err.response?.status);
-            return Promise.reject(err);
+            //console.info('状态码:', err.response?.status);
+            this.handleStatusCode(err.response?.data as ResponseErr);
+            return Promise.reject(err.response?.data);
         });
     }
 
     //处理响应状态码
-    private handleStatusCode(code:number|undefined) {
-        switch (code) {
-            case 400:
-                message.error({ content: '请求错误!', duration: 1 });
-                console.info('请求错误');
-                break;
-            case 401:
-                console.info('未授权，请重新登录');
-                break;
-            case 403:
-                message.error({content:'访问失败,权限不够!'});
-                console.info('拒绝访问');
-                break;
-            case 404:
-                message.error({ content: '你访问的资源不存在', duration: 1 });
-                console.info('请求路径不存在对应的资源');
-                break;
-            case 500:
-                message.error({ content: '出错了，请联系管理员!', duration: 1 });
-                console.info('服务器错误');
-                break;
-                case 502:
-                message.error({ content: '网络错误!', duration: 1 });
-                console.info('网络错误');
-                break;
-            default:
-                message.error({ content: '出错了，请联系管理员!', duration: 1 });
-                console.info('未知错误');
-                break;
-        }
+    private handleStatusCode(res: ResponseErr) {
+        message.info({content:`${res.statusCode} ${res.message}`});
     }
     //get请求
     public get<T = any>(url:string,config?:AxiosRequestConfig):Promise<ResponseData<T>> {

@@ -30,7 +30,7 @@ const StyleDiv = styled('div')<Props>`
   header{
     padding:1rem .5rem;
     text-align: center;
-    height:12%;
+    height:10%;
   }
 
   h4{
@@ -40,9 +40,8 @@ const StyleDiv = styled('div')<Props>`
   .chat{
     &_container{
       width:100%;
-      height:88%;
+      height:90%;
       overflow: auto;
-      padding-bottom:.5rem;
       overflow-x: hidden;
       margin: 0;
     }
@@ -78,7 +77,7 @@ const StyleDiv = styled('div')<Props>`
         display: ${props=>props.wide?'block':'none'};
       }
       &:hover{
-        background-color: var(--ab-grey-300);
+        background-color: var(--ab-grey-200);
         cursor: pointer;
       }
     }

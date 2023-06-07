@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, Popover } from 'antd';
+import { isLogin } from '@/utils';
 import StyleDiv from './style';
 import Login from '@/components/Login';
 import Header from '@/components/Header';
+import { Button, Popover } from 'antd';
 import LogoSvg from '@/assets/logo/logo.svg';
 import GitHubSvg from '@/assets/logo/github.svg';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 
 const content = (
   <div>
@@ -15,14 +16,18 @@ const content = (
 export default function Index() {
   const [showLogin, setShowLogin] = React.useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const handleLoginCancel = () => {
     setShowLogin(false);
   };
-  const handleLoginOk = () => {
-    setShowLogin(true);
-  };
 
+
+  React.useLayoutEffect(() => {
+    if (!isLogin()) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   if (pathname === '/') {
     return <StyleDiv>
@@ -43,7 +48,6 @@ export default function Index() {
       <Login
         show={showLogin}
         handleCancel={handleLoginCancel}
-        handleOk={handleLoginOk}
       />
       <footer>
         <Link to='https://github.com/JustWantToHappy/Collaborative-app' title='项目地址' target='_blank'><img src={GitHubSvg} alt='项目地址' /></Link>

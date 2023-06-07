@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,8 +18,15 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+    const user = await this.userRepository.findOne({
+      where: { email: createUserDto?.email },
+    });
+    if (user) {
+      throw new ConflictException(`${createUserDto.email} has registered`);
+    } else {
+      const user = await this.userRepository.create(createUserDto);
+      return this.userRepository.save(user);
+    }
   }
 
   findAll(paginationQuery: PaginationQueryDto) {

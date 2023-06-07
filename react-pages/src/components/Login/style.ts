@@ -10,6 +10,11 @@ const StyleDiv = styled('div')`
       width:80%;
     }
   }
+  .selected{
+    display: flex;
+    justify-content: flex-end;
+    letter-spacing: 1px;
+  }
 `;
 
 export default StyleDiv;

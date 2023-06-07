@@ -1,7 +1,7 @@
-import React, { Suspense } from 'react';
-import { ConfigProvider } from 'antd';
-import { useRoutes } from 'react-router-dom';
+import React from 'react';
 import { routes } from './layout';
+import { useRoutes } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
 import { defaultCssStyles } from './utils';
 
 
@@ -19,11 +19,11 @@ function App() {
         colorLinkHover: data.colorPrimary
       }
     }}>
-      <div className="app">
-        <Suspense fallback={<h1>Loading...</h1>}>
+      <React.Suspense fallback={<h1>Loading...</h1>}>
+        <div className='app'>
           {element}
-        </Suspense>
-      </div>
+        </div>
+      </React.Suspense>
     </ConfigProvider>
   );
 }

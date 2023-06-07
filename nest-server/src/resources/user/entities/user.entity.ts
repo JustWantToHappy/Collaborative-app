@@ -12,7 +12,7 @@ export class User extends Base {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ default: '' })
   avatar: string;
 
   @Column('simple-array')
