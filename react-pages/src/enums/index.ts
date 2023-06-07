@@ -10,3 +10,10 @@ export enum Role{
 export enum Config{
   WsUrl='http://localhost:8080'
 }
+
+export enum Chat {
+  Group_Join = 'group join',
+  Group_Message = 'group message',
+  Group_Leave = 'group leave',
+  Private_Chat = 'private chat',
+}

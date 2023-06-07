@@ -9,6 +9,7 @@ import { io } from 'socket.io-client';
 import LogoSvg from '@/assets/logo/logo.svg';
 import type { Socket } from 'socket.io-client';
 import GitHubSvg from '@/assets/logo/github.svg';
+import { Chat } from '@/enums';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 
 const content = (
@@ -34,7 +35,7 @@ export default function Index() {
   }, [navigate]);
 
   React.useEffect(() => {
-    const socket = io(Config.WsUrl);
+    const socket = io(Config.WsUrl + '/group-100');
     setSocket(socket);
     socket.on('disconnect', () => {
       console.log(socket.id);
@@ -48,6 +49,15 @@ export default function Index() {
     return <StyleDiv>
       <header>
         <Link to='/' title=""> <img src={LogoSvg} /></Link>
+        <Button onClick={() => {
+          socket && socket.emit(Chat.Group_Join, 'group 1');
+        }}>加入房间</Button>
+        <Button onClick={() => {
+          socket && socket.emit(Chat.Group_Message, '我是大傻逼');
+        }}>发送消息</Button>
+        <Button onClick={() => {
+          socket && socket.emit(Chat.Group_Leave, 'group 1');
+        }}>离开房间</Button>
         <Button type="primary" onClick={() => setShowLogin(true)}>登录 / 注册</Button>
       </header>
       <main>
