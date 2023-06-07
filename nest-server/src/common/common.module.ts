@@ -10,9 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from './guards/roles/roles.guard';
 import { LoggingMiddleware } from './middleware/logging/logging.middleware';
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, WebsocketModule],
   providers: [
     {
       provide: APP_GUARD,
