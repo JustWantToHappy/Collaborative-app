@@ -47,7 +47,7 @@ export default function Index() {
         onFinish={onBuildGroup}
         autoComplete="off"
       >
-
+        
         <Form.Item
           label="名称"
           name="name"
@@ -59,7 +59,6 @@ export default function Index() {
         <Form.Item
           label="简介"
           name="description"
-          rules={[{ required: true, message: '群简介不能为空!' }]}
         >
           <Input.TextArea rows={5} />
         </Form.Item>

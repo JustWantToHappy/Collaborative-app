@@ -2,9 +2,11 @@ import React from 'react';
 import { StyleDiv } from '@/common';
 import { useLocation } from 'react-router-dom';
 import ChatHeader from './components/ChatHeader';
-import ChatAside from '@/pages/Client/Chat/components/ChatAside';
+import ChatAside from './components/ChatAside';
+import ChatContainer from './components/ChatContainer';
+
 import { MemoDiv } from './style';
-import { Button, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 
 const onChange = (key: string) => {
@@ -37,8 +39,11 @@ export default function Index() {
     setWide(wide => !wide);
   };
 
+  const asideWidth = React.useMemo(() => {
+    return wide ? '18rem' : '6rem';
+  }, [wide]);
   return (
-    <StyleDiv asideWidth={wide ? '18rem' : '6rem'}>
+    <StyleDiv asideWidth={asideWidth}>
       <aside >
         <ChatAside wide={wide} changeWide={changeWide} />
       </aside>
@@ -58,7 +63,7 @@ export default function Index() {
               onChange={onChange}
             />
           </MemoDiv>}
-          
+          {/\/chat\/\d+/.test(pathname) && <ChatContainer asideWidth={asideWidth} />}
         </div>
       </main>
     </StyleDiv>

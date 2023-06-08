@@ -54,6 +54,7 @@ export default function Index(props: IProps) {
                   content={
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <Button type='link'>标记已读</Button>
+                      <Button type='link'>邀请好友</Button>
                       <Button type='link'>退出该群</Button>
                     </div>
                   }

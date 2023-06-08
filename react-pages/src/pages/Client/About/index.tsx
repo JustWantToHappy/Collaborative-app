@@ -27,11 +27,20 @@ export default function Index() {
     setShowLogin(false);
   };
 
+  //进行路由权限处理
+  React.useLayoutEffect(() => {
+    const login = isLogin();
+    if (!login) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   React.useLayoutEffect(() => {
     const login = isLogin();
-    navigate(login ? '/chat' : '/', { replace: true });
-  }, [navigate]);
+    if (login) {
+      navigate('/chat');
+    }
+  }, []);
 
   React.useEffect(() => {
     const socket = io(Config.WsUrl + '/chat/private');
@@ -48,7 +57,7 @@ export default function Index() {
     return <StyleDiv>
       <header>
         <Link to='/' title=""> <img src={LogoSvg} /></Link>
-      {/*  <Button onClick={() => {
+        {/*  <Button onClick={() => {
           socket && socket.emit(Chat.Group_Join, 'group 1');
         }}>加入房间</Button>
         <Button onClick={() => {
