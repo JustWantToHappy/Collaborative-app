@@ -1,15 +1,20 @@
 import React from 'react';
+import { buildGroup } from '@/api';
 import StyleDiv from './style';
+import { useLocalStorage } from '@/hooks';
+import type { Team, User } from '@/types';
 import { defaultCssStyles } from '@/utils';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Form, Input, Modal } from 'antd';
 import type { FormInstance } from 'antd/es/form';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Button, Form, Input, Modal, message } from 'antd';
 
 
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  //const [user] = useLocalStorage<User>('user_info');
   const formRef = React.useRef<FormInstance>(null);
+  const [messageApi, contextHolder] = message.useMessage();
   const [showGroup, setShowGroup] = React.useState(false);
 
   const openGroup = () => {
@@ -24,11 +29,24 @@ export default function Index() {
     formRef.current?.submit();
   };
 
-  const onBuildGroup = () => { };
-
+  const onBuildGroup = async (values: Team) => {
+    values.avatar = '';
+    console.info(values, 'hhh');
+    try {
+      const { statusCode, msg } = await buildGroup(values);
+      if (statusCode === 200) {
+        messageApi.success({ content: '创建成功' });
+      } else {
+        messageApi.info({ content: `${statusCode} ${msg}` });
+      }
+    } catch (err) {
+      console.info(err);
+    }
+  };
 
 
   return <StyleDiv>
+    {contextHolder}
     <h4>名称(1)</h4>
     <div>
       <Button
@@ -47,7 +65,7 @@ export default function Index() {
         onFinish={onBuildGroup}
         autoComplete="off"
       >
-        
+
         <Form.Item
           label="名称"
           name="name"

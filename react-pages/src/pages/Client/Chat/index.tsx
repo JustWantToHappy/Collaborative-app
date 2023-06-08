@@ -26,6 +26,11 @@ const items: TabsProps['items'] = [
   },
   {
     key: '3',
+    label: `星标好友`,
+    children: `Content of Tab Pane 2`,
+  },
+  {
+    key: '4',
     label: `添加好友`,
     children: `Content of Tab Pane 3`,
   },

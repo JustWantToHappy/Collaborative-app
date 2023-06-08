@@ -6,7 +6,7 @@ import React from 'react';
  * @param initValue 
  * @returns 
  */
-export function useLocalStorage<T>(key: string,initValue:T) {
+export function useLocalStorage<T>(key: string,initValue:T|null=null) {
 
   const [storedValue, setStoredValue] = React.useState(() => {
     try {

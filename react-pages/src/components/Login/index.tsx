@@ -26,9 +26,11 @@ const Index: React.FC<IProps> = (props) => {
       const { statusCode, data, msg } = await login(user);
       if (statusCode === 200) {
         const storeUserInfo = {
+          //id: data?.id,
+          avatar: data?.avatar,
           jwt_token: data?.jwt_token,
           email: data?.email,
-          name: data?.name
+          name: data?.name,
         };
         setToken(storeUserInfo);
         navigate('/chat', { replace: true });

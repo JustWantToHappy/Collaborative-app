@@ -17,6 +17,7 @@ export const StyleDiv = styled('div') <Props>`
     height:calc(100vh - var(--ab-nav-height));
     box-shadow: var(--ab-green-200) 1px 4px 4px;
     border-right:1px solid var(--ab-grey-100);
+    transition:width 100ms ease;
   }
   main{
     left:var(--aside-width);
