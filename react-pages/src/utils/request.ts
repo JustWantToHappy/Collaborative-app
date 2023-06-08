@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { LocalStorageKey} from '@/enum';
+import { User } from '@/types';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse,AxiosError } from 'axios';
 
 export interface ResponseData<T> {
@@ -28,8 +30,19 @@ class Request{
     //拦截器
     private interceptors() {
         this.instance.interceptors.request.use(config => {
+            try {
+                const userInfoStr=window.localStorage.getItem(LocalStorageKey.User_Info);
+                const userInfo:User=JSON.parse(userInfoStr as string);
+                config.headers.Authorization = `Bearer ${userInfo.jwt_token}`;
+                console.info(config.headers.Authorization);
+            } catch (err) {
+                //console.info(err);
+            }
             return config;
         }, (err: AxiosError) => {
+            if (err.response?.status === 401) {
+                window.localStorage.removeItem(LocalStorageKey.User_Info);
+            }
             return Promise.reject(err.response?.data);
         });
 
