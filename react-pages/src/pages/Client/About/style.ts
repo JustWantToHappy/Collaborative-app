@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 
-export const StyleDiv = styled('div')`
+const StyleDiv = styled('div')`
   &>header{
     display:flex;
     justify-content: space-between;
@@ -35,3 +35,5 @@ export const StyleDiv = styled('div')`
   }
 
 `;
+
+export default StyleDiv;

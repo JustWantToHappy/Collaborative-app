@@ -1,18 +1,11 @@
 import axios from 'axios';
-import { message} from 'antd';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse,AxiosError } from 'axios';
 
 export interface ResponseData<T> {
     statusCode: number;
-    data: T;
     time: string;
-}
-
-export interface ResponseErr{
-    statusCode: number;
-    message: string;
-    error: string;
-    time: string;
+    data?: T;
+    msg?: string;
 }
 
 class Request{
@@ -43,16 +36,10 @@ class Request{
         this.instance.interceptors.response.use((res:AxiosResponse) => {
             return res.data;
         }, (err: AxiosError) => {
-            //console.info('状态码:', err.response?.status);
-            this.handleStatusCode(err.response?.data as ResponseErr);
-            return Promise.reject(err.response?.data);
+            return Promise.resolve(err.response?.data);
         });
     }
 
-    //处理响应状态码
-    private handleStatusCode(res: ResponseErr) {
-        message.info({content:`${res.statusCode} ${res.message}`});
-    }
     //get请求
     public get<T = any>(url:string,config?:AxiosRequestConfig):Promise<ResponseData<T>> {
         return this.instance.get(url,config);

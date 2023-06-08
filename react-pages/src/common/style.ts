@@ -35,17 +35,17 @@ export const StyleDiv = styled('div') <Props>`
   }
   .container{
     width:var(--main-width);
-    padding:1rem 2rem;
+    padding:0 2rem;
     margin-top: var(--ab-main-header-height);
     display: flex;
   }
 
   .welcome{
     display: flex;
-    width:var(--main-width);
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin:0 auto;
     margin-top:20vh;
   }
 `;

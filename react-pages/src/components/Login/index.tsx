@@ -19,10 +19,11 @@ const Index: React.FC<IProps> = (props) => {
   const { show, handleCancel } = props;
   const [title, setTitle] = React.useState('登录');
   const [, setToken] = useLocalStorage(LocalStorageKey.User_Info, '');
+  const [messageApi, contextHolder] = message.useMessage();
 
   const userLogin = async (user: User) => {
     try {
-      const { statusCode, data } = await login(user);
+      const { statusCode, data, msg } = await login(user);
       if (statusCode === 200) {
         const storeUserInfo = {
           jwt_token: data?.jwt_token,
@@ -31,8 +32,9 @@ const Index: React.FC<IProps> = (props) => {
         };
         setToken(storeUserInfo);
         navigate('/chat', { replace: true });
+        handleCancel();
       } else {
-        //
+        messageApi.info({ content: `${statusCode} ${msg}` });
       }
     } catch (err) {
       console.info(err);
@@ -41,11 +43,15 @@ const Index: React.FC<IProps> = (props) => {
 
   const userRegister = async (user: User) => {
     try {
-      await register(Object.assign(user, { roles: [Role.User] }));
-      message.success({ content: '注册成功!' });
-      handleCancel();
-      setTitle('登录');
-      formRef.current?.resetFields();
+      const { statusCode, msg } = await register(Object.assign(user, { roles: [Role.User] }));
+      if (statusCode === 200) {
+        message.success({ content: '注册成功!' });
+        handleCancel();
+        setTitle('登录');
+        formRef.current?.resetFields();
+      } else {
+        messageApi.info({ content: `${statusCode} ${msg}` });
+      }
     } catch (err) {
       console.info(err);
     }
@@ -67,6 +73,7 @@ const Index: React.FC<IProps> = (props) => {
     mask={false}
     style={{ maxWidth: '380px' }}
   >
+    {contextHolder}
     <StyleDiv>
       <Form
         ref={formRef}

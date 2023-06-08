@@ -63,19 +63,36 @@ const StyleDiv = styled('div')<Props>`
         grid-row:2/3;
       }
 
-      &>small{
+      &_date{
         font-weight: 100;
         position:absolute;
+        top: 0.5rem;
         right:0;
         display: ${props=>props.wide?'block':'none'};
       }
+
+      &_infoCount{
+        position:absolute;
+        bottom:.5rem;
+        right:0;
+      }
+
       &:hover{
         background-color: var(--ab-grey-200);
         cursor: pointer;
       }
+      &:hover>span{
+        display: block;
+      }
+      &>span{
+        position: absolute;
+        z-index:1000;
+        bottom:.5rem;
+        right:2.5rem;
+        display: none;
+      }
     }
   }
-  
   .chat_item_avatar{
     display: flex;
     align-items: center;

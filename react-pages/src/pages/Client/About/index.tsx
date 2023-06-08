@@ -29,9 +29,8 @@ export default function Index() {
 
 
   React.useLayoutEffect(() => {
-    if (!isLogin()) {
-      navigate('/', { replace: true });
-    }
+    const login = isLogin();
+    navigate(login ? '/chat' : '/', { replace: true });
   }, [navigate]);
 
   React.useEffect(() => {
@@ -49,7 +48,7 @@ export default function Index() {
     return <StyleDiv>
       <header>
         <Link to='/' title=""> <img src={LogoSvg} /></Link>
-        <Button onClick={() => {
+      {/*  <Button onClick={() => {
           socket && socket.emit(Chat.Group_Join, 'group 1');
         }}>加入房间</Button>
         <Button onClick={() => {
@@ -57,7 +56,7 @@ export default function Index() {
         }}>发送消息</Button>
         <Button onClick={() => {
           socket && socket.emit(Chat.Group_Leave, 'group 1');
-        }}>离开房间</Button>
+        }}>离开房间</Button>*/}
         <Button type="primary" onClick={() => setShowLogin(true)}>登录 / 注册</Button>
       </header>
       <main>

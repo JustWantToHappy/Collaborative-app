@@ -1,13 +1,15 @@
 import React from 'react';
-import { Avatar } from 'antd';
+import { Avatar, Badge, Button, Popover } from 'antd';
 import StyleDiv from './style';
+import { defaultCssStyles } from '@/utils';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 
 type IProps = {
   wide: boolean;
   changeWide: () => void;
 }
+
 
 export default function Index(props: IProps) {
   const { wide, changeWide } = props;
@@ -28,11 +30,11 @@ export default function Index(props: IProps) {
       </header>
       <ul className='chat_aside'>
         {new Array(10).fill(1).map((_, index) =>
-          <NavLink key={index} to={`/chat/${index}`} style={{color:'#000',textDecoration:'none'}}>
+          <NavLink key={index} to={`/chat/${index}`} style={{ color: active === index ? '#fff' : '#000', textDecoration: 'none' }}>
             <li
               className='chat_item'
               onClick={() => setActive(index)}
-              style={{ backgroundColor: active === index ? '#00B96B' : '' }}
+              style={active === index ? { backgroundColor: defaultCssStyles.colorPrimary } : {}}
             >
               <div className='chat_item_avatar'>
                 <Avatar
@@ -42,7 +44,23 @@ export default function Index(props: IProps) {
               </div>
               <p>飞书团队</p>
               <p>登录操作通知</p>
-              <small>2020年01月01日</small>
+              <small className='chat_item_date'>2020年01月01日</small>
+              <small className='chat_item_infoCount'>
+                {/*<Badge count={12} />*/}
+              </small>
+              <span>
+                <Popover
+                  placement="top"
+                  content={
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <Button type='link'>标记已读</Button>
+                      <Button type='link'>退出该群</Button>
+                    </div>
+                  }
+                  arrow={false}>
+                  <EllipsisOutlined />
+                </Popover>
+              </span>
             </li>
           </NavLink>
         )}

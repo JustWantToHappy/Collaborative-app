@@ -1,13 +1,16 @@
 import React from 'react';
 import StyleDiv from './style';
+import { defaultCssStyles } from '@/utils';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Form, Input, Modal } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 
 
 export default function Index() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const formRef = React.useRef<FormInstance>(null);
   const [showGroup, setShowGroup] = React.useState(false);
-  const [showFriend, setShowFriend] = React.useState(false);
 
   const openGroup = () => {
     setShowGroup(true);
@@ -20,24 +23,21 @@ export default function Index() {
   const onSubmitGroup = () => {
     formRef.current?.submit();
   };
-  const openFriend = () => {
-    setShowFriend(true);
-  };
-
-  const closeFriend = () => {
-    setShowFriend(false);
-  };
 
   const onBuildGroup = () => { };
 
-  const onInviteFriend = () => { };
 
 
   return <StyleDiv>
     <h4>名称(1)</h4>
     <div>
+      <Button
+        type='link'
+        style={{ color: pathname === '/chat/address' ? defaultCssStyles.colorPrimary : defaultCssStyles.colorLink }}
+        onClick={() => navigate('/chat/address')}>
+        通讯录
+      </Button>
       <Button type='link' onClick={openGroup}>新建群组</Button>
-      <Button type='link' onClick={openFriend}>邀请好友</Button>
     </div>
     <Modal title="新建群组" open={showGroup} onCancel={closeGroup} onOk={onSubmitGroup} >
       <Form

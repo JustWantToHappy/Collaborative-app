@@ -14,16 +14,19 @@ export class HttpExceptionFilter<T extends HttpException>
   catch(exception: T, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
     const error =
       typeof response === 'string'
-        ? { message: exceptionResponse }
-        : (exceptionResponse as object);
-    console.info(error);
+        ? { msg: exceptionResponse }
+        : (exceptionResponse as any);
+    const { message } = error;
+
+    const errorMessage = Array.isArray(message) ? message[0] : message;
+
     response.status(status).json({
-      ...(typeof error === 'string' ? { error } : error),
+      statusCode: status,
+      msg: errorMessage,
       time: new Date().toISOString(),
     });
   }

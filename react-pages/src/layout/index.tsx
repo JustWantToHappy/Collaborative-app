@@ -9,7 +9,6 @@ import PageNotFound from '../pages/PageNotFound';
 import UserInfo from '../pages/Client/UserInfo';
 import CloudDocument from '../pages/Client/CloudDocument';
 import SharedSpace from '../pages/Client/SharedSpace';
-import AddressBook from '../pages/Client/AdressBook';
 
 //后台路由
 import Test from '../pages/Admin/Test';
@@ -50,13 +49,6 @@ export const routes: Array<Router> = [
         path: '/shared',
         element: <AuthRoute redirect='/'>
           <SharedSpace />
-        </AuthRoute>
-      },
-      {
-        name: '通讯录',
-        path: '/address',
-        element: <AuthRoute redirect='/'>
-          <AddressBook />
         </AuthRoute>
       },
     ]
