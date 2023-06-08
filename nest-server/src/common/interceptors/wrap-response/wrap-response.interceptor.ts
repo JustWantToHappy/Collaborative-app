@@ -12,6 +12,7 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class WrapResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    console.info('Before request....');
     return next.handle().pipe(
       map((data) => ({
         data,

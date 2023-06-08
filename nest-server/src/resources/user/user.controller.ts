@@ -56,6 +56,7 @@ export class UserController {
   @Public()
   @Post('login')
   login(@Body() body: any) {
+    console.info('login');
     return this.authService.signIn(body.email, body.password);
   }
 

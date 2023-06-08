@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { TeamService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -18,7 +19,8 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
-  create(@Body() createTeamDto: CreateTeamDto) {
+  create(@Request() request, @Body() createTeamDto: CreateTeamDto) {
+    createTeamDto.leader_id = request.user.id;
     return this.teamService.create(createTeamDto);
   }
 
