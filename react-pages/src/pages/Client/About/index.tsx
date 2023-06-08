@@ -1,6 +1,6 @@
 import React from 'react';
 import { isLogin } from '@/utils';
-import { Config } from '@/enums';
+import { Config } from '@/enum';
 import StyleDiv from './style';
 import Login from '@/components/Login';
 import Header from '@/components/Header';
@@ -9,7 +9,7 @@ import { io } from 'socket.io-client';
 import LogoSvg from '@/assets/logo/logo.svg';
 import type { Socket } from 'socket.io-client';
 import GitHubSvg from '@/assets/logo/github.svg';
-import { Chat } from '@/enums';
+import { Chat } from '@/enum';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 
 const content = (
@@ -35,7 +35,7 @@ export default function Index() {
   }, [navigate]);
 
   React.useEffect(() => {
-    const socket = io(Config.WsUrl + '/group-100');
+    const socket = io(Config.WsUrl + '/chat/private');
     setSocket(socket);
     socket.on('disconnect', () => {
       console.log(socket.id);
@@ -81,9 +81,7 @@ export default function Index() {
   } else {
     return <>
       <Header />
-      <div className='ab_container'>
-        <Outlet />
-      </div>
+      <Outlet />
     </>;
   }
 }

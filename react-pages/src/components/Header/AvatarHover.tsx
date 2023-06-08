@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { LocalStorageKey } from '@/enums';
+import { LocalStorageKey } from '@/enum';
 import { useLocalStorage } from '@/hooks';
 import styled from 'styled-components';
 

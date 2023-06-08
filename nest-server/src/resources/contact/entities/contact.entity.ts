@@ -9,6 +9,6 @@ export class Contact {
   @Column()
   user_id: number;
 
-  @Column({ type: 'tinyint', width: 1, default: YesNotState.Not })
+  @Column({ type: 'tinyint', default: YesNotState.Not })
   is_care: number;
 }

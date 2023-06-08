@@ -12,5 +12,6 @@ export enum Chat {
   Group_Join = 'group join',
   Group_Message = 'group message',
   Group_Leave = 'group leave',
-  Private_Chat = 'private chat',
+  Private_Join = 'private join',
+  Private_Leave = 'private leave',
 }

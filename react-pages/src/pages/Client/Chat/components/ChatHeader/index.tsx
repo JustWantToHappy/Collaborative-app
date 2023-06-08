@@ -3,11 +3,8 @@ import StyleDiv from './style';
 import { Button, Form, Input, Modal } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 
-interface Props {
-  wide: boolean;
-}
 
-export default function Index(props: Props) {
+export default function Index() {
   const formRef = React.useRef<FormInstance>(null);
   const [showGroup, setShowGroup] = React.useState(false);
   const [showFriend, setShowFriend] = React.useState(false);
@@ -36,7 +33,7 @@ export default function Index(props: Props) {
   const onInviteFriend = () => { };
 
 
-  return <StyleDiv wide={props.wide}>
+  return <StyleDiv>
     <h4>名称(1)</h4>
     <div>
       <Button type='link' onClick={openGroup}>新建群组</Button>

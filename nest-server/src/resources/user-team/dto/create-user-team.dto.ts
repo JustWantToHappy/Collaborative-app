@@ -1,4 +1,5 @@
 import { IsNumber } from 'class-validator';
+import { YesNotState } from 'src/common/enum';
 
 export class CreateUserTeamDto {
   readonly id: number;
@@ -8,4 +9,7 @@ export class CreateUserTeamDto {
 
   @IsNumber()
   team_id: number;
+
+  @IsNumber()
+  isagree: YesNotState;
 }

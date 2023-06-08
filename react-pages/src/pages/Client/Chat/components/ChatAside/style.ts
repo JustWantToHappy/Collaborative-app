@@ -5,15 +5,7 @@ interface Props{
 }
 
 const StyleDiv = styled('div')<Props>`
-  transition: width 200ms ease;
-  display: block;
-  top:var(--ab-nav-height);
-  position: fixed;
-  height:calc(100vh - var(--ab-nav-height));
-  box-shadow: var(--ab-green-200) 1px 4px 4px;
-  width:${props => props.wide ? '16rem' : '6rem'};
-  overflow: hidden;
-
+  position: relative;
   i{
     float:right;
     cursor: pointer;
@@ -30,7 +22,7 @@ const StyleDiv = styled('div')<Props>`
   header{
     padding:1rem .5rem;
     text-align: center;
-    height:10%;
+    height:var(--ab-main-header-height);
   }
 
   h4{
@@ -39,8 +31,8 @@ const StyleDiv = styled('div')<Props>`
   
   .chat{
     &_aside{
-      width:100%;
-      height:90%;
+      height: 100%;
+      height:calc(100vh - var(--ab-nav-height) - var(--ab-main-header-height));
       overflow: auto;
       overflow-x: hidden;
       margin: 0;

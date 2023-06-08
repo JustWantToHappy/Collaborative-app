@@ -4,7 +4,7 @@ import StyleDiv from './style';
 import { login, register } from '@/api';
 import { useLocalStorage } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
-import { LocalStorageKey, Role } from '@/enums';
+import { LocalStorageKey, Role } from '@/enum';
 import type { FormInstance } from 'antd/es/form';
 import { Button, Form, Input, Modal, message } from 'antd';
 

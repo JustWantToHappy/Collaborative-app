@@ -1,4 +1,4 @@
-import {LocalStorageKey } from '@/enums';
+import {LocalStorageKey } from '@/enum';
 
 export function isLogin() {
   let user_info = null;

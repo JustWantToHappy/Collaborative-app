@@ -1,3 +1,4 @@
+import { YesNotState } from 'src/common/enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -10,4 +11,7 @@ export class UserTeam {
 
   @Column()
   team_id: number;
+
+  @Column({ type: 'tinyint', default: YesNotState.Yes })
+  isagree: number;
 }

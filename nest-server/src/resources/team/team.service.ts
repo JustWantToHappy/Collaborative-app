@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { YesNotState } from 'src/common/enum';
+import { InviteUserJoinGroup } from 'src/common/types';
 import { DataSource, Repository } from 'typeorm';
 import { CreateUserTeamDto } from '../user-team/dto/create-user-team.dto';
 import { UserTeamService } from '../user-team/user-team.service';
@@ -15,6 +17,7 @@ export class TeamService {
     private readonly userTeamService: UserTeamService,
   ) {}
 
+  //同时将创建者加入到中间表中
   async create(createTeamDto: CreateTeamDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -37,6 +40,13 @@ export class TeamService {
     return newTeam;
   }
 
+  async joinTeam(info: InviteUserJoinGroup) {
+    const { leader_id, team_id, user_id } = info;
+    await this.findByLeaderId(leader_id, team_id);
+    const joinInfo = { user_id, team_id, isagree: YesNotState.Not };
+    return this.userTeamService.create(joinInfo);
+  }
+
   findAll() {
     return `This action returns all team`;
   }
@@ -51,5 +61,17 @@ export class TeamService {
 
   remove(id: number) {
     return `This action removes a #${id} team`;
+  }
+
+  async findByLeaderId(leader_id: number, team_id: number) {
+    const team = await this.teamRepository.findOne({
+      where: { leader_id, id: team_id },
+    });
+    if (!team) {
+      throw new ForbiddenException(
+        `user ${leader_id} is not a group ${team_id}'sleader`,
+      );
+    }
+    return team;
   }
 }

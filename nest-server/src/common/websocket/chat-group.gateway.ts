@@ -2,7 +2,7 @@ import { WebSocketGateway, SubscribeMessage } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { Chat } from '../enum';
 
-@WebSocketGateway({ cors: true, port: 8080, namespace: /^\/group-\d+$/ })
+@WebSocketGateway({ cors: true, port: 8080, namespace: /^\/chat\/group-\d+$/ })
 export class ChatGroup {
   handleConnection(client: Socket) {
     console.log(`Client ${client.id} connected ${client.id}`);
