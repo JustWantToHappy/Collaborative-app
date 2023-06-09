@@ -1,6 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { YesNotState } from 'src/common/enum';
 import { Repository } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -8,6 +7,7 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 import { Contact } from './entities/contact.entity';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
+import { YesNotState } from 'src/common/enum';
 
 @Injectable()
 export class ContactService {
@@ -25,25 +25,36 @@ export class ContactService {
   }
 
   async invitedRecords(id: number) {
-    return await this.contactRepository
-      .createQueryBuilder('contact')
-      //使用innerJoinAndMapOne可以将查询结果打平
-      .innerJoinAndMapOne(
-        'result.user', // 查询结果中的结果别名
-        User, // 要查询的实体
-        'user', // 查询别名
-        'user.id = contact.user_id', // 关联条件
-      )
-      .select([
-        'name',
-        'email',
-        'avatar',
-        'contact.id AS id',
-        'contact.create_at As create_at',
-      ])
-      .where('contact.other_id = :id', { id })
-      .orderBy('contact.create_at', 'DESC')
-      .getRawMany();
+    return (
+      (
+        await this.contactRepository
+          .createQueryBuilder('contact')
+          //使用innerJoinAndMapOne可以将查询结果打平
+          .innerJoinAndMapOne(
+            'result.user', // 查询结果中的结果别名
+            User, // 要查询的实体
+            'user', // 查询别名
+            'user.id = contact.user_id', // 关联条件
+          )
+          .select([
+            'name',
+            'email',
+            'avatar',
+            'contact.isagree AS isagree',
+            'contact.id AS id',
+            'contact.create_at As create_at',
+          ])
+          .where('contact.other_id = :id', { id })
+          .where('contact.isagree=:isagree', { isagree: YesNotState.Not })
+          .orderBy('contact.create_at', 'DESC')
+          .getRawMany()
+      ).map((contact) => {
+        contact.create_at = dayjs(contact.create_at).format(
+          'YYYY-MM-DD HH:mm:ss',
+        );
+        return contact;
+      })
+    );
   }
 
   findAll() {
@@ -54,9 +65,12 @@ export class ContactService {
     return this.contactRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateContactDto: UpdateContactDto) {
-    const contact = this.findOne(id);
-    this.contactRepository.create(Object.assign(contact, updateContactDto));
+  async update(id: number, updateContactDto: UpdateContactDto) {
+    const contact = await this.findOne(id);
+    const updateContact = await this.contactRepository.create(
+      Object.assign(contact, updateContactDto),
+    );
+    this.contactRepository.save(updateContact);
     return '';
   }
 
