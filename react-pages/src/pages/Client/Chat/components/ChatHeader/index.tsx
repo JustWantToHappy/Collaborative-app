@@ -1,8 +1,7 @@
 import React from 'react';
 import { buildGroup } from '@/api';
 import StyleDiv from './style';
-import { useLocalStorage } from '@/hooks';
-import type { Team, User } from '@/types';
+import type { Team } from '@/types';
 import { defaultCssStyles } from '@/utils';
 import type { FormInstance } from 'antd/es/form';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -12,7 +11,6 @@ import { Button, Form, Input, Modal, message } from 'antd';
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  //const [user] = useLocalStorage<User>('user_info');
   const formRef = React.useRef<FormInstance>(null);
   const [messageApi, contextHolder] = message.useMessage();
   const [showGroup, setShowGroup] = React.useState(false);
@@ -31,11 +29,12 @@ export default function Index() {
 
   const onBuildGroup = async (values: Team) => {
     values.avatar = '';
-    console.info(values, 'hhh');
     try {
       const { statusCode, msg } = await buildGroup(values);
       if (statusCode === 200) {
         messageApi.success({ content: '创建成功' });
+        formRef.current?.resetFields();
+        setShowGroup(false);
       } else {
         messageApi.info({ content: `${statusCode} ${msg}` });
       }
@@ -64,6 +63,7 @@ export default function Index() {
         labelCol={{ span: 5 }}
         onFinish={onBuildGroup}
         autoComplete="off"
+        initialValues={{ description: '' }}
       >
 
         <Form.Item

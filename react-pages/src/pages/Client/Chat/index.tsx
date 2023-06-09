@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import ChatHeader from './components/ChatHeader';
 import ChatAside from './components/ChatAside';
 import ChatContainer from './components/ChatContainer';
+import FriendInvite from './components/FriendInvite';
 
 import { MemoDiv } from './style';
 import { Tabs } from 'antd';
@@ -32,7 +33,7 @@ const items: TabsProps['items'] = [
   {
     key: '4',
     label: `添加好友`,
-    children: `Content of Tab Pane 3`,
+    children: <FriendInvite />,
   },
 ];
 

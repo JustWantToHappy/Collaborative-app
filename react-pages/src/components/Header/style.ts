@@ -9,6 +9,7 @@ const StyleDiv = styled('div')`
   header{
     height:4rem;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    /*border-bottom: 1px solid var(--ab-grey-100);*/
     display: flex;
     align-items: center;
     padding:0  var(--ab-padding-x);
