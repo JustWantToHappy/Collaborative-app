@@ -17,3 +17,8 @@ export enum Chat {
   Group_Leave = 'group leave',
   Private_Chat = 'private chat',
 }
+
+export enum YesNotState{
+  Not=0,
+  Yes=1
+}

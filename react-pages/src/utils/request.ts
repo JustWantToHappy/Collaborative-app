@@ -31,10 +31,11 @@ class Request{
     private interceptors() {
         this.instance.interceptors.request.use(config => {
             try {
-                const userInfoStr=window.localStorage.getItem(LocalStorageKey.User_Info);
-                const userInfo:User=JSON.parse(userInfoStr as string);
-                config.headers.Authorization = `Bearer ${userInfo.jwt_token}`;
-                console.info(config.headers.Authorization);
+                if (config.url !== '/user/login') {
+                    const userInfoStr=window.localStorage.getItem(LocalStorageKey.User_Info);
+                    const userInfo:User=JSON.parse(userInfoStr as string);
+                    config.headers.Authorization = `Bearer ${userInfo.jwt_token}`;
+                }
             } catch (err) {
                 //console.info(err);
             }
@@ -46,7 +47,7 @@ class Request{
             return Promise.reject(err.response?.data);
         });
 
-        this.instance.interceptors.response.use((res:AxiosResponse) => {
+        this.instance.interceptors.response.use((res: AxiosResponse) => {
             return res.data;
         }, (err: AxiosError) => {
             return Promise.resolve(err.response?.data);

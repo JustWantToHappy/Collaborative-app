@@ -9,7 +9,3 @@ export function login(user:User) {
   const {email,password } = user;
   return request.post<User>('/user/login',{email,password});
 }  
-
-export function addFriend(email:string) {
-  return request.post('/user/invite',{email});
-}
