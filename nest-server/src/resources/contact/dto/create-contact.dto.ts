@@ -8,5 +8,8 @@ export class CreateContactDto {
   user_id: number;
 
   @IsNumber()
-  is_care: YesNotState;
+  iscare: YesNotState;
+
+  @IsNumber()
+  isagree: YesNotState;
 }

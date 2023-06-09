@@ -30,6 +30,7 @@ export class TeamService {
       newTeam = await this.userTeamService.create({
         user_id: savedTeam.leader_id,
         team_id: savedTeam.id,
+        isagree: 1,
       } as CreateUserTeamDto);
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -43,8 +44,8 @@ export class TeamService {
   async joinTeam(info: InviteUserJoinGroup) {
     const { leader_id, team_id, user_id } = info;
     await this.findByLeaderId(leader_id, team_id);
-    const joinInfo = { user_id, team_id, isagree: YesNotState.Not };
-    return this.userTeamService.create(joinInfo);
+    const joinInfo = { user_id, team_id };
+    return this.userTeamService.create(joinInfo as CreateUserTeamDto);
   }
 
   findAll() {

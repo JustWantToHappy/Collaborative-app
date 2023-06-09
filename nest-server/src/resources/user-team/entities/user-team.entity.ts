@@ -12,6 +12,6 @@ export class UserTeam {
   @Column()
   team_id: number;
 
-  @Column({ type: 'tinyint', default: YesNotState.Yes })
+  @Column({ type: 'tinyint', default: YesNotState.Not })
   isagree: number;
 }

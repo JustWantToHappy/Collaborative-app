@@ -10,5 +10,8 @@ export class Contact {
   user_id: number;
 
   @Column({ type: 'tinyint', default: YesNotState.Not })
-  is_care: number;
+  iscare: number;
+
+  @Column({ type: 'tinyint', default: YesNotState.Not })
+  isagree: number;
 }

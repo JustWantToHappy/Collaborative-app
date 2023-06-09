@@ -12,8 +12,9 @@ export class ContactService {
     private readonly contactRepository: Repository<Contact>,
   ) {}
 
-  create(createContactDto: CreateContactDto) {
-    return 'This action adds a new contact';
+  async create(createContactDto: CreateContactDto) {
+    const contact = await this.contactRepository.create(createContactDto);
+    return this.contactRepository.save(contact);
   }
 
   findAll() {

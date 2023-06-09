@@ -16,6 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { AuthService } from 'src/auth/auth/auth.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
+import { request } from 'http';
 
 @Controller('user')
 export class UserController {
@@ -56,8 +57,13 @@ export class UserController {
   @Public()
   @Post('login')
   login(@Body() body: any) {
-    console.info('login');
     return this.authService.signIn(body.email, body.password);
+  }
+
+  @Post('invite')
+  invite(@Body() body: any, @Request() request) {
+    const user = request.user;
+    return this.userService.invite(body.email, user.id);
   }
 
   @Post('loginafter')
