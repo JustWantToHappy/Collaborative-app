@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+} from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -17,6 +26,11 @@ export class ContactController {
     return this.contactService.findAll();
   }
 
+  @Get('invitedInfo')
+  invitedRecords(@Request() request) {
+    return this.contactService.invitedRecords(request.user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.contactService.findOne(+id);
@@ -30,5 +44,11 @@ export class ContactController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.contactService.remove(+id);
+  }
+
+  @Post('invite')
+  invite(@Body() body: any, @Request() request) {
+    const user = request.user;
+    return this.contactService.invite(body.email, user.id);
   }
 }

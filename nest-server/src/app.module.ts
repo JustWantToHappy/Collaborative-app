@@ -66,10 +66,6 @@ import { CommonModule } from './common/common.module';
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
-    //{
-    //  provide: APP_INTERCEPTOR, // 全局应用拦截器
-    //  useClass: TokenInterceptor,
-    //},
   ],
 })
 export class AppModule {

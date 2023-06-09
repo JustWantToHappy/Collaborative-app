@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -7,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { Repository } from 'typeorm';
-import { ContactService } from '../contact/contact.service';
 import { Contact } from '../contact/entities/contact.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -26,7 +24,7 @@ export class UserService {
       where: { email: createUserDto?.email },
     });
     if (user) {
-      throw new ConflictException(`${createUserDto.email} has registered`);
+      throw new ConflictException(`${createUserDto.email}已经注册`);
     } else {
       const user = await this.userRepository.create(createUserDto);
       return this.userRepository.save(user);
@@ -47,7 +45,7 @@ export class UserService {
   async findOne(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException(`user ${id} is not found`);
+      throw new NotFoundException('此用户不存在');
     }
     return user;
   }
@@ -66,12 +64,8 @@ export class UserService {
   async findOnyByEmail(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      throw new NotFoundException(`user ${email} is not found.`);
+      throw new NotFoundException(`邮箱${email}不存在`);
     }
     return user;
-  }
-
-  async invite(email: string, id: number) {
-    const user = await this.findOnyByEmail(email);
   }
 }

@@ -1,6 +1,7 @@
 import { Base } from 'src/common/base/base.entity';
 import { Role } from 'src/common/enum';
-import { Column, Entity } from 'typeorm';
+import { Contact } from 'src/resources/contact/entities/contact.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 @Entity()
 export class User extends Base {
   @Column()
@@ -17,4 +18,10 @@ export class User extends Base {
 
   @Column('simple-array')
   roles: Role[];
+
+  @OneToMany(() => Contact, (contact) => contact.user)
+  others: Contact[];
+
+  @OneToMany(() => Contact, (contact) => contact.other)
+  OthersOf: Contact[];
 }
