@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { Repository } from 'typeorm';
 import { ContactService } from '../contact/contact.service';
+import { Contact } from '../contact/entities/contact.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -15,8 +16,9 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UserService {
   constructor(
-    //private readonly contactService: ContactService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Contact)
+    private readonly contactRepository: Repository<Contact>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
