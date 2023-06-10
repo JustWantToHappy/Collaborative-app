@@ -31,6 +31,11 @@ export class ContactController {
     return this.contactService.invitedRecords(request.user.id);
   }
 
+  @Get('myfriends')
+  findMyFriend(@Request() request) {
+    return this.contactService.findMyFriend(request.user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.contactService.findOne(+id);

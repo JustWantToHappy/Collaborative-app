@@ -3,43 +3,45 @@ import { StyleDiv } from '@/common';
 import { useLocation } from 'react-router-dom';
 import ChatHeader from './components/ChatHeader';
 import ChatAside from './components/ChatAside';
-import ChatContainer from './components/ChatContainer';
 import ChatTools from './components/ChatTools';
+import MyFriends from './components/MyFriends';
+import ChatContainer from './components/ChatContainer';
 
 import { MemoDiv } from './style';
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 
-const onChange = (key: string) => {
-  console.log(key);
-};
-
-const items: TabsProps['items'] = [
-  {
-    key: '1',
-    label: `我的好友`,
-    children: <div>sb</div>,
-  },
-  {
-    key: '2',
-    label: `我加入的群组`,
-    children: `Content of Tab Pane 2`,
-  },
-  {
-    key: '3',
-    label: `更多操作`,
-    children: <ChatTools />,
-  },
-];
 
 export default function Index() {
   const { pathname } = useLocation();
   const [wide, setWide] = React.useState(true);
+  const [key, setKey] = React.useState('1');
 
   const changeWide = () => {
     setWide(wide => !wide);
   };
 
+  const onChange = (key: string) => {
+    setKey(key);
+  };
+
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: `我的好友`,
+      children: <MyFriends option={key} />,
+    },
+    {
+      key: '2',
+      label: `我加入的群组`,
+      children: `Content of Tab Pane 2`,
+    },
+    {
+      key: '3',
+      label: `更多操作`,
+      children: <ChatTools />,
+    },
+  ];
   const asideWidth = React.useMemo(() => {
     return wide ? '18rem' : '6rem';
   }, [wide]);
@@ -59,7 +61,7 @@ export default function Index() {
           </div>}
           {pathname === '/chat/address' && <MemoDiv>
             <Tabs
-              defaultActiveKey="1"
+              defaultActiveKey={key}
               items={items}
               onChange={onChange}
             />

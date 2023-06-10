@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -25,36 +25,35 @@ export class ContactService {
   }
 
   async invitedRecords(id: number) {
-    return (
-      (
-        await this.contactRepository
-          .createQueryBuilder('contact')
-          //使用innerJoinAndMapOne可以将查询结果打平
-          .innerJoinAndMapOne(
-            'result.user', // 查询结果中的结果别名
-            User, // 要查询的实体
-            'user', // 查询别名
-            'user.id = contact.user_id', // 关联条件
-          )
-          .select([
-            'name',
-            'email',
-            'avatar',
-            'contact.isagree AS isagree',
-            'contact.id AS id',
-            'contact.create_at As create_at',
-          ])
-          .where('contact.other_id = :id', { id })
-          .where('contact.isagree=:isagree', { isagree: YesNotState.Not })
-          .orderBy('contact.create_at', 'DESC')
-          .getRawMany()
-      ).map((contact) => {
-        contact.create_at = dayjs(contact.create_at).format(
-          'YYYY-MM-DD HH:mm:ss',
-        );
-        return contact;
-      })
-    );
+    const result = (
+      await this.contactRepository
+        .createQueryBuilder('contact')
+        //使用innerJoinAndMapOne可以将查询结果打平
+        .innerJoinAndMapOne(
+          'result.user', // 查询结果中的结果别名
+          User, // 要查询的实体
+          'user', // 查询别名
+          'user.id = contact.user_id', // 关联条件
+        )
+        .select([
+          'name',
+          'email',
+          'avatar',
+          'contact.isagree AS isagree',
+          'contact.id AS id',
+          'contact.create_at As create_at',
+        ])
+        .where('contact.other_id = :id', { id })
+        .where('contact.isagree=:isagree', { isagree: YesNotState.Not })
+        .orderBy('contact.create_at', 'DESC')
+        .getRawMany()
+    ).map((contact) => {
+      contact.create_at = dayjs(contact.create_at).format(
+        'YYYY-MM-DD HH:mm:ss',
+      );
+      return contact;
+    });
+    return result;
   }
 
   findAll() {
@@ -63,6 +62,17 @@ export class ContactService {
 
   findOne(id: number) {
     return this.contactRepository.findOne({ where: { id } });
+  }
+
+  async findMyFriend(id: number) {
+    const query = `select contact.id as id,user.name,user.email,user.avatar from contact
+     inner join user on user_id=user.id
+     where other_id=? and isagree=${YesNotState.Yes}
+     union
+     select contact.id as contact_id,user.name,user.email,user.avatar from contact
+     inner join user on other_id=user.id
+      where user_id=? and isagree=${YesNotState.Yes};`;
+    return await this.contactRepository.query(query, [id, id]);
   }
 
   async update(id: number, updateContactDto: UpdateContactDto) {
@@ -76,8 +86,7 @@ export class ContactService {
 
   async remove(id: number) {
     const contact = await this.findOne(id);
-    this.contactRepository.remove(contact);
-    return '';
+    return this.contactRepository.remove(contact);
   }
 
   async invite(email: string, id: number) {
@@ -85,8 +94,23 @@ export class ContactService {
     const invite = await this.contactRepository.findOne({
       where: { user_id: id, other_id: user.id },
     });
-    if (invite) {
+    const results = await this.contactRepository
+      .createQueryBuilder('contact')
+      .where(
+        new Brackets((qb) =>
+          qb
+            .where('contact.user_id=:id', { id })
+            .andWhere('contact.other_id=:user_id', { user_id: user.id })
+            .orWhere('contact.user_id=:user_id', { user_id: user.id })
+            .andWhere('contact.other_id=:id', { id }),
+        ),
+      )
+      .andWhere('contact.isagree=:isagree', { isagree: YesNotState.Yes })
+      .getMany();
+    if (invite && invite.isagree === YesNotState.Not) {
       throw new ConflictException('你已邀请过此用户');
+    } else if (results.length) {
+      throw new ConflictException('好友关系已存在');
     }
     const contact = await this.contactRepository.create({
       user_id: id,

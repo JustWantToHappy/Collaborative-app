@@ -5,7 +5,7 @@ import type { FormInstance } from 'antd/es/form';
 import { LocalStorageKey, YesNotState } from '@/enum';
 import { useDebouce, useLocalStorage } from '@/hooks';
 import { Button, Form, Input, message } from 'antd';
-import { addFriend, invitedInfo, handleInvite, deleteInviteInfo } from '@/api';
+import { addFriend, invitedInfo, handleInvite, deleteFriend } from '@/api';
 
 export default function Index() {
   const formRef = React.useRef<FormInstance>(null);
@@ -53,7 +53,7 @@ export default function Index() {
   };
 
   const deleteInvite = async (id: number) => {
-    const { statusCode, msg } = await deleteInviteInfo(id);
+    const { statusCode, msg } = await deleteFriend(id);
     if (statusCode === 200) {
       getData();
     } else {
@@ -86,15 +86,15 @@ export default function Index() {
           <Button type='primary' onClick={onSubmit} >添加好友</Button>
         </div>
       </div>
-      <div>
+     {/* <div>
         <h3>我的申请</h3>
 
-      </div>
+      </div>*/}
       <div>
         <h3>新朋友</h3>
-        {!invitedInfo.length && <p style={{ textAlign: 'center' }}>
+        {!invitedInfo.length && <div style={{ textAlign: 'center' }}>
           <h4>暂无申请</h4>
-        </p>}
+        </div>}
         {invitedInfos.map(invitedInfo =>
           <div className='invite_records' key={invitedInfo.email}>
             <p>{invitedInfo.name}申请你为好友</p>
@@ -102,13 +102,6 @@ export default function Index() {
               onClick={() => { changeInviteState(invitedInfo.id, YesNotState.Yes); }}
             >
               同意邀请
-            </Button>
-            <Button
-              type='link'
-              size='small'
-              onClick={() => { changeInviteState(invitedInfo.id, YesNotState.Not); }}
-            >
-              拒绝
             </Button>
             <Button
               type='link'
