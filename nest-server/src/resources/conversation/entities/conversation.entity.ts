@@ -4,6 +4,9 @@ import { Column } from 'typeorm';
 
 export class Conversation extends Base {
   //0表示群聊
-  @Column({ type: 'enum', enum: YesNotState, default: YesNotState.Not })
+  @Column({ type: 'int', default: YesNotState.Not })
   type: YesNotState;
+  //0表示未读
+  @Column({ type: 'int', default: YesNotState.Not })
+  isread: YesNotState;
 }

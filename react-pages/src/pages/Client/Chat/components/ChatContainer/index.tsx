@@ -11,13 +11,9 @@ export default function Index(props: IProps) {
   const { asideWidth } = props;
   const [open, setOpen] = React.useState(false);
 
-  const showDrawer = () => {
-    setOpen(true);
-  };
+  const showDrawer = () => setOpen(true);
 
-  const onClose = () => {
-    setOpen(false);
-  };
+  const onClose = () => setOpen(false);
 
   return (
     <StyleDiv asideWidth={asideWidth}>

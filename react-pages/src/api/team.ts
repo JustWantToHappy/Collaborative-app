@@ -1,6 +1,9 @@
-import type {Team } from '@/types';
 import { request } from '@/utils/request';
 
-export const buildGroup = (team:Team) => {
-  return request.post('/team',team);
+export const myGroups = () => {
+  return request.get('/team');
+};
+
+export const buildGroup = (team:FormData) => {
+  return request.post('/team',team,{ headers: { 'Content-Type': 'multipart/formdata' } });
 };

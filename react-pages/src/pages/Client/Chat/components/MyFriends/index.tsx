@@ -5,8 +5,8 @@ import { myFriends, deleteFriend } from '@/api';
 import { message, Avatar, Button, Popover } from 'antd';
 
 export default function Index(props: { option: string }) {
-  const [friendsInfo, SetFriendsInfo] = React.useState<InviteInfo[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
+  const [friendsInfo, SetFriendsInfo] = React.useState<InviteInfo[]>([]);
 
 
   React.useEffect(() => {

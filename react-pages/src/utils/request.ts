@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import { User } from '@/types';
 import { LocalStorageKey} from '@/enum';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse,AxiosError } from 'axios';
@@ -30,15 +30,7 @@ class Request{
     //拦截器
     private interceptors() {
         this.instance.interceptors.request.use(config => {
-            try {
-                if (config.url !== '/user/login') {
-                    const userInfoStr=window.localStorage.getItem(LocalStorageKey.User_Info);
-                    const userInfo:User=JSON.parse(userInfoStr as string);
-                    config.headers.Authorization = `Bearer ${userInfo.jwt_token}`;
-                }
-            } catch (err) {
-                //console.info(err);
-            }
+            this.handleAuthorization(config);
             return config;
         }, (err: AxiosError) => {
             if (err.response?.status === 401) {
@@ -69,6 +61,18 @@ class Request{
     //patch请求
     public patch<T=any>(url:string,data?: any,config?:AxiosRequestConfig):Promise<ResponseData<T>> {
         return this.instance.patch(url,data,config);
+    }
+
+    private handleAuthorization(config: InternalAxiosRequestConfig<any>) {
+        try {
+            if (config.url !== '/user/login') {
+                const userInfoStr=window.localStorage.getItem(LocalStorageKey.User_Info);
+                const userInfo:User=JSON.parse(userInfoStr as string);
+                config.headers.Authorization = `Bearer ${userInfo.jwt_token}`;
+            }
+        } catch (err) {
+            //console.info(err);
+        }
     }
 }
 

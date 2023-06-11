@@ -7,10 +7,14 @@ import {
   Param,
   Delete,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { TeamService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/config/upload-img.config';
 //import { Roles } from 'src/common/decorators/roles.decorator';
 //import { Role } from 'src/common/enum';
 
@@ -19,8 +23,14 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
-  create(@Request() request, @Body() createTeamDto: CreateTeamDto) {
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() request,
+    @Body() createTeamDto: CreateTeamDto,
+  ) {
     createTeamDto.leader_id = request.user.id;
+    createTeamDto.avatar = file.path;
     return this.teamService.create(createTeamDto);
   }
 
