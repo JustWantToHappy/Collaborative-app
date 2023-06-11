@@ -46,7 +46,7 @@ export default function Index(props: IProps) {
       <div className='chat_record_tool'>
         <div style={{ flex: '1' }}><Input /></div>
         <Button type='primary' >发送</Button>
-        <UploadImg title='发送图片' action='/api/chat/uploadImg' />
+        <UploadImg title='发送图片' action='/api/conversation/uploadImg' />
       </div>
     </StyleDiv>
   );

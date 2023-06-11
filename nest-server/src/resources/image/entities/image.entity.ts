@@ -8,6 +8,6 @@ export class Image {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: '' })
   path: string;
 }

@@ -55,8 +55,8 @@ import { ImageModule } from './resources/image/image.module';
       }),
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'src', 'static'),
-      serveRoot: '/static', //提供静态文件的子路由
+      rootPath: join(__dirname, '..', 'public/images'),
+      serveRoot: '/static/images', //提供静态文件的子路由
     }),
     UserModule,
     TeamModule,

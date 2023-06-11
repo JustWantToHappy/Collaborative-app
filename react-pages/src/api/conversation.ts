@@ -1,5 +1,5 @@
 import {request} from '@/utils';
 
 export function uploadImg() {
-  return request.post('/chat/uploadImg');
+  return request.post('/conversation/uploadImg');
 }

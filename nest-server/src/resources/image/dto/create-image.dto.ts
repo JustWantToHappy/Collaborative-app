@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { IsString } from 'class-validator';
 
 export class CreateImageDto {
@@ -7,5 +8,6 @@ export class CreateImageDto {
   name: string;
 
   @IsString()
+  @Optional()
   path: string;
 }
