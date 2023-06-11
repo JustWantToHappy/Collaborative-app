@@ -2,16 +2,40 @@ import styled from 'styled-components';
 
 const StyleDiv = styled('div')<{asideWidth:string}>`
   --chat-tool-height:4rem;
-  --chat-aside-width:${props=>props.asideWidth};
-
+  --chat-aside-width:${props => props.asideWidth};
+  border-radius: 1rem;
+  margin:1rem auto;
+  margin-bottom:calc(var(--chat-tool-height) + 2rem);
+  padding:0 1rem;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  
   p{
     margin:0;
     word-break: break-all;
     letter-spacing: 1px;
     font-size:.9rem;
   }
+  
+  .chat_record_header{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    small{
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      position: absolute;
+      right:2rem;
+      top:50%;
+      transform: translateY(-50%);
+      &:hover{
+        color:var(--ab-green-600);
+      }
+    }
+  }
+  
   .chat_record{
-    margin:2rem 0 calc(var(--chat-tool-height) + 1rem) 0;
     
     &_userInfo{
       margin:1rem;

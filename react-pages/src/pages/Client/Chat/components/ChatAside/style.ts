@@ -21,8 +21,15 @@ const StyleDiv = styled('div')<Props>`
 
   header{
     padding:1rem .5rem;
-    text-align: center;
+    display: flex;
+    align-items: center;
     height:var(--ab-main-header-height);
+    justify-content: center;
+    position: relative;
+    &>i{
+      position: absolute;
+      right:.5rem;
+    }
   }
 
   h4{

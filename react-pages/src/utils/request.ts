@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { LocalStorageKey} from '@/enum';
 import { User } from '@/types';
+import { LocalStorageKey} from '@/enum';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse,AxiosError } from 'axios';
 
 export interface ResponseData<T> {

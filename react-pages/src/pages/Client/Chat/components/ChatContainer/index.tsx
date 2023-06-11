@@ -1,6 +1,7 @@
 import React from 'react';
 import StyleDiv from './style';
-import { Avatar, Button, Input } from 'antd';
+import UploadImg from '@/components/UploadImg';
+import { Avatar, Button, Drawer, Input } from 'antd';
 
 interface IProps {
   asideWidth: string;
@@ -8,9 +9,22 @@ interface IProps {
 
 export default function Index(props: IProps) {
   const { asideWidth } = props;
+  const [open, setOpen] = React.useState(false);
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   return (
     <StyleDiv asideWidth={asideWidth}>
+      <div className='chat_record_header'>
+        <h4>sb群</h4>
+        <small>成员列表</small>
+      </div>
       <div className='chat_record'>
         {
           new Array(10).fill(1).map((_, index) =>
@@ -32,7 +46,7 @@ export default function Index(props: IProps) {
       <div className='chat_record_tool'>
         <div style={{ flex: '1' }}><Input /></div>
         <Button type='primary' >发送</Button>
-        <Button type='primary'>发送图片</Button>
+        <UploadImg title='发送图片' action='/api/chat/uploadImg' />
       </div>
     </StyleDiv>
   );

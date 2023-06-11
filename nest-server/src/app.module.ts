@@ -1,21 +1,25 @@
-import { Dependencies, Module, ValidationPipe } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { join } from 'path';
 import { DataSource } from 'typeorm';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import appConfig from './config/app.config';
 import { APP_PIPE } from '@nestjs/core';
+import appConfig from './config/app.config';
+import { ConfigModule } from '@nestjs/config';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth/auth.module';
+import { CommonModule } from './common/common.module';
+import { FileModule } from './resources/file/file.module';
 import { UserModule } from './resources/user/user.module';
 import { TeamModule } from './resources/team/team.module';
-import { UserTeamModule } from './resources/user-team/user-team.module';
-import { ContactModule } from './resources/contact/contact.module';
-import { ChatModule } from './resources/chat/chat.module';
-import { FileModule } from './resources/file/file.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { SharedModule } from './resources/shared/shared.module';
+import { ContactModule } from './resources/contact/contact.module';
+import { Dependencies, Module, ValidationPipe } from '@nestjs/common';
+import { UserTeamModule } from './resources/user-team/user-team.module';
 import { KnowledgeBaseModule } from './resources/knowledge-base/knowledge-base.module';
-import { CommonModule } from './common/common.module';
+import { ConversationModule } from './resources/conversation/conversation.module';
+import { MessageModule } from './resources/message/message.module';
+import { ImageModule } from './resources/image/image.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
  * providers数组中。
@@ -50,14 +54,20 @@ import { CommonModule } from './common/common.module';
         synchronize: true,
       }),
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src', 'static'),
+      serveRoot: '/static', //提供静态文件的子路由
+    }),
     UserModule,
     TeamModule,
     UserTeamModule,
     ContactModule,
-    ChatModule,
     FileModule,
     SharedModule,
     KnowledgeBaseModule,
+    ConversationModule,
+    MessageModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [

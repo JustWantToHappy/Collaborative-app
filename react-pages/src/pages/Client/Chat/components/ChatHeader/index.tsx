@@ -46,7 +46,6 @@ export default function Index() {
 
   return <StyleDiv>
     {contextHolder}
-    <h4>名称(1)</h4>
     <div>
       <Button
         type='link'
@@ -80,6 +79,9 @@ export default function Index() {
         >
           <Input.TextArea rows={5} />
         </Form.Item>
+        {/*<Form.Item>
+
+        </Form.Item>*/}
       </Form>
     </Modal>
     <Modal title="邀请好友加入">
