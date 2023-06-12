@@ -10,6 +10,7 @@ import { Contact } from '../contact/entities/contact.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { deleteFile } from '../../common/utils';
 
 @Injectable()
 export class UserService {
@@ -52,6 +53,9 @@ export class UserService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
+    //删除之前的头像
+    console.info(user.avatar, 'test');
+    deleteFile(user.avatar);
     Object.assign(user, updateUserDto);
     return this.userRepository.save(user);
   }

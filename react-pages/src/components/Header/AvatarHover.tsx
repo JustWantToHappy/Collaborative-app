@@ -38,6 +38,8 @@ export default function AvatarHover(props: Props) {
       props.setImgSrc(data?.avatar as string);
       userInfo.avatar = data?.avatar;
       setUserInfo(userInfo);
+      setShow(false);
+      messageApi.success('修改个人信息成功');
     } else {
       messageApi.info(`${statusCode} ${msg}`);
     }
