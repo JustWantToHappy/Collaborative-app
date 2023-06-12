@@ -43,7 +43,7 @@ export default function Index() {
   }, []);
 
   React.useEffect(() => {
-    const socket = io(Config.WsUrl + '/chat/private');
+    const socket = io(Config.ServerUrl + '/chat/private');
     setSocket(socket);
     socket.on('disconnect', () => {
       console.log(socket.id);

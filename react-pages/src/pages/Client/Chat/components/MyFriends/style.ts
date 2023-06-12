@@ -5,10 +5,12 @@ const StyleDiv = styled('div')`
     position: relative;
     display: flex;
     align-items: center;
-    width:35vw;
     padding:.5rem;
+    padding-right:10vw;
     cursor: pointer;
     border-radius: 5px;
+    height:4rem;
+    overflow: hidden;
     &>small{
       position: absolute;
       right:1rem;

@@ -1,7 +1,7 @@
 import { request } from '@/utils/request';
 
 export const myGroups = () => {
-  return request.get('/team');
+  return request.get('/userTeam');
 };
 
 export const buildGroup = (team:FormData) => {

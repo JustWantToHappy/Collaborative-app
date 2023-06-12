@@ -6,12 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { UserTeamService } from './user-team.service';
 import { CreateUserTeamDto } from './dto/create-user-team.dto';
 import { UpdateUserTeamDto } from './dto/update-user-team.dto';
 
-@Controller('user-team')
+@Controller('userTeam')
 export class UserTeamController {
   constructor(private readonly userTeamService: UserTeamService) {}
 
@@ -21,8 +22,8 @@ export class UserTeamController {
   }
 
   @Get()
-  findAll() {
-    return this.userTeamService.findAll();
+  findAll(@Request() request) {
+    return this.userTeamService.findAll(request.user.id);
   }
 
   @Get(':id')

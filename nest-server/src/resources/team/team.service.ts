@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { YesNotState } from 'src/common/enum';
 import { InviteUserJoinGroup } from 'src/common/types';
@@ -19,6 +23,12 @@ export class TeamService {
 
   //同时将创建者加入到中间表中
   async create(createTeamDto: CreateTeamDto) {
+    const team = await this.findByName(createTeamDto.name);
+    if (team.length > 0) {
+      throw new ConflictException(
+        `群名称${createTeamDto.name}已被占用，请重新创建`,
+      );
+    }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -74,5 +84,9 @@ export class TeamService {
       );
     }
     return team;
+  }
+
+  findByName(name: string) {
+    return this.teamRepository.find({ where: { name } });
   }
 }

@@ -104,7 +104,7 @@ const Index: React.FC<IProps> = (props) => {
           name="password"
           rules={[{ required: true, message: '请输入你的密码!' }]}
         >
-          <Input.Password />
+          <Input.Password visibilityToggle={false} />
         </Form.Item>
 
         <Form.Item>

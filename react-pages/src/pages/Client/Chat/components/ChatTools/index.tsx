@@ -1,37 +1,35 @@
 import React from 'react';
 import StyleDiv from './style';
 import type { InviteInfo } from '@/types';
-import type { FormInstance } from 'antd/es/form';
 import { LocalStorageKey, YesNotState } from '@/enum';
-import { useDebouce, useLocalStorage } from '@/hooks';
-import { Button, Form, Input, message } from 'antd';
+import { useLocalStorage } from '@/hooks';
+import { Button, Input, message } from 'antd';
 import { addFriend, invitedInfo, handleInvite, deleteFriend } from '@/api';
 
 export default function Index() {
-  const formRef = React.useRef<FormInstance>(null);
   const [messageApi, contextHolder] = message.useMessage();
+  const [group, setGroup] = React.useState('');
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const [invitedInfos, setInvitedInfos] = React.useState<Array<InviteInfo>>([]);
+  const [email, setEmail] = React.useState('');
 
-  const onSubmit = useDebouce(async () => {
-    const userEmail = formRef.current?.getFieldValue('email');
-    if (userInfo.email === userEmail) {
-      formRef.current?.resetFields();
+  const onInviteFriend = async () => {
+    if (userInfo.email === email) {
+      setEmail('');
       return;
     }
-    const { statusCode, msg } = await addFriend(userEmail);
+    const { statusCode, msg } = await addFriend(email);
     if (statusCode === 200) {
       messageApi.success({ content: '已发送邀请' });
-      formRef.current?.resetFields();
+      setEmail('');
     } else {
       messageApi.info({ content: `${statusCode} ${msg}` });
     }
-  }, 500);
+  };
 
 
   const getData = async () => {
     const { statusCode, data, msg } = await invitedInfo();
-    console.info(data);
     if (statusCode === 200) {
       setInvitedInfos(data as InviteInfo[]);
     } else {
@@ -65,34 +63,29 @@ export default function Index() {
       {contextHolder}
       <div>
         <h3>申请好友</h3>
-        <div className='invite_form'>
-          <Form
-            ref={formRef}
-            name="basic"
-            onFinish={onSubmit}
-            autoComplete="off"
-            layout='inline'
-          >
-            <Form.Item
-              label='用户邮箱地址'
-              name='email'
-            >
-              <Input
-                style={{ width: '30vw' }}
-                placeholder='请输入用户的邮箱地址'
-              />
-            </Form.Item>
-          </Form>
-          <Button type='primary' onClick={onSubmit} >添加好友</Button>
+        <div className='apply_friend'>
+          <Input
+            style={{ width: '30vw' }}
+            placeholder='请输入用户的邮箱地址'
+            onChange={e => setEmail(e.target.value)}
+            value={email}
+          />
+          <Button type='primary' onClick={onInviteFriend} style={{ marginLeft: '1vw' }}>添加好友</Button>
         </div>
       </div>
-     {/* <div>
-        <h3>我的申请</h3>
-
-      </div>*/}
+      <div >
+        <h3>申请加群</h3>
+        <div className='apply_team'>
+          <Input
+            placeholder='请输入群名称'
+            onChange={e => setGroup(e.target.value)}
+            style={{ width: '30vw' }} />
+          <Button type='primary' style={{ marginLeft: '1vw' }}>申请加入</Button>
+        </div>
+      </div>
       <div>
         <h3>新朋友</h3>
-        {!invitedInfo.length && <div style={{ textAlign: 'center' }}>
+        {!invitedInfos.length && <div style={{ textAlign: 'center' }}>
           <h4>暂无申请</h4>
         </div>}
         {invitedInfos.map(invitedInfo =>
@@ -112,6 +105,12 @@ export default function Index() {
               删除记录
             </Button>
           </div>)}
+      </div>
+      <div>
+        <h3>群邀请</h3>
+        <div style={{ textAlign: 'center' }}>
+          <h4>暂无邀请</h4>
+        </div>
       </div>
     </StyleDiv>
   );

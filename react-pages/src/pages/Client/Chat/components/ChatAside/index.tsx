@@ -39,7 +39,6 @@ export default function Index(props: IProps) {
               <div className='chat_item_avatar'>
                 <Avatar
                   size='large'
-                  src='http://localhost:8080/static/images/7aa1031b-9188-4685-94be-2ba44bce5027-e21dd1b9c880d2945892dabf23ae9f74.jpeg'
                 />
               </div>
               <p>飞书团队</p>

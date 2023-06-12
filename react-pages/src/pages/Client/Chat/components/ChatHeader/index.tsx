@@ -5,8 +5,8 @@ import { buildGroup } from '@/api';
 import type { Team } from '@/types';
 import { defaultCssStyles } from '@/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 import { Button, Form, Input, Modal, message } from 'antd';
+import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 
 export default function Index() {
@@ -31,7 +31,7 @@ export default function Index() {
     const formData = new FormData();
     formData.append('file', file as RcFile);
     formData.set('avatar', '');
-    formData.set('name', values.name as string);
+    formData.set('name', (values.name as string).trim());
     formData.set('description', values.description ?? '');
     try {
       const { statusCode, msg } = await buildGroup(formData);

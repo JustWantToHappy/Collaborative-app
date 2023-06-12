@@ -1,17 +1,21 @@
 import React from 'react';
-import AvatarHover from './AvatarHover';
 import StyleDiv from './style';
-import { NavLink } from 'react-router-dom';
-import { Avatar, Badge, Button, Popover } from 'antd';
-import LogoSvg from '@/assets/logo/logo.svg';
-import { BellFilled, UserOutlined } from '@ant-design/icons';
-import { defaultCssStyles } from '@/utils';
+import { Config, LocalStorageKey } from '@/enum';
 import { routes } from '@/layout';
 import type { Router } from '@/types';
+import AvatarHover from './AvatarHover';
+import { useLocalStorage } from '@/hooks';
+import { NavLink } from 'react-router-dom';
+import { defaultCssStyles } from '@/utils';
+import LogoSvg from '@/assets/logo/logo.svg';
+import { Avatar, Badge, Button, Popover } from 'antd';
+import { BellFilled, UserOutlined } from '@ant-design/icons';
 
 export default function Index() {
+  const [src, setSrc] = React.useState('');
   const [active, setActive] = React.useState('/chat');
   const lists = routes[0].children as Array<Router>;
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
 
   return (
     <StyleDiv>
@@ -32,12 +36,18 @@ export default function Index() {
           <Badge count={5} size='small'>
             <BellFilled />
           </Badge>
-          <Popover placement="bottom" content={AvatarHover} >
-            <Avatar size="small" icon={<UserOutlined />} style={{ marginLeft: '2rem', cursor: 'pointer' }} />
+          <Popover
+            placement="bottom"
+            content={<AvatarHover setImgSrc={(src: string) => setSrc(src)}
+            />} >
+            <Avatar
+              icon={<UserOutlined />}
+              style={{ marginLeft: '2rem', cursor: 'pointer' }}
+              src={Config.ServerUrl + '/' + (src === '' ? userInfo.avatar : src)}>
+            </Avatar>
           </Popover>
         </div>
       </header>
-      <main></main>
     </StyleDiv >
   );
 }

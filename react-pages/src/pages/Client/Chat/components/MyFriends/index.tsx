@@ -2,7 +2,7 @@ import React from 'react';
 import StyleDiv from './style';
 import type { InviteInfo } from '@/types';
 import { myFriends, deleteFriend } from '@/api';
-import { message, Avatar, Button, Popover } from 'antd';
+import { message, Avatar, Button } from 'antd';
 
 export default function Index(props: { option: string }) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -38,13 +38,9 @@ export default function Index(props: { option: string }) {
     <StyleDiv>
       {contextHolder}
       {friendsInfo.map(friend => <div key={friend.email} className='friend_info'>
-        <Popover
-          content={<span>邮箱：{friend.email}</span>}
-          arrow={false}
-          placement='bottom'>
-          <Avatar size='large' />
-        </Popover>
+        <Avatar size='large' />
         <h5>{friend.name}</h5>
+        <span>邮箱地址：{friend.email}</span>
         <small>
           <Button type='link' danger onClick={() => removeFriend(friend.id)}>删除好友</Button>
         </small>

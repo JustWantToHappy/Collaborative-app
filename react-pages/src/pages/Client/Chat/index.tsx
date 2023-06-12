@@ -5,6 +5,7 @@ import ChatHeader from './components/ChatHeader';
 import ChatAside from './components/ChatAside';
 import ChatTools from './components/ChatTools';
 import MyFriends from './components/MyFriends';
+import MyGroups from './components/MyGroups';
 import ChatContainer from './components/ChatContainer';
 
 import { MemoDiv } from './style';
@@ -34,7 +35,7 @@ export default function Index() {
     {
       key: '2',
       label: `我加入的群组`,
-      children: `Content of Tab Pane 2`,
+      children: <MyGroups option={key} />,
     },
     {
       key: '3',
@@ -64,6 +65,7 @@ export default function Index() {
               defaultActiveKey={key}
               items={items}
               onChange={onChange}
+              size='large'
             />
           </MemoDiv>}
           {/\/chat\/\d+/.test(pathname) && <ChatContainer asideWidth={asideWidth} />}

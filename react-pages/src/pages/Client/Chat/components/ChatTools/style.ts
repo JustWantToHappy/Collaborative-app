@@ -5,17 +5,20 @@ const StyleDiv = styled('div')`
     margin:0;
     margin-bottom:.5rem;
   }
-  .invite_form{
+  .apply_friend{
     display: flex;
   }
 
+  .apply_team{
+    display:flex;
+  }
   .invite_records{
     display: flex;
     align-items: center;
     column-gap:1vw;
   }
   &>div{
-    margin-bottom:1rem;
+    margin-bottom:2rem;
   }
 `;
 
