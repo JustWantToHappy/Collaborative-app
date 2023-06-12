@@ -1,16 +1,23 @@
 import styled from 'styled-components';
+import {ellipsis } from '@/common';
 
 const StyleDiv = styled('div')`
   .friend_info{
     position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
     align-items: center;
     padding:.5rem;
-    padding-right:10vw;
+    padding-right:9vw;
     cursor: pointer;
     border-radius: 5px;
     height:4rem;
-    overflow: hidden;
+    h5{
+      ${ellipsis};
+    }
+    &>span:last-of-type{
+      ${ellipsis};
+    }
     &>small{
       position: absolute;
       right:1rem;

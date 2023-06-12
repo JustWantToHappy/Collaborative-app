@@ -54,10 +54,14 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
     //删除之前的头像
-    console.info(user.avatar, 'test');
-    deleteFile(user.avatar);
+    await deleteFile(user.avatar);
     Object.assign(user, updateUserDto);
-    return this.userRepository.save(user);
+    const userInfo = await this.userRepository.save(user);
+    return {
+      name: userInfo.name,
+      avatar: userInfo.avatar,
+      email: userInfo.email,
+    };
   }
 
   async remove(id: number) {

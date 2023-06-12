@@ -4,7 +4,13 @@ import type { InviteInfo } from '@/types';
 import { myFriends, deleteFriend } from '@/api';
 import { message, Avatar, Button } from 'antd';
 
-export default function Index(props: { option: string }) {
+
+interface Props {
+  option: string;
+  
+}
+
+export default function Index(props: Props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [friendsInfo, SetFriendsInfo] = React.useState<InviteInfo[]>([]);
 

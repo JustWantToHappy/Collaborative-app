@@ -34,11 +34,10 @@ export default function AvatarHover(props: Props) {
   const modifyUserInfo = async (formData: FormData) => {
     const { statusCode, msg, data } = await updateInfo(formData);
     if (statusCode === 200) {
-      console.info(data);
       props.setImgSrc(data?.avatar as string);
-      userInfo.avatar = data?.avatar;
-      setUserInfo(userInfo);
       setShow(false);
+      setUserInfo(data);
+      formRef.current?.resetFields();
       messageApi.success('修改个人信息成功');
     } else {
       messageApi.info(`${statusCode} ${msg}`);
@@ -81,7 +80,7 @@ export default function AvatarHover(props: Props) {
       >
         退出登录
       </Button>
-      <Modal title='修改个人信息' open={show} onCancel={handleCancle} onOk={handleOk}>
+      <Modal title='修改个人信息' open={show} onCancel={handleCancle} onOk={handleOk} >
         <Form
           ref={formRef}
           name="basic"

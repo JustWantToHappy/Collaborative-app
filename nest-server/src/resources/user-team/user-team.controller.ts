@@ -40,7 +40,7 @@ export class UserTeamController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userTeamService.remove(+id);
+  remove(@Param('id') id: string, @Request() request) {
+    return this.userTeamService.remove(request.user.id, +id);
   }
 }

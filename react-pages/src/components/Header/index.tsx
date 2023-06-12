@@ -1,6 +1,6 @@
 import React from 'react';
 import StyleDiv from './style';
-import { Config, LocalStorageKey } from '@/enum';
+import { LocalStorageKey } from '@/enum';
 import { routes } from '@/layout';
 import type { Router } from '@/types';
 import AvatarHover from './AvatarHover';
@@ -17,6 +17,7 @@ export default function Index() {
   const lists = routes[0].children as Array<Router>;
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
 
+  console.info(userInfo, 'test');
   return (
     <StyleDiv>
       <header>
@@ -43,7 +44,7 @@ export default function Index() {
             <Avatar
               icon={<UserOutlined />}
               style={{ marginLeft: '2rem', cursor: 'pointer' }}
-              src={Config.ServerUrl + '/' + (src === '' ? userInfo.avatar : src)}>
+              src={'/api' + (src === '' ? userInfo.avatar : src)}>
             </Avatar>
           </Popover>
         </div>

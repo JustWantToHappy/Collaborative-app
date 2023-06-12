@@ -9,10 +9,10 @@ const StyleDiv = styled('div')`
     border-radius: 5px;
     overflow: hidden;
     height:4rem;
-    display: flex;
+    display:flex;
     align-items: center;
     &>div{
-      flex:4;
+      flex:1;
     }
 
     &>h5{

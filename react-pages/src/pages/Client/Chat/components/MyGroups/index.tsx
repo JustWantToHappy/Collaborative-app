@@ -1,6 +1,6 @@
 import React from 'react';
 import StyleDiv from './style';
-import { myGroups } from '@/api';
+import { myGroups, leaveGroup } from '@/api';
 import { Button, message } from 'antd';
 import type { Team } from '@/types';
 import Avatar from '@/components/Avatar';
@@ -10,7 +10,6 @@ interface Props {
 }
 
 const Index: React.FC<Props> = (props) => {
-  const [show, setShow] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [groupsInfo, setGroupsInfo] = React.useState<Team[]>([]);
 
@@ -27,6 +26,16 @@ const Index: React.FC<Props> = (props) => {
     getData();
   }, [messageApi, props.option]);
 
+  const departureGroup = async (id: number) => {
+    const { statusCode, msg } = await leaveGroup(id);
+    if (statusCode === 200) {
+      const restGroupsInfo = groupsInfo.filter(groupInfo => groupInfo.id !== id);
+      setGroupsInfo([...restGroupsInfo]);
+    } else {
+      messageApi.error(`${statusCode} ${msg}`);
+    }
+  };
+
   return (
     <StyleDiv>
       {contextHolder}
@@ -35,10 +44,7 @@ const Index: React.FC<Props> = (props) => {
         <h5>{group.name}</h5>
         <div>
           <small>
-            <Button type='link' onClick={() => setShow(true)}>邀请好友</Button>
-          </small>
-          <small>
-            <Button type='link' danger>退出此群</Button>
+            <Button type='link' danger onClick={() => departureGroup(group.id as number)}>退出此群</Button>
           </small>
         </div>
       </div>)}
