@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
+import { UserModule } from './resources/user/user.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
  * providers数组中。
@@ -30,6 +31,7 @@ import { PrismaModule } from './prisma/prisma.module';
       serveRoot: '/public/images', //提供静态文件的子路由
     }),
     PrismaModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

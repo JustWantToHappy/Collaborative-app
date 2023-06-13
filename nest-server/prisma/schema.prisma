@@ -11,17 +11,146 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id            String          @id @default(uuid())
+  email         String          @unique
+  name          String
+  password      String
+  avatar        String?         @default("")
+  createAt      DateTime?       @default(now())
+  updateAt      DateTime?       @default(now())
+  roles         String?         @default("0") //"0"表示普通用户,"00"表示管理员
+  UserFriend    UserFriend[]
+  UserGroup     UserGroup[]
+  ChatRecord    ChatRecord[]
+  CloudDocument CloudDocument[]
+  CloudFile     CloudFile[]
+  RePort        Report[]
+  Approval      Approval[]
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
+model UserFriend {
+  userId   String   @id
+  otherId  String
+  createAt DateTime @default(now())
+  state    String   @default("pending") //pending|agree|reject
+  User     User     @relation(fields: [userId], references: [id])
+}
+
+model UserGroup {
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+  group    Group    @relation(fields: [groupId], references: [id])
+  groupId  String
+  state    String   @default("pending") //pending|agree|reject
+  createAt DateTime @default(now())
+  updateAt DateTime @default(now())
+
+  @@id([userId, groupId])
+}
+
+model Group {
+  id          String      @id @default(uuid())
+  leaderId    String
+  name        String      @unique
+  avatar      String?     @default("")
+  description String      @default("")
+  createAt    DateTime    @default(now())
+  UserGroup   UserGroup[]
+}
+
+model ChatRoom {
+  id         String       @id @default(uuid())
+  ChatRecord ChatRecord[]
+}
+
+model ChatRecord {
+  id         String    @id @default(uuid())
+  User       User?     @relation(fields: [userId], references: [id])
+  userId     String?
+  ChatRoom   ChatRoom? @relation(fields: [ChatRoomId], references: [id])
+  ChatRoomId String?
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  text       String?  @db.Text
+  createAt   DateTime @default(now())
+  updateAt   DateTime @default(now())
+  state      String   @default("pending") //pending|agree|reject
+  senderId   Int
+  receiverId Int
+  fileType   Int      @default(0) //默认值0表示为文本，1表示为图片
+  image      Image?
+  imageUrl   String   @unique
+}
+
+model Image {
+  id      String  @id @default(uuid())
+  Message Message @relation(fields: [path], references: [imageUrl])
+  path    String  @unique
+}
+
+//CloudFile的id不给默认值，这是因为CloudFile的id必须和用户id保持一致
+model CloudFile {
+  id            String          @id
+  title         String
+  parentId      String          @default("")
+  User          User?           @relation(fields: [userId], references: [id])
+  userId        String?
+  CloudDocument CloudDocument[]
+}
+
+model CloudDocument {
+  id               String             @id @default(uuid())
+  title            String
+  text             String             @db.Text
+  version          String
+  createAt         DateTime           @default(now())
+  updateAt         DateTime           @default(now())
+  ownerId          String
+  collaborators    String //协作者id，逗号隔开
+  User             User?              @relation(fields: [userId], references: [id])
+  userId           String?
+  CloudFile        CloudFile?         @relation(fields: [CloudFileId], references: [id])
+  CloudFileId      String?
+  OnlineEditPerson OnlineEditPerson[]
+}
+
+//在线编辑的用户
+model OnlineEditPerson {
+  id            String         @id
+  CloudDocument CloudDocument? @relation(fields: [id], references: [id])
+  onlineIds     String         @db.Text
+}
+
+model Approval {
+  id        String   @id @default(uuid())
+  type      String //0加班，1外出，2请假
+  state     String   @default("pending") //pending|agree|reject
+  startTime DateTime @default(now())
+  endTime   DateTime @default(now())
+  reason    String   @db.Text
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Report {
+  id         String   @id @default(uuid())
+  title      String
+  type       String   @default("0") //0表示日报、1表示周报、2表示月报
+  curReport  String   @db.Text
+  prevPeport String   @db.Text
+  createAt   DateTime @default(now())
+  updateAt   DateTime @default(now())
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+}
+
+model Calendar {
+  id        String   @id @default(uuid())
   title     String
-  content   String?
-  published Boolean? @default(false)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  startTime DateTime @default(now())
+  endTime   DateTime @default(now())
+  createAt  DateTime @default(now())
+  desc      String   @db.Text
 }
