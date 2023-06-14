@@ -6,6 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +18,9 @@ import { AuthService } from 'src/auth/auth/auth.service';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enum';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/config/upload-img.config';
+import { deleteFile } from 'src/common/utils';
 
 @Controller('user')
 export class UserController {
@@ -26,7 +32,6 @@ export class UserController {
   @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    console.info(createUserDto);
     return this.userService.create(createUserDto);
   }
 
@@ -41,9 +46,15 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Patch()
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  update(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() request,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    updateUserDto.avatar = file.path;
+    return this.userService.update(request.user.id, updateUserDto);
   }
 
   @Delete(':id')

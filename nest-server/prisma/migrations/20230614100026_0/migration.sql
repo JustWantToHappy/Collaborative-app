@@ -6,8 +6,8 @@ CREATE TABLE `User` (
     `password` VARCHAR(191) NOT NULL,
     `avatar` VARCHAR(191) NULL DEFAULT '',
     `createAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `roles` VARCHAR(191) NULL DEFAULT '0',
+    `updateAt` DATETIME(3) NULL,
+    `roles` JSON NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -15,12 +15,15 @@ CREATE TABLE `User` (
 
 -- CreateTable
 CREATE TABLE `UserFriend` (
-    `userId` VARCHAR(191) NOT NULL,
-    `otherId` VARCHAR(191) NOT NULL,
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `id` VARCHAR(191) NOT NULL,
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `friendId` VARCHAR(191) NOT NULL,
 
-    PRIMARY KEY (`userId`)
+    UNIQUE INDEX `UserFriend_userId_friendId_key`(`userId`, `friendId`),
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -29,7 +32,7 @@ CREATE TABLE `UserGroup` (
     `groupId` VARCHAR(191) NOT NULL,
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`userId`, `groupId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -37,7 +40,7 @@ CREATE TABLE `UserGroup` (
 -- CreateTable
 CREATE TABLE `Group` (
     `id` VARCHAR(191) NOT NULL,
-    `leaderId` INTEGER NOT NULL,
+    `leaderId` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `avatar` VARCHAR(191) NULL DEFAULT '',
     `description` VARCHAR(191) NOT NULL DEFAULT '',
@@ -68,7 +71,7 @@ CREATE TABLE `Message` (
     `id` VARCHAR(191) NOT NULL,
     `text` TEXT NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `senderId` INTEGER NOT NULL,
     `receiverId` INTEGER NOT NULL,
@@ -105,7 +108,7 @@ CREATE TABLE `CloudDocument` (
     `text` TEXT NOT NULL,
     `version` VARCHAR(191) NOT NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
     `ownerId` VARCHAR(191) NOT NULL,
     `collaborators` VARCHAR(191) NOT NULL,
     `userId` VARCHAR(191) NULL,
@@ -143,7 +146,7 @@ CREATE TABLE `Report` (
     `curReport` TEXT NOT NULL,
     `prevPeport` TEXT NOT NULL,
     `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
     `userId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
@@ -163,6 +166,9 @@ CREATE TABLE `Calendar` (
 
 -- AddForeignKey
 ALTER TABLE `UserFriend` ADD CONSTRAINT `UserFriend_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `UserFriend` ADD CONSTRAINT `UserFriend_friendId_fkey` FOREIGN KEY (`friendId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `UserGroup` ADD CONSTRAINT `UserGroup_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

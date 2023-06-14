@@ -1,6 +1,7 @@
-export enum YesNotState {
-  Not = 0,
-  Yes = 1,
+export enum State {
+  Pending = 'pending',
+  Agree = 'agree',
+  Reject = 'reject',
 }
 //权限标识
 export enum Role {
