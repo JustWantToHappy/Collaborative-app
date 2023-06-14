@@ -4,8 +4,8 @@ export enum YesNotState {
 }
 //权限标识
 export enum Role {
-  User = '0',
-  Admin = '00',
+  User = 'User',
+  Admin = 'Admin',
 }
 //聊天指令
 export enum Chat {

@@ -9,10 +9,12 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthService } from 'src/auth/auth/auth.service';
-import { User } from '@prisma/client';
 import { Public } from 'src/common/decorators/public.decorator';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enum';
 
 @Controller('user')
 export class UserController {
@@ -21,12 +23,15 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
+    console.info(createUserDto);
     return this.userService.create(createUserDto);
   }
 
   @Get()
+  //@Roles(Role.Admin)
   findAll() {
     return this.userService.findAll();
   }
@@ -48,7 +53,7 @@ export class UserController {
 
   @Public()
   @Post('login')
-  login(@Body() body: User) {
+  login(@Body() body: LoginUserDto) {
     return this.authService.signIn(body.email, body.password);
   }
 }

@@ -44,7 +44,7 @@ const Index: React.FC<IProps> = (props) => {
 
   const userRegister = async (user: User) => {
     try {
-      const { statusCode, msg } = await register(Object.assign(user, { roles: [Role.User] }));
+      const { statusCode, msg } = await register(Object.assign(user, { roles: JSON.stringify([Role.User]) }));
       if (statusCode === 200) {
         message.success({ content: '注册成功!' });
         handleCancel();

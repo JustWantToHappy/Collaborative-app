@@ -11,7 +11,6 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     const user = await this.userService.findOnyByEmail(email);
-    console.info(user, user.password, password, 'test');
     if (user?.password !== password) {
       throw new UnauthorizedException('密码错误');
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,7 +6,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  create(createUserDto: CreateUserDto) {}
+  async create(createUserDto: CreateUserDto) {
+    const user = await this.findOnyByEmail(createUserDto.email);
+    if (user) {
+      throw new ConflictException(`$邮箱{user.email}已经注册`);
+    }
+    await this.prisma.user.create({ data: createUserDto });
+    return 'create success';
+  }
 
   findAll() {
     return `This action returns all user`;
@@ -27,7 +34,6 @@ export class UserService {
   findOnyByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
-      select: { password: true },
     });
   }
 }
