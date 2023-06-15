@@ -3,6 +3,10 @@ export enum State {
   Agree = 'agree',
   Reject = 'reject',
 }
+export enum YesNotState {
+  Yes = '1',
+  Not = '0',
+}
 //权限标识
 export enum Role {
   User = 'User',

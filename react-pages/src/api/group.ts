@@ -1,11 +1,11 @@
 import { request } from '@/utils/request';
 
 export const myGroups = () => {
-  return request.get('/userTeam');
+  return request.get('/group');
 };
 
 export const buildGroup = (team:FormData) => {
-  return request.post('/team',team,{ headers: { 'Content-Type': 'multipart/formdata' } });
+  return request.post('/group',team,{ headers: { 'Content-Type': 'multipart/formdata' } });
 };
 
 export const leaveGroup = (id:number) => {

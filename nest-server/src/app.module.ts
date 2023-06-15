@@ -11,6 +11,7 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './resources/user/user.module';
 import { FriendModule } from './resources/friend/friend.module';
+import { GroupModule } from './resources/group/group.module';
 import { FriendModule } from './resources/friend/friend.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
@@ -35,6 +36,7 @@ import { FriendModule } from './resources/friend/friend.module';
     PrismaModule,
     UserModule,
     FriendModule,
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [

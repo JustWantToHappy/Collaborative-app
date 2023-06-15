@@ -30,14 +30,15 @@ model User {
 }
 
 model UserFriend {
-  id        String   @id @default(uuid())
-  state     String   @default("pending")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  user      User     @relation("UserToFriends", fields: [userId], references: [id])
-  friend    User     @relation("FriendToUsers", fields: [friendId], references: [id])
+  id        String    @id @default(uuid())
+  state     String    @default("pending")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  user      User      @relation("UserToFriends", fields: [userId], references: [id])
+  friend    User      @relation("FriendToUsers", fields: [friendId], references: [id])
   userId    String
   friendId  String
+  ChatRoom  ChatRoom?
 
   @@unique([userId, friendId])
 }
@@ -62,13 +63,19 @@ model Group {
   description String      @default("")
   createdAt   DateTime    @default(now())
   UserGroup   UserGroup[]
+  ChatRoom    ChatRoom?
 }
 
 model ChatRoom {
-  id         String       @id @default(uuid())
-  userIds    String       @db.Text
-  name       String       @default("")
-  ChatRecord ChatRecord[]
+  id           String       @id @default(uuid())
+  userIds      String       @db.Text //用户id,逗号隔开
+  name         String       @default("")
+  ChatRecord   ChatRecord[]
+  type         Int          @default(0) //0表示群聊，1表示私聊
+  Group        Group?       @relation(fields: [groupId], references: [id])
+  groupId      String?      @unique
+  UserFriend   UserFriend?  @relation(fields: [userFriendId], references: [id])
+  userFriendId String?      @unique
 }
 
 model ChatRecord {
@@ -90,6 +97,7 @@ model Message {
   fileType   Int      @default(0) //默认值0表示为文本，1表示为图片
   image      Image?
   imageUrl   String   @unique
+  isread     Int      @default(0) //0表示未读，1表示已读
 }
 
 model Image {
