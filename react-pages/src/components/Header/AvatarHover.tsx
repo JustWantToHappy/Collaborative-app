@@ -25,7 +25,7 @@ export default function AvatarHover(props: Props) {
   const [file, setFile] = React.useState<UploadFile>();
   const [messageApi, contextHolder] = message.useMessage();
   const [showFileList, setShowFileList] = React.useState(true);
-  const [userInfo, setUserInfo, removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, '');
+  const [, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, '');
 
   const handleOpen = () => setShow(true);
 
@@ -36,12 +36,17 @@ export default function AvatarHover(props: Props) {
     if (statusCode === 200) {
       props.setImgSrc(data?.avatar as string);
       setShow(false);
-      setUserInfo(data);
       formRef.current?.resetFields();
       messageApi.success('修改个人信息成功');
+      loginOut();
     } else {
       messageApi.info(`${statusCode} ${msg}`);
     }
+  };
+
+  const loginOut = () => {
+    removeUserInfo();
+    navigate('/');
   };
 
   const handleOk = () => {
@@ -73,11 +78,7 @@ export default function AvatarHover(props: Props) {
       </Button>
       <Button
         type="link"
-        onClick={() => {
-          removeUserInfo();
-          navigate('/');
-        }}
-      >
+        onClick={loginOut}>
         退出登录
       </Button>
       <Modal title='修改个人信息' open={show} onCancel={handleCancle} onOk={handleOk} >

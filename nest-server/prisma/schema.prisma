@@ -16,8 +16,8 @@ model User {
   name          String
   password      String
   avatar        String?         @default("")
-  createAt      DateTime?       @default(now())
-  updateAt      DateTime?
+  createdAt     DateTime?       @default(now())
+  updatedAt     DateTime?       @default(now())
   roles         Json?
   UserGroup     UserGroup[]
   ChatRecord    ChatRecord[]
@@ -32,8 +32,8 @@ model User {
 model UserFriend {
   id        String   @id @default(uuid())
   state     String   @default("pending")
-  createdAt DateTime @default(now()) @map("createAt")
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
   user      User     @relation("UserToFriends", fields: [userId], references: [id])
   friend    User     @relation("FriendToUsers", fields: [friendId], references: [id])
   userId    String
@@ -43,13 +43,13 @@ model UserFriend {
 }
 
 model UserGroup {
-  user     User     @relation(fields: [userId], references: [id])
-  userId   String
-  group    Group    @relation(fields: [groupId], references: [id])
-  groupId  String
-  state    String   @default("pending") //pending|agree|reject
-  createAt DateTime @default(now())
-  updateAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  group     Group    @relation(fields: [groupId], references: [id])
+  groupId   String
+  state     String   @default("pending") //pending|agree|reject
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   @@id([userId, groupId])
 }
@@ -60,12 +60,14 @@ model Group {
   name        String      @unique
   avatar      String?     @default("")
   description String      @default("")
-  createAt    DateTime    @default(now())
+  createdAt   DateTime    @default(now())
   UserGroup   UserGroup[]
 }
 
 model ChatRoom {
   id         String       @id @default(uuid())
+  userIds    String       @db.Text
+  name       String       @default("")
   ChatRecord ChatRecord[]
 }
 
@@ -80,8 +82,8 @@ model ChatRecord {
 model Message {
   id         String   @id @default(uuid())
   text       String?  @db.Text
-  createAt   DateTime @default(now())
-  updateAt   DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
   state      String   @default("pending") //pending|agree|reject
   senderId   Int
   receiverId Int
@@ -111,8 +113,8 @@ model CloudDocument {
   title            String
   text             String             @db.Text
   version          String
-  createAt         DateTime           @default(now())
-  updateAt         DateTime
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
   ownerId          String
   collaborators    String //协作者id，逗号隔开
   User             User?              @relation(fields: [userId], references: [id])
@@ -146,8 +148,8 @@ model Report {
   type       String   @default("0") //0表示日报、1表示周报、2表示月报
   curReport  String   @db.Text
   prevPeport String   @db.Text
-  createAt   DateTime @default(now())
-  updateAt   DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
   User       User?    @relation(fields: [userId], references: [id])
   userId     String?
 }
@@ -157,6 +159,6 @@ model Calendar {
   title     String
   startTime DateTime @default(now())
   endTime   DateTime @default(now())
-  createAt  DateTime @default(now())
+  createdAt DateTime @default(now())
   desc      String   @db.Text
 }

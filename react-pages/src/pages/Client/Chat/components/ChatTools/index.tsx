@@ -1,7 +1,7 @@
 import React from 'react';
 import StyleDiv from './style';
-import type { InviteInfo } from '@/types';
-import { LocalStorageKey, YesNotState } from '@/enum';
+import type { Friend } from '@/types';
+import { LocalStorageKey, State } from '@/enum';
 import { useLocalStorage } from '@/hooks';
 import { Button, Input, message } from 'antd';
 import { addFriend, invitedInfo, handleInvite, deleteFriend } from '@/api';
@@ -10,7 +10,7 @@ export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const [group, setGroup] = React.useState('');
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
-  const [invitedInfos, setInvitedInfos] = React.useState<Array<InviteInfo>>([]);
+  const [invitedInfos, setInvitedInfos] = React.useState<Array<Friend>>([]);
   const [email, setEmail] = React.useState('');
 
   const onInviteFriend = async () => {
@@ -30,8 +30,9 @@ export default function Index() {
 
   const getData = async () => {
     const { statusCode, data, msg } = await invitedInfo();
+    console.info(data, 'data');
     if (statusCode === 200) {
-      setInvitedInfos(data as InviteInfo[]);
+      setInvitedInfos(data as Friend[]);
     } else {
       messageApi.info({ content: `${statusCode} ${msg}` });
     }
@@ -41,8 +42,8 @@ export default function Index() {
     getData();
   }, []);
 
-  const changeInviteState = async (id: number, state: YesNotState) => {
-    const { statusCode, msg } = await handleInvite(id, state);
+  const changeInviteState = async (email: string, state: State) => {
+    const { statusCode, msg } = await handleInvite(email, state);
     if (statusCode === 200) {
       getData();
     } else {
@@ -92,7 +93,7 @@ export default function Index() {
           <div className='invite_records' key={invitedInfo.email}>
             <p>{invitedInfo.name}申请你为好友</p>
             <Button type='link' size='small'
-              onClick={() => { changeInviteState(invitedInfo.id, YesNotState.Yes); }}
+              onClick={() => { changeInviteState(invitedInfo.email, State.Agree); }}
             >
               同意邀请
             </Button>

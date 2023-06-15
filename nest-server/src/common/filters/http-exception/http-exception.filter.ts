@@ -21,12 +21,11 @@ export class HttpExceptionFilter<T extends HttpException>
         ? { msg: exceptionResponse }
         : (exceptionResponse as any);
     const { message } = error;
-
     const errorMessage = Array.isArray(message) ? message[0] : message;
 
     response.status(status).json({
       statusCode: status,
-      msg: errorMessage,
+      msg: errorMessage ?? exception.message,
       time: new Date().toISOString(),
     });
   }

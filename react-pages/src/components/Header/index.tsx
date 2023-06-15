@@ -17,7 +17,6 @@ export default function Index() {
   const lists = routes[0].children as Array<Router>;
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
 
-  console.info(userInfo, 'test');
   return (
     <StyleDiv>
       <header>

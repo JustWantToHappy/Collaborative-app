@@ -1,6 +1,6 @@
 import React from 'react';
 import StyleDiv from './style';
-import type { InviteInfo } from '@/types';
+import type { Friend } from '@/types';
 import { myFriends, deleteFriend } from '@/api';
 import { message, Avatar, Button } from 'antd';
 
@@ -12,7 +12,7 @@ interface Props {
 
 export default function Index(props: Props) {
   const [messageApi, contextHolder] = message.useMessage();
-  const [friendsInfo, SetFriendsInfo] = React.useState<InviteInfo[]>([]);
+  const [friendsInfo, SetFriendsInfo] = React.useState<Friend[]>([]);
 
 
   React.useEffect(() => {

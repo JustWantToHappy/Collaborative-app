@@ -19,7 +19,8 @@ export enum Chat {
   Private_Chat = 'private chat',
 }
 
-export enum YesNotState{
-  Not=0,
-  Yes=1
+export enum State {
+  Pending = 'pending',
+  Agree = 'agree',
+  Reject = 'reject',
 }

@@ -5,8 +5,8 @@ CREATE TABLE `User` (
     `name` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `avatar` VARCHAR(191) NULL DEFAULT '',
-    `createAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NULL,
+    `createdAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NULL,
     `roles` JSON NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
@@ -31,8 +31,8 @@ CREATE TABLE `UserGroup` (
     `userId` VARCHAR(191) NOT NULL,
     `groupId` VARCHAR(191) NOT NULL,
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`userId`, `groupId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -44,7 +44,7 @@ CREATE TABLE `Group` (
     `name` VARCHAR(191) NOT NULL,
     `avatar` VARCHAR(191) NULL DEFAULT '',
     `description` VARCHAR(191) NOT NULL DEFAULT '',
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `Group_name_key`(`name`),
     PRIMARY KEY (`id`)
@@ -53,6 +53,8 @@ CREATE TABLE `Group` (
 -- CreateTable
 CREATE TABLE `ChatRoom` (
     `id` VARCHAR(191) NOT NULL,
+    `userIds` TEXT NOT NULL,
+    `name` VARCHAR(191) NOT NULL DEFAULT '',
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -70,8 +72,8 @@ CREATE TABLE `ChatRecord` (
 CREATE TABLE `Message` (
     `id` VARCHAR(191) NOT NULL,
     `text` TEXT NULL,
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `senderId` INTEGER NOT NULL,
     `receiverId` INTEGER NOT NULL,
@@ -107,8 +109,8 @@ CREATE TABLE `CloudDocument` (
     `title` VARCHAR(191) NOT NULL,
     `text` TEXT NOT NULL,
     `version` VARCHAR(191) NOT NULL,
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
     `ownerId` VARCHAR(191) NOT NULL,
     `collaborators` VARCHAR(191) NOT NULL,
     `userId` VARCHAR(191) NULL,
@@ -145,8 +147,8 @@ CREATE TABLE `Report` (
     `type` VARCHAR(191) NOT NULL DEFAULT '0',
     `curReport` TEXT NOT NULL,
     `prevPeport` TEXT NOT NULL,
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updateAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
     `userId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
@@ -158,7 +160,7 @@ CREATE TABLE `Calendar` (
     `title` VARCHAR(191) NOT NULL,
     `startTime` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `endTime` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `desc` TEXT NOT NULL,
 
     PRIMARY KEY (`id`)
