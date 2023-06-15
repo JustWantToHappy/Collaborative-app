@@ -6,7 +6,7 @@ CREATE TABLE `User` (
     `password` VARCHAR(191) NOT NULL,
     `avatar` VARCHAR(191) NULL DEFAULT '',
     `createdAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NULL,
+    `updatedAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `roles` JSON NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
@@ -18,7 +18,7 @@ CREATE TABLE `UserFriend` (
     `id` VARCHAR(191) NOT NULL,
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `userId` VARCHAR(191) NOT NULL,
     `friendId` VARCHAR(191) NOT NULL,
 
@@ -32,7 +32,7 @@ CREATE TABLE `UserGroup` (
     `groupId` VARCHAR(191) NOT NULL,
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`userId`, `groupId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -55,14 +55,20 @@ CREATE TABLE `ChatRoom` (
     `id` VARCHAR(191) NOT NULL,
     `userIds` TEXT NOT NULL,
     `name` VARCHAR(191) NOT NULL DEFAULT '',
+    `type` INTEGER NOT NULL DEFAULT 0,
+    `groupId` VARCHAR(191) NULL,
+    `userFriendId` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `ChatRoom_groupId_key`(`groupId`),
+    UNIQUE INDEX `ChatRoom_userFriendId_key`(`userFriendId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `ChatRecord` (
     `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NULL,
+    `senderId` VARCHAR(191) NOT NULL,
+    `receiverId` VARCHAR(191) NOT NULL,
     `ChatRoomId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
@@ -73,12 +79,12 @@ CREATE TABLE `Message` (
     `id` VARCHAR(191) NOT NULL,
     `text` TEXT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `state` VARCHAR(191) NOT NULL DEFAULT 'pending',
-    `senderId` INTEGER NOT NULL,
-    `receiverId` INTEGER NOT NULL,
     `fileType` INTEGER NOT NULL DEFAULT 0,
     `imageUrl` VARCHAR(191) NOT NULL,
+    `isread` INTEGER NOT NULL DEFAULT 0,
+    `chatRecordId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Message_imageUrl_key`(`imageUrl`),
     PRIMARY KEY (`id`)
@@ -110,7 +116,7 @@ CREATE TABLE `CloudDocument` (
     `text` TEXT NOT NULL,
     `version` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `ownerId` VARCHAR(191) NOT NULL,
     `collaborators` VARCHAR(191) NOT NULL,
     `userId` VARCHAR(191) NULL,
@@ -148,7 +154,7 @@ CREATE TABLE `Report` (
     `curReport` TEXT NOT NULL,
     `prevPeport` TEXT NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `userId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
@@ -179,10 +185,16 @@ ALTER TABLE `UserGroup` ADD CONSTRAINT `UserGroup_userId_fkey` FOREIGN KEY (`use
 ALTER TABLE `UserGroup` ADD CONSTRAINT `UserGroup_groupId_fkey` FOREIGN KEY (`groupId`) REFERENCES `Group`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ChatRecord` ADD CONSTRAINT `ChatRecord_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `ChatRoom` ADD CONSTRAINT `ChatRoom_groupId_fkey` FOREIGN KEY (`groupId`) REFERENCES `Group`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ChatRoom` ADD CONSTRAINT `ChatRoom_userFriendId_fkey` FOREIGN KEY (`userFriendId`) REFERENCES `UserFriend`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ChatRecord` ADD CONSTRAINT `ChatRecord_ChatRoomId_fkey` FOREIGN KEY (`ChatRoomId`) REFERENCES `ChatRoom`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Message` ADD CONSTRAINT `Message_chatRecordId_fkey` FOREIGN KEY (`chatRecordId`) REFERENCES `ChatRecord`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Image` ADD CONSTRAINT `Image_path_fkey` FOREIGN KEY (`path`) REFERENCES `Message`(`imageUrl`) ON DELETE RESTRICT ON UPDATE CASCADE;

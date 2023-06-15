@@ -3,9 +3,9 @@ export enum State {
   Agree = 'agree',
   Reject = 'reject',
 }
-export enum YesNotState {
-  Yes = '1',
-  Not = '0',
+export enum ChatRoom {
+  Private = 'private',
+  Public = 'public',
 }
 //权限标识
 export enum Role {

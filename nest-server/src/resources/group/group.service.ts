@@ -6,7 +6,7 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 
 @Injectable()
 export class GroupService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
   async create(createGroupDto: CreateGroupDto) {
     const team = await this.prisma.group.findUnique({
       where: { name: createGroupDto.name },
