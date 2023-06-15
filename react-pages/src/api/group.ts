@@ -11,3 +11,7 @@ export const buildGroup = (team:FormData) => {
 export const leaveGroup = (id:number) => {
   return request.delete(`/userTeam/${id}`);
 };
+
+export const applyJoinGroup = (name:string) => {
+  return request.post('/group/apply',{name});
+};

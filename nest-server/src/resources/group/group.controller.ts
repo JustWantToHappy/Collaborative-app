@@ -53,7 +53,5 @@ export class GroupController {
   }
 
   @Get('apply')
-  groupApply(@Request() request) {
-    
-  }
+  groupApply(@Request() request) {}
 }

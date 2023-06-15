@@ -7,7 +7,6 @@ import { message, Avatar, Button } from 'antd';
 
 interface Props {
   option: string;
-  
 }
 
 export default function Index(props: Props) {

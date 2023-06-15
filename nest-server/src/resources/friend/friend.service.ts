@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { State } from 'src/common/enum';
+import { ChatRoom, State } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { UpdateFriendDto } from './dto/update-friend.dto';
@@ -24,13 +24,12 @@ export class FriendService {
         ],
       },
     });
-    const state = userfriend.state;
+    const state = userfriend?.state;
     if (state === State.Pending) {
       throw new HttpException('你已经邀请过此用户！', HttpStatus.BAD_REQUEST);
     } else if (state === State.Agree) {
       throw new HttpException('好友关系已存在！', HttpStatus.CONFLICT);
     }
-
     await this.prisma.userFriend.create({
       data: { userId: id, friendId: user.id },
     });
@@ -40,12 +39,13 @@ export class FriendService {
   async findAll(id: string) {
     const result = await this.prisma.$queryRaw`
       SELECT
+        userFriend.id,
         name,
         avatar,
         email
         FROM User
       INNER JOIN userFriend ON user.id=userFriend.userId OR user.id=userFriend.friendId
-      AND state=${State.Agree} WHERE user.id!=${id}
+       WHERE user.id!=${id} AND state=${State.Agree}
     `;
     return result;
   }
@@ -69,7 +69,8 @@ export class FriendService {
     const user = await this.prisma.user.findUnique({
       where: { email: updateFriendDto.email },
     });
-    await this.prisma.userFriend.update({
+    //创建好友关系的时候同时创建一个房间
+    const addFriend = this.prisma.userFriend.update({
       where: {
         userId_friendId: {
           userId: user.id,
@@ -80,10 +81,17 @@ export class FriendService {
         state: updateFriendDto.state,
       },
     });
+    const chatRoom = this.prisma.chatRoom.create({
+      data: {
+        userIds: [user.id, id].join(','),
+        type: ChatRoom.Private,
+      },
+    });
+    await this.prisma.$transaction([addFriend, chatRoom]);
     return 'update success';
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} friend`;
+  remove(id: string) {
+    return this.prisma.userFriend.delete({ where: { id } });
   }
 }

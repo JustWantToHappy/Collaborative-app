@@ -4,14 +4,14 @@ import type { Friend } from '@/types';
 import { LocalStorageKey, State } from '@/enum';
 import { useLocalStorage } from '@/hooks';
 import { Button, Input, message } from 'antd';
-import { addFriend, invitedInfo, handleInvite, deleteFriend } from '@/api';
+import { addFriend, invitedInfo, handleInvite, deleteFriend, applyJoinGroup } from '@/api';
 
 export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const [group, setGroup] = React.useState('');
+  const [email, setEmail] = React.useState('');
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const [invitedInfos, setInvitedInfos] = React.useState<Array<Friend>>([]);
-  const [email, setEmail] = React.useState('');
 
   const onInviteFriend = async () => {
     if (userInfo.email === email) {
@@ -30,7 +30,6 @@ export default function Index() {
 
   const getData = async () => {
     const { statusCode, data, msg } = await invitedInfo();
-    console.info(data, 'data');
     if (statusCode === 200) {
       setInvitedInfos(data as Friend[]);
     } else {
@@ -56,9 +55,20 @@ export default function Index() {
     if (statusCode === 200) {
       getData();
     } else {
-      messageApi.info({ content: `${statusCode} 删除失败 ${msg}` });
+      messageApi.error(`${statusCode} ${msg}`);
     }
   };
+
+  const applyJoin = async () => {
+    const { statusCode, msg } = await applyJoinGroup(group);
+    if (statusCode === 200) {
+      messageApi.success('申请成功');
+      setGroup('');
+    } else {
+      messageApi.error(`${statusCode} ${msg}`);
+    }
+  };
+
   return (
     <StyleDiv >
       {contextHolder}
@@ -80,8 +90,9 @@ export default function Index() {
           <Input
             placeholder='请输入群名称'
             onChange={e => setGroup(e.target.value)}
+            value={group}
             style={{ width: '30vw' }} />
-          <Button type='primary' style={{ marginLeft: '1vw' }}>申请加入</Button>
+          <Button type='primary' style={{ marginLeft: '1vw' }} onClick={applyJoin}>申请加入</Button>
         </div>
       </div>
       <div>

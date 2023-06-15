@@ -17,11 +17,17 @@ export class GroupService {
         HttpStatus.CONFLICT,
       );
     }
+    //创建群组的同时创建一个房间，事务操作
     await this.prisma.group.create({
       data: {
         ...createGroupDto,
-        UserGroup: {
+        UserGroups: {
           create: [{ userId: createGroupDto.leaderId, state: State.Agree }],
+        },
+        ChatRoom: {
+          create: {
+            userIds: createGroupDto.leaderId + '',
+          },
         },
       },
     });
@@ -73,15 +79,24 @@ export class GroupService {
     if (usergroup) {
       throw new HttpException('你已加入该团队', HttpStatus.CONFLICT);
     }
-    const result = await this.prisma.userGroup.create({
+    //方便测试，这里用户只要申请了就可以加入团队
+    const joinGroup = this.prisma.userGroup.create({
       data: {
         userId: id,
         groupId: group.id,
-        state: State.Agree, //为了后面测试，之后改回pendign
+        state: State.Agree,
       },
     });
+    const chatRoom = this.prisma.chatRoom.findUnique({
+      where: { groupId: group.id },
+    });
+    const chatRoomAddUser = this.prisma.chatRoom.update({
+      where: { groupId: group.id },
+      data: {
+        userIds: (await chatRoom).userIds + `,${id}`,
+      },
+    });
+    await this.prisma.$transaction([joinGroup, chatRoom, chatRoomAddUser]);
     return 'create success';
   }
-
-  groupApply(id: string) {}
 }

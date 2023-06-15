@@ -12,6 +12,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './resources/user/user.module';
 import { FriendModule } from './resources/friend/friend.module';
 import { GroupModule } from './resources/group/group.module';
+import { ChatroomModule } from './resources/chatroom/chatroom.module';
 /**
  * imports:当你在一个模块的imports数组中导入一个模块时，该模块中的所有providers都被注册到了当前模块的
  * providers数组中。
@@ -36,6 +37,7 @@ import { GroupModule } from './resources/group/group.module';
     UserModule,
     FriendModule,
     GroupModule,
+    ChatroomModule,
   ],
   controllers: [AppController],
   providers: [

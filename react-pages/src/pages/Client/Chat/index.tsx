@@ -34,11 +34,6 @@ export default function Index() {
     },
     {
       key: '2',
-      label: `我加入的群组`,
-      children: <MyGroups option={key} />,
-    },
-    {
-      key: '3',
       label: `更多操作`,
       children: <ChatTools />,
     },

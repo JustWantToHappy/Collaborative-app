@@ -11,33 +11,33 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(uuid())
-  email         String          @unique
-  name          String
-  password      String
-  avatar        String?         @default("")
-  createdAt     DateTime?       @default(now())
-  updatedAt     DateTime?       @default(now())
-  roles         Json?
+  id             String          @id @default(uuid())
+  email          String          @unique
+  name           String
+  password       String
+  avatar         String?         @default("")
+  createdAt      DateTime?       @default(now())
+  updatedAt      DateTime?       @default(now())
+  roles          Json?
+  ChatRoom       ChatRoom?
   UserGroups     UserGroup[]
   CloudDocuments CloudDocument[]
   CloudFiles     CloudFile[]
   RePorts        Report[]
   Approvals      Approval[]
-  friends       UserFriend[]    @relation("UserToFriends")
-  friendships   UserFriend[]    @relation("FriendToUsers")
+  friends        UserFriend[]    @relation("UserToFriends")
+  friendships    UserFriend[]    @relation("FriendToUsers")
 }
 
 model UserFriend {
-  id        String    @id @default(uuid())
-  state     String    @default("pending")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  user      User      @relation("UserToFriends", fields: [userId], references: [id])
-  friend    User      @relation("FriendToUsers", fields: [friendId], references: [id])
+  id        String   @id @default(uuid())
+  state     String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  user      User     @relation("UserToFriends", fields: [userId], references: [id])
+  friend    User     @relation("FriendToUsers", fields: [friendId], references: [id])
   userId    String
   friendId  String
-  ChatRoom  ChatRoom?
 
   @@unique([userId, friendId])
 }
@@ -61,20 +61,20 @@ model Group {
   avatar      String?     @default("")
   description String      @default("")
   createdAt   DateTime    @default(now())
-  UserGroups   UserGroup[]
-  ChatRoom    ChatRoom?
+  UserGroups  UserGroup[]
+  ChatRoom    ChatRoom? //限制一个团队只有一个聊天室
 }
 
 model ChatRoom {
-  id           String       @id @default(uuid())
-  userIds      String       @db.Text //用户id,逗号隔开
-  name         String       @default("")
-  ChatRecords   ChatRecord[]
-  type         Int          @default(0) //0表示群聊，1表示私聊
-  Group        Group?       @relation(fields: [groupId], references: [id])
-  groupId      String?      @unique
-  UserFriend   UserFriend?  @relation(fields: [userFriendId], references: [id])
-  userFriendId String?      @unique
+  id          String       @id @default(uuid())
+  userIds     String       @db.Text //用户id,逗号隔开
+  name        String       @default("")
+  ChatRecords ChatRecord[]
+  type        String       @default("public")
+  Group       Group?       @relation(fields: [groupId], references: [id])
+  groupId     String?      @unique
+  User        User?        @relation(fields: [userId], references: [id])
+  userId      String?      @unique
 }
 
 model ChatRecord {
@@ -83,7 +83,7 @@ model ChatRecord {
   receiverId String
   ChatRoom   ChatRoom? @relation(fields: [ChatRoomId], references: [id])
   ChatRoomId String?
-  Messages    Message[]
+  Messages   Message[]
 }
 
 model Message {
@@ -92,7 +92,7 @@ model Message {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now())
   state        String      @default("pending") //pending|agree|reject
-  fileType     Int         @default(0) //默认值0表示为文本，1表示为图片
+  fileType     String      @default("text")
   image        Image?
   imageUrl     String      @unique
   isread       Int         @default(0) //0表示未读，1表示已读
@@ -108,27 +108,27 @@ model Image {
 
 //CloudFile的id不给默认值，这是因为CloudFile的id必须和用户id保持一致
 model CloudFile {
-  id            String          @id
-  title         String
-  parentId      String          @default("")
-  User          User?           @relation(fields: [userId], references: [id])
-  userId        String?
+  id             String          @id
+  title          String
+  parentId       String          @default("")
+  User           User?           @relation(fields: [userId], references: [id])
+  userId         String?
   CloudDocuments CloudDocument[]
 }
 
 model CloudDocument {
-  id               String             @id @default(uuid())
-  title            String
-  text             String             @db.Text
-  version          String
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @default(now())
-  ownerId          String
-  collaborators    String //协作者id，逗号隔开
-  User             User?              @relation(fields: [userId], references: [id])
-  userId           String?
-  CloudFile        CloudFile?         @relation(fields: [CloudFileId], references: [id])
-  CloudFileId      String?
+  id                String             @id @default(uuid())
+  title             String
+  text              String             @db.Text
+  version           String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now())
+  ownerId           String
+  collaborators     String //协作者id，逗号隔开
+  User              User?              @relation(fields: [userId], references: [id])
+  userId            String?
+  CloudFile         CloudFile?         @relation(fields: [CloudFileId], references: [id])
+  CloudFileId       String?
   OnlineEditPersons OnlineEditPerson[]
 }
 
