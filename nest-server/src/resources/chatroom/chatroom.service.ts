@@ -1,15 +1,41 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 
 @Injectable()
 export class ChatroomService {
+  constructor(private readonly prisma: PrismaService) {}
   create(createChatroomDto: CreateChatroomDto) {
     return 'This action adds a new chatroom';
   }
 
-  findAll() {
-    return `This action returns all chatroom`;
+  async findAll(id: string) {
+    //通过模糊匹配查询出用户所在的所有聊天室
+    const result = await this.prisma.chatRoom.findMany({
+      where: {
+        userIds: {
+          contains: id,
+        },
+      },
+      include: {
+        UserFriend: true,
+        Group: true,
+        ChatRecords: {
+          include: {
+            Messages: {
+              select: {
+                createdAt: true,
+              },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+    console.info(result);
+    return result;
   }
 
   findOne(id: number) {

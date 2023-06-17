@@ -4,8 +4,7 @@ import { useLocation } from 'react-router-dom';
 import ChatHeader from './components/ChatHeader';
 import ChatAside from './components/ChatAside';
 import ChatTools from './components/ChatTools';
-import MyFriends from './components/MyFriends';
-import MyGroups from './components/MyGroups';
+import MyJoin from './components/MyJoin';
 import ChatContainer from './components/ChatContainer';
 
 import { MemoDiv } from './style';
@@ -29,12 +28,12 @@ export default function Index() {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: `我的好友`,
-      children: <MyFriends option={key} />,
+      label: `我加入的`,
+      children: <MyJoin option={key} />,
     },
     {
       key: '2',
-      label: `更多操作`,
+      label: `添加联系人`,
       children: <ChatTools />,
     },
   ];

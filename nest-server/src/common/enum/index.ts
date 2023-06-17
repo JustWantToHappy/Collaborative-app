@@ -7,6 +7,11 @@ export enum ChatRoom {
   Private = 'private',
   Public = 'public',
 }
+//聊天类型
+export enum RecordType {
+  Chat = 'chat',
+  Invite = 'invite',
+}
 //权限标识
 export enum Role {
   User = 'User',

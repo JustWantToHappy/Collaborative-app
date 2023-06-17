@@ -19,27 +19,19 @@ model User {
   createdAt      DateTime?       @default(now())
   updatedAt      DateTime?       @default(now())
   roles          Json?
-  ChatRoom       ChatRoom?
   UserGroups     UserGroup[]
   CloudDocuments CloudDocument[]
   CloudFiles     CloudFile[]
   RePorts        Report[]
   Approvals      Approval[]
-  friends        UserFriend[]    @relation("UserToFriends")
-  friendships    UserFriend[]    @relation("FriendToUsers")
+  Friends        Friend[]
+  ChatRecords    ChatRecord[]
 }
 
-model UserFriend {
-  id        String   @id @default(uuid())
-  state     String   @default("pending")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  user      User     @relation("UserToFriends", fields: [userId], references: [id])
-  friend    User     @relation("FriendToUsers", fields: [friendId], references: [id])
-  userId    String
-  friendId  String
-
-  @@unique([userId, friendId])
+model Friend {
+  User       User   @relation(fields: [userId], references: [id])
+  userId     String @id
+  friendList String //好友列表，使用，隔开
 }
 
 model UserGroup {
@@ -70,20 +62,21 @@ model ChatRoom {
   userIds     String       @db.Text //用户id,逗号隔开
   name        String       @default("")
   ChatRecords ChatRecord[]
-  type        String       @default("public")
+  type        String       @default("private")
   Group       Group?       @relation(fields: [groupId], references: [id])
   groupId     String?      @unique
-  User        User?        @relation(fields: [userId], references: [id])
-  userId      String?      @unique
 }
 
 model ChatRecord {
   id         String    @id @default(uuid())
   senderId   String
   receiverId String
-  ChatRoom   ChatRoom? @relation(fields: [ChatRoomId], references: [id])
-  ChatRoomId String?
+  ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String?
   Messages   Message[]
+  type       String    @default("chat")//聊天类型
+  User       User?     @relation(fields: [userId], references: [id])
+  userId     String?
 }
 
 model Message {
@@ -91,6 +84,7 @@ model Message {
   text         String?     @db.Text
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now())
+  type         String      @default("chat") //消息类型，有聊天，邀请等
   state        String      @default("pending") //pending|agree|reject
   fileType     String      @default("text")
   image        Image?
@@ -127,8 +121,8 @@ model CloudDocument {
   collaborators     String //协作者id，逗号隔开
   User              User?              @relation(fields: [userId], references: [id])
   userId            String?
-  CloudFile         CloudFile?         @relation(fields: [CloudFileId], references: [id])
-  CloudFileId       String?
+  CloudFile         CloudFile?         @relation(fields: [cloudFileId], references: [id])
+  cloudFileId       String?
   OnlineEditPersons OnlineEditPerson[]
 }
 

@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { deleteFile } from 'src/common/utils';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -38,9 +43,13 @@ export class UserService {
     return `This action removes a #${id} user`;
   }
 
-  findOnyByEmail(email: string) {
-    return this.prisma.user.findUnique({
+  async findOnyByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
       where: { email },
     });
+    if (!user) {
+      throw new HttpException(`邮箱${email}并不存在`, HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 }

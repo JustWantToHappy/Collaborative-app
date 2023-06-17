@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
@@ -21,8 +22,8 @@ export class ChatroomController {
   }
 
   @Get()
-  findAll() {
-    return this.chatroomService.findAll();
+  findAll(@Request() request) {
+    return this.chatroomService.findAll(request.user.id);
   }
 
   @Get(':id')

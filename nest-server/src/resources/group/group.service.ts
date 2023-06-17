@@ -87,16 +87,16 @@ export class GroupService {
         state: State.Agree,
       },
     });
-    const chatRoom = this.prisma.chatRoom.findUnique({
+    const addChatRoom = this.prisma.chatRoom.findUnique({
       where: { groupId: group.id },
     });
     const chatRoomAddUser = this.prisma.chatRoom.update({
       where: { groupId: group.id },
       data: {
-        userIds: (await chatRoom).userIds + `,${id}`,
+        userIds: (await addChatRoom).userIds + `,${id}`,
       },
     });
-    await this.prisma.$transaction([joinGroup, chatRoom, chatRoomAddUser]);
+    await this.prisma.$transaction([joinGroup, addChatRoom, chatRoomAddUser]);
     return 'create success';
   }
 }

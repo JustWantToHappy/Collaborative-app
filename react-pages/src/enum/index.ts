@@ -11,7 +11,6 @@ export enum Role{
 
 export enum Config{
   ServerUrl='http://localhost:8080',
-  WsUrl = 'http://localhost:8080',
 }
 
 export enum Chat {

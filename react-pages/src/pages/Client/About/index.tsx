@@ -42,8 +42,8 @@ export default function Index() {
     }
   }, []);
 
-  React.useEffect(() => {
-    const socket = io(Config.ServerUrl + '/chat/private');
+/*  React.useEffect(() => {
+    const socket = io(Config.ServerUrl + '/chat/group-1');
     setSocket(socket);
     socket.on('disconnect', () => {
       console.log(socket.id);
@@ -51,13 +51,13 @@ export default function Index() {
     return function () {
       socket.disconnect();
     };
-  }, []);
+  }, []);*/
 
   if (pathname === '/') {
     return <StyleDiv>
       <header>
         <Link to='/' title=""> <img src={LogoSvg} /></Link>
-        {/*  <Button onClick={() => {
+        {/* <Button onClick={() => {
           socket && socket.emit(Chat.Group_Join, 'group 1');
         }}>加入房间</Button>
         <Button onClick={() => {
