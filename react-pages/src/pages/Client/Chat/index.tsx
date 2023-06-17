@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleDiv } from '@/common';
 import { useLocation } from 'react-router-dom';
-import ChatHeader from './components/ChatHeader';
-import ChatAside from './components/ChatAside';
-import ChatTools from './components/ChatTools';
-import MyJoin from './components/MyJoin';
-import ChatContainer from './components/ChatContainer';
+import MyJoin from '@/components/MyJoin';
+import ChatHeader from '@/components/ChatHeader';
+import ChatAside from '@/components/ChatAside';
+import ChatTools from '@/components/ChatTools';
+import ChatContainer from '@/components/ChatContainer';
 
 import { MemoDiv } from './style';
 import { Tabs } from 'antd';
