@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { State } from 'src/common/enum';
+import { MessageType } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
@@ -21,9 +21,6 @@ export class GroupService {
     await this.prisma.group.create({
       data: {
         ...createGroupDto,
-        UserGroups: {
-          create: [{ userId: createGroupDto.leaderId, state: State.Agree }],
-        },
         ChatRoom: {
           create: {
             userIds: createGroupDto.leaderId + '',
@@ -39,20 +36,7 @@ export class GroupService {
   }
 
   async findUserGroups(id: string) {
-    const result = await this.prisma.userGroup.findMany({
-      where: { userId: id },
-      include: {
-        group: {
-          select: {
-            name: true,
-            avatar: true,
-            description: true,
-            createdAt: true,
-          },
-        },
-      },
-    });
-    return result.map((usergroup) => usergroup.group);
+    return [];
   }
 
   update(id: number, updateGroupDto: UpdateGroupDto) {
@@ -68,23 +52,17 @@ export class GroupService {
     if (!group) {
       throw new HttpException('此群不存在', HttpStatus.NOT_FOUND);
     }
-    const usergroup = await this.prisma.userGroup.findUnique({
-      where: {
-        userId_groupId: {
-          userId: id,
-          groupId: group.id,
-        },
-      },
+    const isJoin = await this.prisma.message.findFirst({
+      where: { senderId: id, receiverId: group.id },
     });
-    if (usergroup) {
+    if (isJoin) {
       throw new HttpException('你已加入该团队', HttpStatus.CONFLICT);
     }
-    //方便测试，这里用户只要申请了就可以加入团队
-    const joinGroup = this.prisma.userGroup.create({
+    const joinGroup = this.prisma.message.create({
       data: {
-        userId: id,
-        groupId: group.id,
-        state: State.Agree,
+        senderId: id,
+        receiverId: group.id,
+        type: MessageType.ApplyGroup,
       },
     });
     const addChatRoom = this.prisma.chatRoom.findUnique({

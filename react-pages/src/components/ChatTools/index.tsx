@@ -11,22 +11,30 @@ export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const [group, setGroup] = React.useState('');
   const [email, setEmail] = React.useState('');
+  const [socket] = React.useState(io(Config.ServerUrl + '/friend'));
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
-  const [setInvitedInfos] = React.useState<Array<Friend>>([]);
 
   const inviteFriend = async () => {
     if (userInfo.email === email) {
       setEmail('');
       return;
     }
-    const socket = io(Config.ServerUrl + '/friend');
-    socket.emit('invite', email);
-    messageApi.info({ content: '已发送邀请' });
+    socket.emit('applyfriend', { email, id: userInfo.id });
   };
 
   const joinGroup = () => {
     //socket.emit()
   };
+
+  React.useEffect(() => {
+    socket.on(`${userInfo?.id}applyfriend`, (data: string) => {
+      messageApi.info({ content: data });
+    });
+    return function () {
+      socket.off(`${userInfo.id}applyfriend`);
+    };
+  }, [userInfo.id, socket, messageApi]);
+
 
   return (
     <StyleDiv >

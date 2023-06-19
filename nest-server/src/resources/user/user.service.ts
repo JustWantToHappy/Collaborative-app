@@ -13,7 +13,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
-    const user = await this.findOnyByEmail(createUserDto.email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: createUserDto.email },
+    });
     if (user) {
       throw new ConflictException(`$邮箱{user.email}已经注册`);
     }

@@ -1,5 +1,6 @@
+import { State } from '@hapi/joi';
 import { Optional } from '@nestjs/common';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateGroupDto {
   @IsString()
@@ -13,4 +14,13 @@ export class CreateGroupDto {
 
   @IsString()
   avatar: string;
+
+  @Optional()
+  state: State;
+
+  @IsString()
+  thirdPartyId?: string;
+
+  @IsNumber()
+  isread: number;
 }
