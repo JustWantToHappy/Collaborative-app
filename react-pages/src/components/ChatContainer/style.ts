@@ -40,7 +40,8 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
     &_userInfo{
       margin:1rem;
       li{
-        display: flex;
+        display: grid;
+        grid-template-columns: auto 1fr;
         column-gap:2rem;
       }
     }

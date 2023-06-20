@@ -1,6 +1,5 @@
 import React from 'react';
 import StyleDiv from './style';
-import type { Friend } from '@/types';
 import { LocalStorageKey } from '@/enum';
 import { useLocalStorage } from '@/hooks';
 import { io } from 'socket.io-client';
@@ -11,7 +10,7 @@ export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const [group, setGroup] = React.useState('');
   const [email, setEmail] = React.useState('');
-  const [socket] = React.useState(io(Config.ServerUrl + '/friend'));
+  const [socket] = React.useState(io(Config.ServerUrl + '/message'));
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
 
   const inviteFriend = async () => {
@@ -19,22 +18,17 @@ export default function Index() {
       setEmail('');
       return;
     }
-    socket.emit('applyfriend', { email, id: userInfo.id });
+    //发送好友邀请
+    socket.emit('applyfriend', { email, id: userInfo.id }, (data: { msg: string, receiverId: string }) => {
+      messageApi.info({ content: data?.msg });
+      //通知被邀请者
+      socket.emit('fetchMessage', data?.receiverId);
+    });
   };
 
   const joinGroup = () => {
     //socket.emit()
   };
-
-  React.useEffect(() => {
-    socket.on(`${userInfo?.id}applyfriend`, (data: string) => {
-      messageApi.info({ content: data });
-    });
-    return function () {
-      socket.off(`${userInfo.id}applyfriend`);
-    };
-  }, [userInfo.id, socket, messageApi]);
-
 
   return (
     <StyleDiv >

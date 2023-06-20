@@ -4,7 +4,6 @@ import { useRoutes } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { defaultCssStyles } from './utils';
-import WebSocket from './pages/WebSocket';
 
 function App() {
   const element = useRoutes(routes);
@@ -24,8 +23,6 @@ function App() {
       }}
     >
       <React.Suspense fallback={<h1>Loading...</h1>}>
-        {/* websocket事件注册 */}
-        <WebSocket />
         <div className='app'>
           {element}
         </div>

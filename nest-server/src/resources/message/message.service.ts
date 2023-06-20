@@ -1,10 +1,8 @@
-import { Server } from 'socket.io';
 import { Injectable } from '@nestjs/common';
-import { WebSocketServer } from '@nestjs/websockets';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { MessageType } from 'src/common/enum';
+import { MessageType, State } from 'src/common/enum';
 
 @Injectable()
 export class MessageService {
@@ -13,8 +11,13 @@ export class MessageService {
     await this.prisma.message.create({ data: createMessageDto });
   }
 
-  findAll() {
-    return `This action returns all message`;
+  findAllPending(id: string) {
+    const query = this.prisma.$queryRaw`
+      select user.name,user.avatar,message.createdAt,thirdPartyId,type from user
+      inner join message on message.senderId=user.id and receiverId=${id}
+      where state=${State.Pending}
+    `;
+    return query;
   }
 
   findOne(senderId: string, receiverId: string, type: MessageType) {

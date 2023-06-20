@@ -1,5 +1,6 @@
 import React from 'react';
 import StyleDiv from './style';
+import Bell from '@/components/Bell';
 import { LocalStorageKey } from '@/enum';
 import { routes } from '@/layout';
 import type { Router } from '@/types';
@@ -33,9 +34,7 @@ export default function Index() {
           </li>)}
         </ul>
         <div>
-          <Badge count={5} size='small'>
-            <BellFilled />
-          </Badge>
+          <Bell />
           <Popover
             placement="bottom"
             content={<AvatarHover setImgSrc={(src: string) => setSrc(src)}

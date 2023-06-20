@@ -20,6 +20,14 @@ export enum Chat {
   Private_Chat = 'private chat',
 }
 
+//聊天类型
+export enum MessageType {
+  Chat = 'chat',
+  ApplyFriend = 'applyfriend', //申请好友
+  ApplyGroup = 'applygroup', //申请加群
+  FriendInviteJoinGroup = 'friendInviteJoinGroup', //好友邀请加群
+  GroupInvite = 'groupInvite', //群申请
+}
 export enum State {
   Pending = 'pending',
   Agree = 'agree',

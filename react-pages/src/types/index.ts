@@ -3,3 +3,4 @@ export * from './css';
 export * from './user';
 export * from './team';
 export * from './friend';
+export * from './message';
