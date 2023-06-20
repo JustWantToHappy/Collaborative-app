@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { MessageType } from 'src/common/enum';
+import { MessageType, State } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
@@ -52,29 +52,26 @@ export class GroupService {
     if (!group) {
       throw new HttpException('此群不存在', HttpStatus.NOT_FOUND);
     }
-    const isJoin = await this.prisma.message.findFirst({
-      where: { senderId: id, receiverId: group.id },
-    });
-    if (isJoin) {
-      throw new HttpException('你已加入该团队', HttpStatus.CONFLICT);
+    if (group.leaderId === id) {
+      throw new HttpException('你已加入此群', HttpStatus.CONFLICT);
     }
-    const joinGroup = this.prisma.message.create({
+    const isApply = await this.prisma.message.findFirst({
+      where: { senderId: id, receiverId: group.leaderId },
+    });
+    if (isApply) {
+      const str =
+        isApply.state === State.Pending
+          ? '你已发送过申请，不可以重复发送'
+          : '你已加入此群';
+      throw new HttpException(str, HttpStatus.CONFLICT);
+    }
+    await this.prisma.message.create({
       data: {
         senderId: id,
-        receiverId: group.id,
+        receiverId: group.leaderId,
         type: MessageType.ApplyGroup,
       },
     });
-    const addChatRoom = this.prisma.chatRoom.findUnique({
-      where: { groupId: group.id },
-    });
-    const chatRoomAddUser = this.prisma.chatRoom.update({
-      where: { groupId: group.id },
-      data: {
-        userIds: (await addChatRoom).userIds + `,${id}`,
-      },
-    });
-    await this.prisma.$transaction([joinGroup, addChatRoom, chatRoomAddUser]);
-    return 'create success';
+    return group.leaderId;
   }
 }

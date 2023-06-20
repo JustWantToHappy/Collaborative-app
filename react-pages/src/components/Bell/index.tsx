@@ -1,12 +1,13 @@
 import React from 'react';
-import { io } from 'socket.io-client';
-import { Config, LocalStorageKey } from '@/enum';
 import StyleDiv from './style';
 import { Message } from '@/types';
-import { BellFilled } from '@ant-design/icons';
-import { Avatar, Badge, Modal, Button, message } from 'antd';
+import { io } from 'socket.io-client';
 import { useLocalStorage } from '@/hooks';
 import { getAllPendingMessages } from '@/api';
+import { Config, LocalStorageKey } from '@/enum';
+import { BellFilled } from '@ant-design/icons';
+import PubSub from 'pubsub-js';
+import { Avatar, Badge, Modal, Button, message } from 'antd';
 
 export default function Index() {
   const [open, setOpen] = React.useState(false);
@@ -35,11 +36,15 @@ export default function Index() {
         messageApi.error({ content: `${statusCode} ${msg}` });
       }
     })();
+    const token = PubSub.subscribe('fetchMessage', (_, receiverId: string) => {
+      socket.emit('fetchMessage', receiverId);
+    });
     socket.on(receiverEventName, (messages: Message[]) => {
       setMessages(messages);
     });
     return function () {
       socket.off(receiverEventName);
+      PubSub.unsubscribe(token);
     };
   }, [socket, receiverEventName, messageApi]);
 
