@@ -6,7 +6,8 @@ const About = lazy(() => import('../pages/Client/About'));
 import Chat from '../pages/Client/Chat';
 import WorkSpace from '../pages/Client/WorkSpace';
 import PageNotFound from '../pages/PageNotFound';
-import UserInfo from '../pages/Client/UserInfo';
+import ChatContainer from '@/components/ChatContainer';
+import Notify from '@/pages/Client/Notify';
 import CloudDocument from '../pages/Client/CloudDocument';
 import SharedSpace from '../pages/Client/SharedSpace';
 
@@ -24,11 +25,30 @@ export const routes: Array<Router> = [
     element: <About />,
     children: [
       {
-        name: '聊天列表',
-        path: '/chat/:id?',
+        name: '实时聊天',
+        path: '/chat',
         element: <AuthRoute redirect='/'>
           <Chat />
         </AuthRoute>,
+        children: [
+          {
+            name: '通讯录',
+            path: 'address',
+            element: <></>
+          },
+          {
+            name: '聊天记录',
+            path: 'record/:id',
+            element: <ChatContainer />
+          },
+          {
+            name: '最新通知',
+            path: 'notify',
+            element: <AuthRoute redirect='/'>
+              <Notify />
+            </AuthRoute>
+          }
+        ]
       },
       {
         name: '工作台',

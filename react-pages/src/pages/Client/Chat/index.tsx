@@ -1,13 +1,12 @@
 import React from 'react';
+import PubSub from 'pubsub-js';
 import { StyleDiv } from '@/common';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Outlet } from 'react-router-dom';
 import MyJoin from '@/components/MyJoin';
 import ChatHeader from '@/components/ChatHeader';
 import ChatAside from '@/components/ChatAside';
 import ChatTools from '@/components/ChatTools';
-import ChatContainer from '@/components/ChatContainer';
 
-import { MemoDiv } from './style';
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 
@@ -38,8 +37,11 @@ export default function Index() {
     },
   ];
   const asideWidth = React.useMemo(() => {
-    return wide ? '18rem' : '6rem';
+    const asideWidth = wide ? '18rem' : '6rem';
+    PubSub.publish('asideWidth', asideWidth);
+    return asideWidth;
   }, [wide]);
+
   return (
     <StyleDiv asideWidth={asideWidth}>
       <aside >
@@ -54,15 +56,13 @@ export default function Index() {
             <h2>欢迎使用</h2>
             <small>点击左边用户头像框即可开始聊天</small>
           </div>}
-          {pathname === '/chat/address' && <MemoDiv>
-            <Tabs
-              defaultActiveKey={key}
-              items={items}
-              onChange={onChange}
-              size='large'
-            />
-          </MemoDiv>}
-          {/\/chat\/\d+/.test(pathname) && <ChatContainer asideWidth={asideWidth} />}
+          {pathname === '/chat/address' && <Tabs
+            defaultActiveKey={key}
+            items={items}
+            onChange={onChange}
+            size='large'
+          />}
+          <Outlet />
         </div>
       </main>
     </StyleDiv>

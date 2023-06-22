@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MessageType } from 'src/common/enum';
+import { MessageType, State } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MessageService } from '../message/message.service';
 import { UpdateFriendDto } from './dto/update-friend.dto';
@@ -19,6 +19,7 @@ export class FriendService {
       id,
       user.id,
       MessageType.ApplyFriend,
+      State.Pending,
     );
     if (message) {
       return '你已邀请此用户';

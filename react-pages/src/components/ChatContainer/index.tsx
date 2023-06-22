@@ -1,19 +1,30 @@
 import React from 'react';
+import PubSub from 'pubsub-js';
 import StyleDiv from './style';
 import UploadImg from '@/components/UploadImg';
-import { Avatar, Button, Drawer, Input } from 'antd';
+import { Avatar, Button, Input } from 'antd';
 
-interface IProps {
-  asideWidth: string;
-}
 
-export default function Index(props: IProps) {
-  const { asideWidth } = props;
+export default function Index() {
+  const [asideWidth, setAsideWidth] = React.useState('18rem');
   const [open, setOpen] = React.useState(false);
 
   const showDrawer = () => setOpen(true);
 
   const onClose = () => setOpen(false);
+
+  React.useEffect(() => {
+    (async function () {
+      
+    })();
+    const token = PubSub.subscribe('asideWidth',
+      (_, asideWidth: string) => {
+        setAsideWidth(asideWidth);
+      });
+    return function () {
+      PubSub.unsubscribe(token);
+    };
+  }, []);
 
   return (
     <StyleDiv asideWidth={asideWidth}>

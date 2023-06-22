@@ -30,7 +30,7 @@ model User {
 model Friend {
   User       User   @relation(fields: [userId], references: [id])
   userId     String @id
-  friendList String //好友列表，使用，隔开
+  friendList String @db.Text //好友列表使用，隔开
 }
 
 model Group {
@@ -48,13 +48,14 @@ model ChatRoom {
   userIds     String       @db.Text //用户id,逗号隔开
   name        String       @default("")
   ChatRecords ChatRecord[]
-  type        String       @default("public")
-  Group       Group?       @relation(fields: [groupId], references: [id])
-  groupId     String?      @unique
+  Group       Group        @relation(fields: [groupId], references: [id])
+  groupId     String       @unique
 }
 
 model ChatRecord {
   id         String    @id @default(uuid())
+  //用来区分群聊还是私聊
+  type       String    @default("private")
   ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
   chatRoomId String?
   Messages   Message[]
@@ -66,7 +67,9 @@ model Message {
   id           String      @id @default(uuid())
   senderId     String
   receiverId   String
-  thirdPartyId String      @default("")
+  thirdPartyId String?
+  groupName    String?
+  groupAvatar  String?
   text         String?     @db.Text
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now())

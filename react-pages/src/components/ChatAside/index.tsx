@@ -30,7 +30,7 @@ export default function Index(props: IProps) {
       </header>
       <ul className='chat_aside'>
         {new Array(10).fill(1).map((_, index) =>
-          <NavLink key={index} to={`/chat/${index}`} style={{ color: active === index ? '#fff' : '#000', textDecoration: 'none' }}>
+          <NavLink key={index} to={`/chat/record/${index}`} style={{ color: active === index ? '#fff' : '#000', textDecoration: 'none' }}>
             <li
               className='chat_item'
               onClick={() => setActive(index)}

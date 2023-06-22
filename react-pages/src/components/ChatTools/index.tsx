@@ -1,7 +1,7 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
-import { LocalStorageKey } from '@/enum';
+import { LocalStorageKey, MessageType } from '@/enum';
 import { useLocalStorage } from '@/hooks';
 import { Manager } from 'socket.io-client';
 import { Config } from '@/enum';
@@ -26,14 +26,16 @@ export default function Index() {
       (data: { msg: string, receiverId: string }) => {
         messageApi.info({ content: data?.msg });
         PubSub.publish('fetchMessage', data?.receiverId);
+        setEmail('');
       });
   };
 
   const joinGroup = async () => {
-    const { statusCode, msg, data } = await applyJoinGroup(group);
+    const { statusCode, msg, data: leaderId } = await applyJoinGroup(group);
     if (statusCode === 200) {
-      PubSub.publish('fetchMessage', data);
+      PubSub.publish('fetchMessage', leaderId);
       messageApi.success({ content: '申请成功!' });
+      setGroup('');
     } else {
       messageApi.error({ content: `${statusCode} ${msg}` });
     }

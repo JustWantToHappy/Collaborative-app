@@ -8,10 +8,10 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 export class GroupService {
   constructor(private readonly prisma: PrismaService) {}
   async create(createGroupDto: CreateGroupDto) {
-    const team = await this.prisma.group.findUnique({
+    const group = await this.prisma.group.findUnique({
       where: { name: createGroupDto.name },
     });
-    if (team) {
+    if (group) {
       throw new HttpException(
         `${createGroupDto.name} 已被注册！`,
         HttpStatus.CONFLICT,
@@ -56,7 +56,11 @@ export class GroupService {
       throw new HttpException('你已加入此群', HttpStatus.CONFLICT);
     }
     const isApply = await this.prisma.message.findFirst({
-      where: { senderId: id, receiverId: group.leaderId },
+      where: {
+        senderId: id,
+        receiverId: group.leaderId,
+        type: MessageType.ApplyGroup,
+      },
     });
     if (isApply) {
       const str =
@@ -69,6 +73,9 @@ export class GroupService {
       data: {
         senderId: id,
         receiverId: group.leaderId,
+        thirdPartyId: group.id,
+        groupName: group.name,
+        groupAvatar: group.avatar,
         type: MessageType.ApplyGroup,
       },
     });

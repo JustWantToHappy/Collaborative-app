@@ -19,6 +19,7 @@ const content = (
 );
 export default function Index() {
   const { pathname } = useLocation();
+  const prePathname = React.useRef<string>(pathname);
   const navigate = useNavigate();
   const [socket, setSocket] = React.useState<Socket>();
   const [showLogin, setShowLogin] = React.useState(false);
@@ -27,31 +28,34 @@ export default function Index() {
     setShowLogin(false);
   };
 
+  React.useEffect(() => {
+    if (pathname !== prePathname.current) {
+      prePathname.current = pathname;
+    }
+  }, [pathname]);
   //进行路由权限处理
   React.useLayoutEffect(() => {
     const login = isLogin();
     if (!login) {
       navigate('/');
+    } else if (login && pathname === '/' && prePathname.current !== pathname) {
+      navigate(prePathname.current);
+    } else if (login && pathname === '/' && prePathname.current === '/') {
+      navigate('/chat', { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, pathname]);
 
-  React.useLayoutEffect(() => {
-    const login = isLogin();
-    if (login) {
-      navigate('/chat');
-    }
-  }, []);
 
-/*  React.useEffect(() => {
-    const socket = io(Config.ServerUrl + '/chat/group-1');
-    setSocket(socket);
-    socket.on('disconnect', () => {
-      console.log(socket.id);
-    });
-    return function () {
-      socket.disconnect();
-    };
-  }, []);*/
+  /*  React.useEffect(() => {
+      const socket = io(Config.ServerUrl + '/chat/group-1');
+      setSocket(socket);
+      socket.on('disconnect', () => {
+        console.log(socket.id);
+      });
+      return function () {
+        socket.disconnect();
+      };
+    }, []);*/
 
   if (pathname === '/') {
     return <StyleDiv>

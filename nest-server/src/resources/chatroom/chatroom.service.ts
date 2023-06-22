@@ -19,7 +19,6 @@ export class ChatroomService {
         },
       },
       include: {
-        UserFriend: true,
         Group: true,
         ChatRecords: {
           include: {
@@ -34,7 +33,6 @@ export class ChatroomService {
         },
       },
     });
-    console.info(result);
     return result;
   }
 
