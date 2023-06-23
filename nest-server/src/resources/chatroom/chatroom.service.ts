@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { MessageService } from '../message/message.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 
@@ -7,7 +8,7 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 export class ChatroomService {
   constructor(private readonly prisma: PrismaService) {}
   create(createChatroomDto: CreateChatroomDto) {
-    return 'This action adds a new chatroom';
+    return this.prisma.chatRoom.create({ data: createChatroomDto });
   }
 
   async findAll(id: string) {
@@ -17,18 +18,26 @@ export class ChatroomService {
         userIds: {
           contains: id,
         },
+        OR: [{ type: 'public' }, { NOT: { userId: id } }],
       },
-      include: {
+      select: {
+        id: true,
+        userIds: true,
+        type: true,
         Group: true,
-        ChatRecords: {
-          include: {
-            Messages: {
-              select: {
-                createdAt: true,
-              },
-              orderBy: { createdAt: 'desc' },
-              take: 1,
-            },
+        User: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        Messages: {
+          select: {
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
           },
         },
       },
@@ -36,15 +45,18 @@ export class ChatroomService {
     return result;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chatroom`;
+  findOne(id: string) {
+    return this.prisma.chatRoom.findUnique({ where: { id } });
   }
 
-  update(id: number, updateChatroomDto: UpdateChatroomDto) {
-    return `This action updates a #${id} chatroom`;
+  async updateByGroupId(id: string, updateChatroomDto: UpdateChatroomDto) {
+    await this.prisma.chatRoom.update({
+      where: { groupId: id },
+      data: updateChatroomDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chatroom`;
+  remove(id: string) {
+    return this.prisma.chatRoom.delete({ where: { id } });
   }
 }

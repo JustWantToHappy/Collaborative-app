@@ -9,6 +9,11 @@ export class MessageController {
   findAllPending(@Request() request) {
     return this.messageService.findAllPending(request.user.id);
   }
+  @Get(':chatRoomId')
+  findChatRoomMessages(@Param() chatRoomId: string) {
+    return this.messageService.findChatRoomMessages(chatRoomId);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

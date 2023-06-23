@@ -1,4 +1,4 @@
-export type Team=Partial<{
+export type Group=Partial<{
   id: number;
   leader_id: number;
   name: string;

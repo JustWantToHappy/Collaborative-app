@@ -24,7 +24,7 @@ model User {
   RePorts        Report[]
   Approvals      Approval[]
   Friends        Friend[]
-  ChatRecords    ChatRecord[]
+  ChatRoom       ChatRoom? //限制一个用户对应一个聊天室，用于私聊
 }
 
 model Friend {
@@ -40,46 +40,38 @@ model Group {
   avatar      String?   @default("")
   description String    @default("")
   createdAt   DateTime  @default(now())
-  ChatRoom    ChatRoom? //限制一个团队只有一个聊天室
+  ChatRoom    ChatRoom? //限制一个团队对应一个聊天室，用于群聊
 }
 
 model ChatRoom {
-  id          String       @id @default(uuid())
-  userIds     String       @db.Text //用户id,逗号隔开
-  name        String       @default("")
-  ChatRecords ChatRecord[]
-  Group       Group        @relation(fields: [groupId], references: [id])
-  groupId     String       @unique
-}
-
-model ChatRecord {
-  id         String    @id @default(uuid())
-  //用来区分群聊还是私聊
-  type       String    @default("private")
-  ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
-  chatRoomId String?
-  Messages   Message[]
-  User       User?     @relation(fields: [userId], references: [id])
-  userId     String?
+  id       String    @id @default(uuid())
+  userIds  String    @db.Text //用户id,逗号隔开
+  name     String    @default("")
+  type     String    @default("private")
+  Group    Group?    @relation(fields: [groupId], references: [id])
+  groupId  String?   @unique
+  Messages Message[]
+  User     User?     @relation(fields: [userId], references: [id])
+  userId   String?   @unique
 }
 
 model Message {
-  id           String      @id @default(uuid())
+  id           String    @id @default(uuid())
   senderId     String
   receiverId   String
   thirdPartyId String?
   groupName    String?
   groupAvatar  String?
-  text         String?     @db.Text
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @default(now())
-  type         String      @default("chat") //消息类型，有聊天，好友邀请，群邀请,申请好友，申请加群等
-  state        String      @default("pending") //pending|agree|reject
-  fileType     String      @default("text")
+  text         String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
+  type         String    @default("chat") //消息类型，有聊天，好友邀请，群邀请,申请好友，申请加群等
+  state        String    @default("pending") //pending|agree|reject
+  fileType     String    @default("text")
   image        Image?
-  isread       Int         @default(0) //0表示未读，1表示已读
-  ChatRecord   ChatRecord? @relation(fields: [chatRecordId], references: [id])
-  chatRecordId String?
+  isread       Int       @default(0) //0表示未读，1表示已读
+  ChatRoom     ChatRoom? @relation(fields: [chatRoomId], references: [id])
+  chatRoomId   String?
 }
 
 model Image {

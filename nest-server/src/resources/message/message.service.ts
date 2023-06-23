@@ -4,10 +4,15 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageType, State } from 'src/common/enum';
 import { Message } from '@prisma/client';
-
+import { GroupService } from '../group/group.service';
+import { ChatroomService } from '../chatroom/chatroom.service';
 @Injectable()
 export class MessageService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly groupService: GroupService,
+    private readonly chatroomService: ChatroomService,
+  ) {}
   async create(createMessageDto: CreateMessageDto) {
     await this.prisma.message.create({ data: createMessageDto });
   }
@@ -54,15 +59,10 @@ export class MessageService {
   }
 
   async handleApplyGroup(message: Message) {
-    const group = await this.prisma.group.findUnique({
-      where: { id: message.thirdPartyId },
-    });
-    const chatroom = await this.prisma.chatRoom.findUnique({
-      where: { groupId: group.id },
-    });
-    await this.prisma.chatRoom.update({
-      where: { groupId: group.id },
-      data: { userIds: chatroom.userIds + `,${message.senderId}` },
+    const group = await this.groupService.findOne(message.thirdPartyId);
+    const chatroom = await this.chatroomService.findOne(group.id);
+    await this.chatroomService.updateByGroupId(group.id, {
+      userIds: chatroom.userIds + `,${message.senderId}`,
     });
   }
 
@@ -97,9 +97,22 @@ export class MessageService {
         },
       });
     }
+    //创建私聊聊天室
+    await this.chatroomService.create({
+      userId: message.senderId,
+      userIds: `${message.senderId},${message.receiverId}`,
+      type: 'private',
+    });
+    await this.chatroomService.create({
+      userId: message.receiverId,
+      userIds: `${message.receiverId},${message.senderId}`,
+      type: 'private',
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  findChatRoomMessages(chatRoomId: string) {
+    return this.prisma.message.findMany({
+      where: { chatRoomId, state: State.Agree, type: MessageType.Chat },
+    });
   }
 }

@@ -24,6 +24,7 @@ export class GroupService {
         ChatRoom: {
           create: {
             userIds: createGroupDto.leaderId + '',
+            type: 'public',
           },
         },
       },
@@ -39,6 +40,9 @@ export class GroupService {
     return [];
   }
 
+  findOne(id: string) {
+    return this.prisma.group.findUnique({ where: { id } });
+  }
   update(id: number, updateGroupDto: UpdateGroupDto) {
     return `This action updates a #${id} group`;
   }

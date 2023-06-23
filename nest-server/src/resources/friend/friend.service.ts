@@ -32,6 +32,10 @@ export class FriendService {
     return '邀请成功！';
   }
 
+  findOne(userId: string) {
+    return this.prisma.friend.findUnique({ where: { userId } });
+  }
+
   async findAll(id: string) {}
 
   async invitedInfo(id: string) {

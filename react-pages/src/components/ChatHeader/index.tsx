@@ -2,7 +2,7 @@ import React from 'react';
 import StyleDiv from './style';
 import UploadImg from '@/components/UploadImg';
 import { buildGroup } from '@/api';
-import type { Team } from '@/types';
+import type { Group } from '@/types';
 import { defaultCssStyles } from '@/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Form, Input, Modal, message } from 'antd';
@@ -27,7 +27,7 @@ export default function Index() {
 
   const setImgFile = (file: UploadFile) => setFile(file);
 
-  const onBuildGroup = async (values: Team) => {
+  const onBuildGroup = async (values: Group) => {
     const formData = new FormData();
     formData.append('file', file as RcFile);
     formData.set('avatar', '');

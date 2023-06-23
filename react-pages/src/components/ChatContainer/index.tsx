@@ -1,13 +1,17 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
+import { useLocation } from 'react-router-dom';
 import UploadImg from '@/components/UploadImg';
 import { Avatar, Button, Input } from 'antd';
+import type { Message } from '@/types';
 
 
 export default function Index() {
-  const [asideWidth, setAsideWidth] = React.useState('18rem');
   const [open, setOpen] = React.useState(false);
+  const { pathname } = useLocation();
+  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [asideWidth, setAsideWidth] = React.useState('18rem');
 
   const showDrawer = () => setOpen(true);
 
@@ -15,8 +19,11 @@ export default function Index() {
 
   React.useEffect(() => {
     (async function () {
-      
+      //获取聊天记录
     })();
+  }, [pathname]);
+
+  React.useEffect(() => {
     const token = PubSub.subscribe('asideWidth',
       (_, asideWidth: string) => {
         setAsideWidth(asideWidth);
