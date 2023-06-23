@@ -2,7 +2,7 @@ import React from 'react';
 import StyleDiv from './style';
 import { getAllChatRoom } from '@/api';
 import { defaultCssStyles } from '@/utils';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import type { ChatRoom } from '@/types';
 import { Avatar, Badge, Button, Popover, message } from 'antd';
 import { EllipsisOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
@@ -15,10 +15,10 @@ type IProps = {
 
 export default function Index(props: IProps) {
   const { wide, changeWide } = props;
+  const { id } = useParams();
   const [chatrooms, setChatRooms] = React.useState<ChatRoom[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
-  const [active, setActive] = React.useState('');
-
+  const [active, setActive] = React.useState(id);
 
   React.useEffect(() => {
     (async function () {
