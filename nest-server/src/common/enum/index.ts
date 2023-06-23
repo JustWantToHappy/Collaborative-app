@@ -22,11 +22,9 @@ export enum Role {
 }
 //聊天指令
 export enum Chat {
-  Group_Join = 'group join',
-  Group_Message = 'group message',
-  Group_Leave = 'group leave',
-  Private_Join = 'private join',
-  Private_Leave = 'private leave',
+  Join = 'join',
+  Leave = 'leave',
+  Message = 'message',
 }
 //聊天类型
 export enum FileType {

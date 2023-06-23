@@ -7,17 +7,15 @@ export enum Role{
   Admin='Admin'
 }
 
-
-
 export enum Config{
   ServerUrl='http://localhost:8080',
 }
 
+//聊天指令
 export enum Chat {
-  Group_Join = 'group join',
-  Group_Message = 'group message',
-  Group_Leave = 'group leave',
-  Private_Chat = 'private chat',
+  Join = 'join',
+  Leave = 'leave',
+  Message = 'message',
 }
 
 //聊天类型
@@ -32,4 +30,10 @@ export enum State {
   Pending = 'pending',
   Agree = 'agree',
   Reject = 'reject',
+}
+
+//聊天类型
+export enum FileType {
+  Text = 'text',
+  Image = 'image',
 }

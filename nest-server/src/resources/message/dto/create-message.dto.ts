@@ -11,6 +11,10 @@ export class CreateMessageDto {
 
   @IsString()
   @Optional()
+  text?: string;
+
+  @IsString()
+  @Optional()
   thirdPartyId?: string;
 
   @IsString()
@@ -28,4 +32,8 @@ export class CreateMessageDto {
   @IsString()
   @Optional()
   type?: string;
+
+  @IsString()
+  @Optional()
+  chatRoomId?: string;
 }

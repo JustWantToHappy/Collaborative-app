@@ -7,7 +7,7 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
   margin:1rem auto;
   margin-bottom:calc(var(--chat-tool-height) + 2rem);
   padding:0 1rem;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   
   p{
     margin:0;
@@ -36,7 +36,6 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
   }
   
   .chat_record{
-    
     &_userInfo{
       margin:1rem;
       li{
@@ -47,7 +46,12 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
     }
 
     &_content{
-      max-width:50vw;
+      @media screen and (max-width:900px) {
+        width:40vw;
+      }
+      @media screen and (min-width:901px){
+        width:${props=>props.asideWidth==='18rem'?'50vw':'60vw'}; 
+      }
     }
 
     &_contentItem{

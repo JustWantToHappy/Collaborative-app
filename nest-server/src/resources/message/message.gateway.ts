@@ -22,10 +22,10 @@ export class MessageGateway {
   /**
    * 根据用户id获取当前用户的实时通知
    */
-  @SubscribeMessage('fetchMessage')
-  async fetchMessage(@MessageBody() id: string) {
+  @SubscribeMessage('fetchNotify')
+  async fetchNotify(@MessageBody() id: string) {
     const messages = await this.messageService.findAllPending(id);
-    this.ws.emit(`${id}fetchMessage`, messages);
+    this.ws.emit(`${id}fetchNotify`, messages);
   }
   /**
    * 获取用户最新的聊天列表

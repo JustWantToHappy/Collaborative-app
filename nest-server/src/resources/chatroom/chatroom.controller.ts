@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Request,
+  Query,
 } from '@nestjs/common';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
@@ -29,6 +30,11 @@ export class ChatroomController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.chatroomService.findOne(id);
+  }
+
+  @Get()
+  findChatRecordsByChatRoomId(@Query() query: { id: string }) {
+    return this.chatroomService.findChatRecordsByChatRoomId(query?.id);
   }
 
   @Delete(':id')

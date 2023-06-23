@@ -25,7 +25,7 @@ export default function Index() {
       { email, id: userInfo.id },
       (data: { msg: string, receiverId: string }) => {
         messageApi.info({ content: data?.msg });
-        PubSub.publish('fetchMessage', data?.receiverId);
+        PubSub.publish('fetchNotify', data?.receiverId);
         setEmail('');
       });
   };
@@ -33,7 +33,7 @@ export default function Index() {
   const joinGroup = async () => {
     const { statusCode, msg, data: leaderId } = await applyJoinGroup(group);
     if (statusCode === 200) {
-      PubSub.publish('fetchMessage', leaderId);
+      PubSub.publish('fetchNotify', leaderId);
       messageApi.success({ content: '申请成功!' });
       setGroup('');
     } else {

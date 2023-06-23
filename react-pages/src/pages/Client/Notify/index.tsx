@@ -22,7 +22,7 @@ export default function Index() {
     const { statusCode, msg, data } = await updateMessage(id, { state });
     if (statusCode === 200) {
       setMessages(data as Message[]);
-      PubSub.publish('notify', data);
+      PubSub.publish('setNotify', data);
     } else {
       messageApi.error({ content: `${statusCode} ${msg}` });
     }

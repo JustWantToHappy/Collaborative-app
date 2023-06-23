@@ -1,3 +1,4 @@
+import { FileType } from '@/enum';
 import type { Group } from './group';
 import type { User } from './user';
 
@@ -7,4 +8,15 @@ export type ChatRoom = {
   type: string;
   User?: User,
   Group?:Group
+}
+
+export type ChatRecord = {
+  name: string;
+  avatar: string;
+  senderId: string;
+  receiverId: string;
+  text: string;
+  fileType: FileType;
+  chatRoomId: string;
+  createdAt: Date;
 }

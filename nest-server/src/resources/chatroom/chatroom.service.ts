@@ -1,6 +1,6 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { MessageType } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { MessageService } from '../message/message.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 
@@ -9,6 +9,10 @@ export class ChatroomService {
   constructor(private readonly prisma: PrismaService) {}
   create(createChatroomDto: CreateChatroomDto) {
     return this.prisma.chatRoom.create({ data: createChatroomDto });
+  }
+
+  findOne(id: string) {
+    return this.prisma.chatRoom.findUnique({ where: { id } });
   }
 
   async findAll(id: string) {
@@ -45,8 +49,21 @@ export class ChatroomService {
     return result;
   }
 
-  findOne(id: string) {
-    return this.prisma.chatRoom.findUnique({ where: { id } });
+  findAllChatRoomId(userId: string) {
+    return this.prisma.chatRoom.findMany({
+      select: { id: true },
+      where: { userIds: { contains: userId } },
+    });
+  }
+
+  async findChatRecordsByChatRoomId(id: string) {
+    const result = await this.prisma.$queryRaw`
+      select user.name,user.avatar,senderId,receiverId,chatRoomId,text,fileType
+      from message inner join user on message.senderId=user.id
+      where type=${MessageType.Chat} and chatRoomId=${id} 
+      orderBy message.createdAt asc
+    `;
+    return result;
   }
 
   async updateByGroupId(id: string, updateChatroomDto: UpdateChatroomDto) {

@@ -16,7 +16,7 @@ export default function Index() {
   const [socket] = React.useState(io(Config.ServerUrl + '/message'));
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const [messageApi, contextHolder] = message.useMessage();
-  const receiverEventName = `${userInfo.id}fetchMessage`;
+  const receiverEventName = `${userInfo.id}fetchNotify`;
 
   const onOpen = () => {
     if (messages.length > 0) {
@@ -35,27 +35,27 @@ export default function Index() {
         messageApi.error({ content: `${statusCode} ${msg}` });
       }
     })();
-    const fetchMessageToken = PubSub.subscribe('fetchMessage',
-      (_, receiverId: string) => {
-        socket.emit('fetchMessage', receiverId);
-      });
     socket.on(receiverEventName, (messages: Message[]) => {
       setMessages(messages);
     });
     return function () {
       socket.off(receiverEventName);
-      PubSub.unsubscribe(fetchMessageToken);
     };
   }, [socket, receiverEventName, messageApi]);
 
   React.useEffect(() => {
-    const token = PubSub.subscribe('notify', (_, newMessages: Message[]) => {
+    const fetchNotifyToken = PubSub.subscribe('fetchNotify',
+      (_, receiverId: string) => {
+        socket.emit('fetchNotify', receiverId);
+      });
+    const notifyToken = PubSub.subscribe('setNotify', (_, newMessages: Message[]) => {
       setMessages(newMessages);
     });
     return function () {
-      PubSub.unsubscribe(token);
+      PubSub.unsubscribe(fetchNotifyToken);
+      PubSub.unsubscribe(notifyToken);
     };
-  }, [messages]);
+  }, [messages, socket]);
 
   return (
     <StyleDiv>

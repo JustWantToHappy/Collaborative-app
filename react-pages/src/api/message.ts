@@ -8,3 +8,7 @@ export function getAllPendingMessages() {
 export function updateMessage(id:string,data:Partial<Message>) {
   return request.patch<Message[]>(`/message/${id}`,data);
 }
+
+export function uploadImg(formData:FormData) {
+  return request.post<string>('/message/uploadImg',formData,{ headers: { 'Content-Type': 'multipart/formdata' } });
+}

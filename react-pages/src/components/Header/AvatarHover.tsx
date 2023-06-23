@@ -24,7 +24,6 @@ export default function AvatarHover(props: Props) {
   const [show, setShow] = React.useState(false);
   const [file, setFile] = React.useState<UploadFile>();
   const [messageApi, contextHolder] = message.useMessage();
-  const [showFileList, setShowFileList] = React.useState(true);
   const [, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, '');
 
   const handleOpen = () => setShow(true);
@@ -115,7 +114,7 @@ export default function AvatarHover(props: Props) {
               manualUpload={true}
               setFile={setImgFile}
               showUploadList={true}
-              showFileList={showFileList}
+              showFileList={true}
               action='' />
           </Form.Item>
         </Form>

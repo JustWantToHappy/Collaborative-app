@@ -1,4 +1,17 @@
-import { Body, Controller, Get, Param, Patch, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/config/upload-img.config';
+//import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageService } from './message.service';
 
@@ -21,5 +34,11 @@ export class MessageController {
     @Body() body: UpdateMessageDto,
   ) {
     return this.messageService.update(id, request.user.id, body);
+  }
+
+  @Post('uploadImg')
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  uploadImg(@UploadedFile() file: Express.Multer.File) {
+    return file.path;
   }
 }

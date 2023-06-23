@@ -13,8 +13,8 @@ export class MessageService {
     private readonly groupService: GroupService,
     private readonly chatroomService: ChatroomService,
   ) {}
-  async create(createMessageDto: CreateMessageDto) {
-    await this.prisma.message.create({ data: createMessageDto });
+  create(createMessageDto: CreateMessageDto) {
+    return this.prisma.message.create({ data: createMessageDto });
   }
 
   findAllPending(id: string) {

@@ -1,15 +1,11 @@
 import React from 'react';
 import { isLogin } from '@/utils';
-import { Config } from '@/enum';
 import StyleDiv from './style';
 import Login from '@/components/Login';
 import Header from '@/components/Header';
 import { Button, Popover } from 'antd';
-import { io } from 'socket.io-client';
 import LogoSvg from '@/assets/logo/logo.svg';
-import type { Socket } from 'socket.io-client';
 import GitHubSvg from '@/assets/logo/github.svg';
-import { Chat } from '@/enum';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 
 const content = (
@@ -21,7 +17,6 @@ export default function Index() {
   const { pathname } = useLocation();
   const prePathname = React.useRef<string>(pathname);
   const navigate = useNavigate();
-  const [socket, setSocket] = React.useState<Socket>();
   const [showLogin, setShowLogin] = React.useState(false);
 
   const handleLoginCancel = () => {
@@ -45,31 +40,10 @@ export default function Index() {
     }
   }, [navigate, pathname]);
 
-
-  /*  React.useEffect(() => {
-      const socket = io(Config.ServerUrl + '/chat/group-1');
-      setSocket(socket);
-      socket.on('disconnect', () => {
-        console.log(socket.id);
-      });
-      return function () {
-        socket.disconnect();
-      };
-    }, []);*/
-
   if (pathname === '/') {
     return <StyleDiv>
       <header>
         <Link to='/' title=""> <img src={LogoSvg} /></Link>
-        {/* <Button onClick={() => {
-          socket && socket.emit(Chat.Group_Join, 'group 1');
-        }}>加入房间</Button>
-        <Button onClick={() => {
-          socket && socket.emit(Chat.Group_Message, '我是大傻逼');
-        }}>发送消息</Button>
-        <Button onClick={() => {
-          socket && socket.emit(Chat.Group_Leave, 'group 1');
-        }}>离开房间</Button>*/}
         <Button type="primary" onClick={() => setShowLogin(true)}>登录 / 注册</Button>
       </header>
       <main>

@@ -54,6 +54,7 @@ export default function Index(props: IProps) {
             <div className='chat_item_avatar'>
               <Avatar
                 size='large'
+                src={chatroom.Group?.avatar || chatroom.User?.avatar}
               />
             </div>
             <p>{chatroom.Group?.name || chatroom.User?.name}</p>
