@@ -79,6 +79,7 @@ export class ChatRoomGateway {
       const message = await this.messageService.create(createMessage);
       if (message) {
         const res: ChatrecordDto = Object.assign(body, {
+          id: message.id,
           name: user.name,
           avatar: user.avatar,
           createdAt: message.createdAt,

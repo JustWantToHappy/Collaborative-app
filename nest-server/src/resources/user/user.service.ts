@@ -28,6 +28,7 @@ export class UserService {
   }
 
   findOne(id: string) {
+    console.info(id, 'hhh');
     return this.prisma.user.findUnique({ where: { id } });
   }
 

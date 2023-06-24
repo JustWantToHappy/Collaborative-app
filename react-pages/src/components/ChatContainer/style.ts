@@ -59,7 +59,9 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
       margin-bottom:1rem;
       padding:1rem;
       border-radius: 5px;
-
+      img{
+        width:100%;
+      }
     }
   }
   .chat_record_tool{

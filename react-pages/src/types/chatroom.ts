@@ -11,6 +11,7 @@ export type ChatRoom = {
 }
 
 export type ChatRecord = {
+  id: string;
   name: string;
   avatar: string;
   senderId: string;

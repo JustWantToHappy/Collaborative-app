@@ -58,10 +58,10 @@ export class ChatroomService {
 
   async findChatRecordsByChatRoomId(id: string) {
     const result = await this.prisma.$queryRaw`
-      select user.name,user.avatar,senderId,receiverId,chatRoomId,text,fileType
+      select user.name,user.avatar,message.id,senderId,receiverId,chatRoomId,text,fileType
       from message inner join user on message.senderId=user.id
-      where type=${MessageType.Chat} and chatRoomId=${id} 
-      orderBy message.createdAt asc
+      where type=${MessageType.Chat} and chatRoomId=${id}
+      order by message.createdAt asc 
     `;
     return result;
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
-import { uploadImg } from '@/api';
+import { uploadImg, getChatRecordsByChatRoomId } from '@/api';
 import { useLocalStorage } from '@/hooks';
 import { Manager } from 'socket.io-client';
 import type { ChatRecord } from '@/types';
@@ -18,7 +18,7 @@ export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const [asideWidth, setAsideWidth] = React.useState('18rem');
-  const [chatRecords, setChatRecords] = React.useState([]);
+  const [chatRecords, setChatRecords] = React.useState<ChatRecord[]>([]);
   const [manager] = React.useState(new Manager(Config.ServerUrl));
 
   const showDrawer = () => setOpen(true);
@@ -38,7 +38,8 @@ export default function Index() {
     if (statusCode === 200) {
       manager.socket('/chatroom').emit(Chat.Message,
         {
-          userId: userInfo.id,
+          senderId: userInfo.id,
+          receiverId: userInfo.id,
           chatRoomId,
           text: data,
           fileType: FileType.Image
@@ -51,13 +52,18 @@ export default function Index() {
   };
 
   //获取聊天记录
-  const getMessages = async () => {
-    //
-  };
+  const getMessages = React.useCallback(async () => {
+    const { statusCode, data, msg } = await getChatRecordsByChatRoomId(chatRoomId as string);
+    if (statusCode === 200) {
+      setChatRecords(data || []);
+    } else {
+      messageApi.error(`${statusCode} ${msg}`);
+    }
+  }, [chatRoomId, messageApi]);
 
   React.useEffect(() => {
     getMessages();
-  }, [chatRoomId]);
+  }, [getMessages]);
 
   React.useEffect(() => {
     const asideWidthToken = PubSub.subscribe('asideWidth',
@@ -67,14 +73,15 @@ export default function Index() {
     const fetchChatRecordToken = PubSub.subscribe('fetchChatRecord',
       (_, data: ChatRecord) => {
         if (data.chatRoomId === chatRoomId) {
-          console.info(data);
+          chatRecords?.push(data);
+          setChatRecords([...chatRecords]);
         }
       });
     return function () {
       PubSub.unsubscribe(asideWidthToken);
       PubSub.unsubscribe(fetchChatRecordToken);
     };
-  }, [chatRoomId]);
+  }, [chatRoomId, chatRecords]);
 
   return (
     <StyleDiv asideWidth={asideWidth}>
@@ -84,22 +91,21 @@ export default function Index() {
         <small>成员列表</small>
       </div>
       <div className='chat_record'>
-        {
-          new Array(10).fill(1).map((_, index) =>
-            <ul key={index} className='chat_record_userInfo'>
-              <li>
-                <Avatar size='large' />
-                <div className='chat_record_content'>
-                  <p
-                    style={{ backgroundColor: index === 1 ? '#C7F0DF' : '' }}
-                    className='chat_record_contentItem'
-                  >
-                    我们开始白那样dfsdfsddsfsdfsdfsdsfdsfdsfsdffdsfsdfdsfdsfsdfsddssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssdsffs
-                  </p>
-                </div>
-              </li>
-            </ul>
-          )}
+        {chatRecords.map(chatRecord => <ul key={chatRecord.id} className='chat_record_userInfo'>
+          <li>
+            <Avatar size='large' src={`/api/${chatRecord.avatar}`} />
+            <div className='chat_record_content'>
+              <p
+                style={{ backgroundColor: userInfo.id === chatRecord.senderId ? '#C7F0DF' : '' }}
+                className='chat_record_contentItem'
+              >
+                {chatRecord.fileType === FileType.Image ?
+                  <img src={`/api/${chatRecord.text}`} /> :
+                  <span>{chatRecord.text}</span>}
+              </p>
+            </div>
+          </li>
+        </ul>)}
       </div>
       <div className='chat_record_tool'>
         <div style={{ flex: '1' }}><Input /></div>

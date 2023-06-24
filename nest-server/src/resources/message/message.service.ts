@@ -60,7 +60,9 @@ export class MessageService {
 
   async handleApplyGroup(message: Message) {
     const group = await this.groupService.findOne(message.thirdPartyId);
-    const chatroom = await this.chatroomService.findOne(group.id);
+    const chatroom = await this.prisma.chatRoom.findUnique({
+      where: { groupId: group.id },
+    });
     await this.chatroomService.updateByGroupId(group.id, {
       userIds: chatroom.userIds + `,${message.senderId}`,
     });

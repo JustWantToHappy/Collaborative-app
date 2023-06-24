@@ -32,9 +32,9 @@ export class ChatroomController {
     return this.chatroomService.findOne(id);
   }
 
-  @Get()
-  findChatRecordsByChatRoomId(@Query() query: { id: string }) {
-    return this.chatroomService.findChatRecordsByChatRoomId(query?.id);
+  @Get('records/:id')
+  findChatRecordsByChatRoomId(@Param('id') id: string) {
+    return this.chatroomService.findChatRecordsByChatRoomId(id);
   }
 
   @Delete(':id')

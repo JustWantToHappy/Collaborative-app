@@ -24,7 +24,6 @@ export default function Index(props: IProps) {
     (async function () {
       const { statusCode, msg, data } = await getAllChatRoom();
       if (statusCode === 200) {
-        console.info(data, 'hh');
         setChatRooms(data || []);
       } else {
         messageApi.error({ content: `${statusCode} ${msg}` });
