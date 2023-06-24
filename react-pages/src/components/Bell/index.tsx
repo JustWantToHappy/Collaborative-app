@@ -1,14 +1,15 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import PubSub from 'pubsub-js';
 import StyleDiv from './style';
+import { Badge, message } from 'antd';
+import { useDebouce } from '@/hooks';
 import type { Message } from '@/types';
 import { io } from 'socket.io-client';
 import { useLocalStorage } from '@/hooks';
 import { getAllPendingMessages } from '@/api';
 import { Config, LocalStorageKey } from '@/enum';
 import { BellFilled } from '@ant-design/icons';
-import PubSub from 'pubsub-js';
-import { Badge, message } from 'antd';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function Index() {
   const navigate = useNavigate();
@@ -18,13 +19,15 @@ export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const receiverEventName = `${userInfo.id}fetchNotify`;
 
-  const onOpen = () => {
+  const onOpen = useDebouce((event: React.MouseEvent) => {
+    console.info(event);
+    event.preventDefault();
     if (messages.length > 0) {
       navigate('/chat/notify', { state: messages });
     } else {
       messageApi.warning({ content: '暂无通知' });
     }
-  };
+  }, 500);
 
   React.useEffect(() => {
     (async () => {
@@ -61,7 +64,9 @@ export default function Index() {
     <StyleDiv>
       {contextHolder}
       <Badge count={messages.length} size='small'>
-        <BellFilled className='bell' onClick={onOpen} />
+        <NavLink to='/chat/notify' onClick={onOpen}>
+          <BellFilled className='bell' />
+        </NavLink>
       </Badge>
     </StyleDiv >
   );

@@ -47,6 +47,7 @@ const StyleDiv = styled('div')<Props>`
 
     &_item{
       display: ${props=>props.wide?'grid':'flex'};
+      justify-content: center;
       grid-template-columns: repeat(4,1fr);
       position: relative;
       padding:.5rem 1rem;
@@ -78,12 +79,6 @@ const StyleDiv = styled('div')<Props>`
         display: ${props=>props.wide?'block':'none'};
       }
 
-      &_infoCount{
-        position:absolute;
-        bottom:.5rem;
-        right:0;
-      }
-
       &:hover{
         background-color: var(--ab-grey-200);
         cursor: pointer;
@@ -95,7 +90,7 @@ const StyleDiv = styled('div')<Props>`
         position: absolute;
         z-index:1000;
         bottom:.5rem;
-        right:2.5rem;
+        right:.5rem;
         display: none;
       }
     }

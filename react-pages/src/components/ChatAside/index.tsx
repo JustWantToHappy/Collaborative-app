@@ -52,17 +52,16 @@ export default function Index(props: IProps) {
             style={active === chatroom.id ? { backgroundColor: defaultCssStyles.colorPrimary } : {}}
           >
             <div className='chat_item_avatar'>
-              <Avatar
-                size='large'
-                src={chatroom.Group?.avatar || chatroom.User?.avatar}
-              />
+              <Badge count={0} size='small'>
+                <Avatar
+                  size='large'
+                  src={`/api/${chatroom.Group?.avatar || chatroom.User?.avatar}`}
+                />
+              </Badge>
             </div>
             <p>{chatroom.Group?.name || chatroom.User?.name}</p>
             <p>登录操作通知</p>
             <small className='chat_item_date'>{chatroom.Group?.create_at}</small>
-            <small className='chat_item_infoCount'>
-              {/*<Badge count={12} />*/}
-            </small>
             <span>
               <Popover
                 placement="top"

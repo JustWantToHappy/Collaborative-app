@@ -14,7 +14,7 @@ const StyleDiv = styled('div') <Props>`
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
   @media screen and (max-width:900px) {
-    min-width:300px;
+    min-width:320px;
   }
   @media screen and (min-width:901px){
     width:${props => props.asideWidth === '18rem' ? '60vw' : '70vw'}; 
@@ -48,6 +48,7 @@ const StyleDiv = styled('div') <Props>`
         grid-template-columns: auto 1fr;
         column-gap:1rem;
         margin-bottom: 3rem;
+        overflow: hidden;
       }
 
     }
@@ -59,26 +60,37 @@ const StyleDiv = styled('div') <Props>`
       letter-spacing: 1px;
       font-size:.9rem;
 
-      img{
-        @media screen and (max-width:900px) {
-          width:100%;
-        }
-        @media screen and (min-width:901px){
-          width:60%;
-        }
+      &>img{
+        height:250px;
+        max-width: 100%;
+        object-fit: cover;
         background-color: var(--ab-grey-100);
-        padding:2rem 1rem;
         border-radius: 5px;
+        padding:2rem 1rem;
       }
-      span{
+      &>span{
         display: inline-block;
         background-color: var(--ab-grey-100);
         padding:1rem;
         border-radius: 5px;
       }
     }
-    .highlight>*{
-      background:var(--ab-green-200);
+    &_contentHeader{
+      h4{
+        margin:0;
+      }
+      display: flex;
+      column-gap: 1rem;
+      margin-bottom: 5px;
+      align-items: center;
+    }
+    .highlight{
+      &>img{
+        background:var(--ab-green-200);
+      }
+      &>span{
+        background:var(--ab-green-200);
+      }
     }
   }
   /*  */

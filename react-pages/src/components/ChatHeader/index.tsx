@@ -5,7 +5,7 @@ import { buildGroup } from '@/api';
 import type { Group } from '@/types';
 import { defaultCssStyles } from '@/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Form, Input, Modal, message } from 'antd';
+import { Button, Form, Input, Modal, message, Space, Badge } from 'antd';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 
@@ -51,6 +51,11 @@ export default function Index() {
 
   return <StyleDiv>
     {contextHolder}
+    <Space style={{ left: '2rem' }}>
+      <Badge status="success" />
+      <Badge color='blue' />
+      <Badge status="warning" />
+    </Space>
     <div>
       <Button
         type='link'

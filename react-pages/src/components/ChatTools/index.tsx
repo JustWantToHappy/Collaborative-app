@@ -45,7 +45,6 @@ export default function Index() {
     <StyleDiv >
       {contextHolder}
       <div>
-        <h3>我要加好友</h3>
         <div className='apply_friend'>
           <Input
             style={{ width: '30vw' }}
@@ -62,7 +61,6 @@ export default function Index() {
         </div>
       </div>
       <div >
-        <h3>我要加群</h3>
         <div className='apply_team'>
           <Input
             placeholder='请输入群名称'

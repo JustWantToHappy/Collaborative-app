@@ -23,8 +23,8 @@ const Index: React.FC<Props> = (props) => {
   const beforeUpload = (file: UploadFile) => {
     if (!file?.size) return false;
     const fileExtName = path.extname(file.name);
-    if (!fileExtName.match(/\.(jpg|jpeg|png|gif)$/)) {
-      messageApi.error('上传的图片格式必须是jpg、jpeg、png、gif');
+    if (!fileExtName.match(/\.(jpg|jpeg|png|gif|ico)$/)) {
+      messageApi.error('上传的图片格式必须是jpg、jpeg、png、gif、ico');
       return false;
     }
 

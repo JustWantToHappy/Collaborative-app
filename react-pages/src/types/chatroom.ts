@@ -19,5 +19,5 @@ export type ChatRecord = {
   text: string;
   fileType: FileType;
   chatRoomId: string;
-  createdAt: Date;
+  createdAt: string;
 }

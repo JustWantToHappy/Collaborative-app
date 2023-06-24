@@ -72,6 +72,12 @@ export class ChatRoomGateway {
     const user = await this.userService.findOne(body.senderId);
     const chatroom = await this.chatRoomService.findOne(body?.chatRoomId);
     if (chatroom) {
+      chatroom.type === 'private' &&
+        (function () {
+          const userIds = chatroom.userIds.split(',');
+          body.receiverId =
+            userIds[0] === body.senderId ? userIds[1] : userIds[0];
+        })();
       const createMessage: CreateMessageDto = {
         ...body,
         state: State.Agree,

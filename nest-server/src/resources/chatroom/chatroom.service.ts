@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MessageType } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from '../user/user.service';
@@ -20,10 +20,6 @@ export class ChatroomService {
   }
 
   async findAll(id: string) {
-    const user = await this.userService.findOne(id);
-    if (!user) {
-      throw new HttpException(`用户${id}不存在`, HttpStatus.NOT_FOUND);
-    }
     //通过模糊匹配查询出用户所在的所有聊天室
     let result = await this.prisma.chatRoom.findMany({
       where: {
@@ -33,6 +29,7 @@ export class ChatroomService {
       },
       select: {
         id: true,
+        userId: true,
         userIds: true,
         type: true,
         Group: true,
@@ -57,16 +54,22 @@ export class ChatroomService {
         },
       },
     });
-    result = result.map((value) => {
-      if (value.User && value.User.id !== id) {
-        value.User = {
-          id,
-          avatar: user.avatar,
-          name: user.name,
-        };
-      }
-      return value;
-    });
+    result = await Promise.all(
+      result.map(async (value) => {
+        if (value.User) {
+          const userIds = value.userIds.split(',');
+          const receiverId = userIds[0] === id ? userIds[1] : userIds[0];
+          const receiver = await this.userService.findOne(receiverId);
+          value.User = {
+            id: receiver.id,
+            name: receiver.name,
+            avatar: receiver.avatar,
+          };
+        }
+        return value;
+      }),
+    );
+    console.info(result);
     //按照时间顺序对聊天列表进行排序
     result.sort((a: any, b: any) => {
       return b.Messages[0]?.createdAt - a.Messages[0]?.createdAt;
@@ -83,7 +86,7 @@ export class ChatroomService {
 
   async findChatRecordsByChatRoomId(id: string) {
     const result = await this.prisma.$queryRaw`
-      select user.name,user.avatar,message.id,senderId,receiverId,chatRoomId,text,fileType
+      select user.name,user.avatar,message.id,senderId,receiverId,chatRoomId,text,fileType,message.createdAt
       from message inner join user on message.senderId=user.id
       where type=${MessageType.Chat} and chatRoomId=${id}
       order by message.createdAt asc 
