@@ -11,13 +11,7 @@ module.exports = {
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   plugins: ['react-refresh'],
   rules: {
-    /**
-     * 如果一个文件的默认导出不是React组件类或者函数，或者它同时导出
-     * 其他内容，就会发出一个警告。
-     * "off"或者0表示关闭本条规则检测
-     * "warn"或者1表示开启规则检测，使用警告级别的错误(不会导致程序退出)
-     * "error"或者2表示开启规则，使用错误级别的错误(当被触发的时候，程序就会退出。)
-     */
+    '@typescript-eslint/no-explicit-any': 'off',
     'react-refresh/only-export-components': 'warn',
     quotes: ['error', 'single', { allowTemplateLiterals: true }],
     //行尾加上分号

@@ -2,7 +2,6 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
 import { Badge, message } from 'antd';
-import { useDebouce } from '@/hooks';
 import type { Message } from '@/types';
 import { io } from 'socket.io-client';
 import { useLocalStorage } from '@/hooks';
@@ -19,15 +18,14 @@ export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const receiverEventName = `${userInfo.id}fetchNotify`;
 
-  const onOpen = useDebouce((event: React.MouseEvent) => {
-    console.info(event);
+  const onOpen = (event: React.MouseEvent) => {
     event.preventDefault();
     if (messages.length > 0) {
       navigate('/chat/notify', { state: messages });
     } else {
       messageApi.warning({ content: '暂无通知' });
     }
-  }, 500);
+  };
 
   React.useEffect(() => {
     (async () => {
@@ -64,10 +62,10 @@ export default function Index() {
     <StyleDiv>
       {contextHolder}
       <Badge count={messages.length} size='small'>
-        <NavLink to='/chat/notify' onClick={onOpen}>
+        <NavLink to='/chat/notify' onClick={onOpen} >
           <BellFilled className='bell' />
         </NavLink>
       </Badge>
-    </StyleDiv >
+    </StyleDiv>
   );
 }

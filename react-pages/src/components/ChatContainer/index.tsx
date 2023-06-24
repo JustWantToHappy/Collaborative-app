@@ -2,7 +2,7 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
 import * as dayjs from 'dayjs';
-import { useLocalStorage } from '@/hooks';
+import { useLocalStorage, useDebouce } from '@/hooks';
 import { Manager } from 'socket.io-client';
 import type { ChatRecord } from '@/types';
 import UploadImg from '@/components/UploadImg';
@@ -29,7 +29,7 @@ export default function Index() {
   const onClose = () => setOpen(false);
 
   //发送文字
-  const sendText = async () => {
+  const sendText = useDebouce(() => {
     if (text === '') {
       messageApi.warning('请输入文字');
       return;
@@ -45,7 +45,7 @@ export default function Index() {
         messageApi.error(tip);
       });
     setText('');
-  };
+  }, 500);
 
   //发送图片
   const sendImgFile = async (file: UploadFile) => {
@@ -116,6 +116,9 @@ export default function Index() {
         <small>成员列表</small>
       </div>
       <div className='chat_record'>
+        <div style={{ textAlign: 'center', padding: '2rem', display: chatRecords.length === 0 ? 'block' : 'none' }}>
+          <small>暂无消息</small>
+        </div>
         {chatRecords.map(chatRecord => <ul key={chatRecord.id} className='chat_record_userInfo'>
           <li>
             <Avatar size='large' src={`/api/${chatRecord.avatar}`} />

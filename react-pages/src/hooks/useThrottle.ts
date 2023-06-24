@@ -7,8 +7,6 @@ type ThrottleCallback = (...args:any) => void;
 export function useThrottle(callback:ThrottleCallback,delay=100) {
   //记录上一次时间戳
   const preTime = React.useRef(0);
-  //使用useRef保存函数可以callback的引用
-  const callbackRef=React.useRef(callback);
 
   React.useEffect(() => {
     preTime.current = Date.now();
@@ -20,9 +18,9 @@ export function useThrottle(callback:ThrottleCallback,delay=100) {
     }
     preTime.current = new Date().getTime();
     setTimeout(() => {
-      callbackRef.current(...args);
+      callback(...args);
     }, delay);
-  }, [delay]);
+  }, [delay,callback]);
 
   return throttledCallback;
 }   
