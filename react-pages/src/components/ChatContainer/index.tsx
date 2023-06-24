@@ -14,6 +14,7 @@ import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 export default function Index() {
   const { id: chatRoomId } = useParams();
+  const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
@@ -27,7 +28,16 @@ export default function Index() {
 
   //发送文字
   const sendText = async () => {
-    //
+    manager.socket('/chatroom').emit(Chat.Message,
+      {
+        senderId: userInfo.id,
+        receiverId: userInfo.id,
+        chatRoomId,
+        text,
+        fileType: FileType.Text
+      }, (tip: string) => {
+        messageApi.error(tip);
+      });
   };
 
   //发送图片
@@ -108,8 +118,10 @@ export default function Index() {
         </ul>)}
       </div>
       <div className='chat_record_tool'>
-        <div style={{ flex: '1' }}><Input /></div>
-        <Button type='primary' >发送</Button>
+        <div style={{ flex: '1' }}>
+          <Input placeholder='你想要说些什么...' onChange={e => setText(e.target.value)} allowClear />
+        </div>
+        <Button type='primary' onClick={sendText}>发送</Button>
         <UploadImg
           title='发送图片'
           action=''
