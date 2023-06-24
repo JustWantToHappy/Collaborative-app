@@ -15,14 +15,23 @@ export class FriendService {
     if (!user) {
       return `${email}不存在`;
     }
-    const message = await this.messageService.findOne(
+    const message1 = await this.messageService.findOne(
       id,
       user.id,
       MessageType.ApplyFriend,
       State.Pending,
     );
-    if (message) {
+    if (message1) {
       return '你已邀请此用户';
+    }
+    const message2 = await this.messageService.findOne(
+      user.id,
+      id,
+      MessageType.ApplyFriend,
+      State.Pending,
+    );
+    if (message2) {
+      return '对方已对你发出好友申请';
     }
     await this.messageService.create({
       senderId: id,

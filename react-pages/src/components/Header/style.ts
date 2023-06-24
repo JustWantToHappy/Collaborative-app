@@ -9,7 +9,6 @@ const StyleDiv = styled('div')`
   header{
     height:4rem;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    /*border-bottom: 1px solid var(--ab-grey-100);*/
     display: flex;
     align-items: center;
     padding:0  var(--ab-padding-x);
@@ -21,12 +20,10 @@ const StyleDiv = styled('div')`
       width:80%;
     }
     &>div{
-      position: absolute;
-      right:calc(var(--ab-padding-x) + 1rem);
       height:100%;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
     }
   }
   img{

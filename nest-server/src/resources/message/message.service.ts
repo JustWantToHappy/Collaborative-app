@@ -105,11 +105,6 @@ export class MessageService {
       userIds: `${message.senderId},${message.receiverId}`,
       type: 'private',
     });
-    await this.chatroomService.create({
-      userId: message.receiverId,
-      userIds: `${message.receiverId},${message.senderId}`,
-      type: 'private',
-    });
   }
 
   findChatRoomMessages(chatRoomId: string) {

@@ -8,6 +8,13 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
   margin-bottom:calc(var(--chat-tool-height) + 2rem);
   padding:0 1rem;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+  @media screen and (max-width:900px) {
+    min-width:300px;
+  }
+  @media screen and (min-width:901px){
+    width:${props=>props.asideWidth==='18rem'?'60vw':'70vw'}; 
+  }
   
   p{
     margin:0;
@@ -46,12 +53,7 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
     }
 
     &_content{
-      @media screen and (max-width:900px) {
-        width:40vw;
-      }
-      @media screen and (min-width:901px){
-        width:${props=>props.asideWidth==='18rem'?'50vw':'60vw'}; 
-      }
+      
     }
 
     &_contentItem{
@@ -60,7 +62,12 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
       padding:1rem;
       border-radius: 5px;
       img{
-        width:100%;
+        @media screen and (max-width:900px) {
+          width:100%;
+        }
+        @media screen and (min-width:901px){
+          width:60%;
+        }
       }
     }
   }

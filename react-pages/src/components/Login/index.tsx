@@ -93,7 +93,7 @@ const Index: React.FC<IProps> = (props) => {
         </Form.Item>}
 
         <Form.Item
-          label="邮箱地址"
+          label="邮箱"
           name="email"
           rules={[{ required: true, message: '请输入你的邮箱地址!' }]}
         >
