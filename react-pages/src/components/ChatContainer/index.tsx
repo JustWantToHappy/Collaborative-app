@@ -5,7 +5,7 @@ import { uploadImg, getChatRecordsByChatRoomId } from '@/api';
 import { useLocalStorage } from '@/hooks';
 import { Manager } from 'socket.io-client';
 import type { ChatRecord } from '@/types';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import UploadImg from '@/components/UploadImg';
 import { Avatar, Button, Input, message } from 'antd';
 import { Chat, Config, FileType, LocalStorageKey } from '@/enum';
@@ -13,6 +13,7 @@ import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 
 export default function Index() {
+  const { state } = useLocation();
   const { id: chatRoomId } = useParams();
   const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -93,27 +94,30 @@ export default function Index() {
     };
   }, [chatRoomId, chatRecords]);
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight });
+    }, 0);
+  }, [chatRoomId]);
+
   return (
     <StyleDiv asideWidth={asideWidth}>
       {contextHolder}
       <div className='chat_record_header'>
-        <h4>sb群</h4>
+        <h4>{state}</h4>
         <small>成员列表</small>
       </div>
       <div className='chat_record'>
         {chatRecords.map(chatRecord => <ul key={chatRecord.id} className='chat_record_userInfo'>
           <li>
             <Avatar size='large' src={`/api/${chatRecord.avatar}`} />
-            <div className='chat_record_content'>
-              <p
-                style={{ backgroundColor: userInfo.id === chatRecord.senderId ? '#C7F0DF' : '' }}
-                className='chat_record_contentItem'
-              >
-                {chatRecord.fileType === FileType.Image ?
-                  <img src={`/api/${chatRecord.text}`} /> :
-                  <span>{chatRecord.text}</span>}
-              </p>
-            </div>
+            <p
+              className={chatRecord.senderId === userInfo.id ? 'chat_record_content' : 'chat_record_content highlight'}
+            >
+              {chatRecord.fileType === FileType.Image ?
+                <img src={`/api/${chatRecord.text}`} /> :
+                <span>{chatRecord.text}</span>}
+            </p>
           </li>
         </ul>)}
       </div>

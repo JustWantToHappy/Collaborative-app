@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-const StyleDiv = styled('div')<{asideWidth:string}>`
+interface Props{
+  asideWidth:string
+}
+
+const StyleDiv = styled('div') <Props>`
   --chat-tool-height:4rem;
   --chat-aside-width:${props => props.asideWidth};
   border-radius: 1rem;
@@ -13,14 +17,7 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
     min-width:300px;
   }
   @media screen and (min-width:901px){
-    width:${props=>props.asideWidth==='18rem'?'60vw':'70vw'}; 
-  }
-  
-  p{
-    margin:0;
-    word-break: break-all;
-    letter-spacing: 1px;
-    font-size:.9rem;
+    width:${props => props.asideWidth === '18rem' ? '60vw' : '70vw'}; 
   }
   
   .chat_record_header{
@@ -45,22 +42,23 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
   .chat_record{
     &_userInfo{
       margin:1rem;
+
       li{
         display: grid;
         grid-template-columns: auto 1fr;
-        column-gap:2rem;
+        column-gap:1rem;
+        margin-bottom: 3rem;
       }
+
     }
 
     &_content{
-      
-    }
-
-    &_contentItem{
-      background-color: var(--ab-grey-100);
-      margin-bottom:1rem;
-      padding:1rem;
       border-radius: 5px;
+      margin:0;
+      word-break: break-all;
+      letter-spacing: 1px;
+      font-size:.9rem;
+
       img{
         @media screen and (max-width:900px) {
           width:100%;
@@ -68,9 +66,22 @@ const StyleDiv = styled('div')<{asideWidth:string}>`
         @media screen and (min-width:901px){
           width:60%;
         }
+        background-color: var(--ab-grey-100);
+        padding:2rem 1rem;
+        border-radius: 5px;
+      }
+      span{
+        display: inline-block;
+        background-color: var(--ab-grey-100);
+        padding:1rem;
+        border-radius: 5px;
       }
     }
+    .highlight>*{
+      background:var(--ab-green-200);
+    }
   }
+  /*  */
   .chat_record_tool{
     display: flex;
     height:var(--chat-tool-height);

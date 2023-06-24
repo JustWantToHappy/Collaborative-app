@@ -44,6 +44,7 @@ export default function Index(props: IProps) {
         {chatrooms.map(chatroom => <NavLink
           key={chatroom.id}
           to={`/chat/record/${chatroom.id}`}
+          state={chatroom.Group?.name || chatroom.User?.name}
           style={{ color: active === chatroom.id ? '#fff' : '#000', textDecoration: 'none' }}>
           <li
             className='chat_item'
