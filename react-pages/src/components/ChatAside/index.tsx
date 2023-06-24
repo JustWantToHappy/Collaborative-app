@@ -55,8 +55,9 @@ export default function Index(props: IProps) {
               <Badge count={0} size='small'>
                 <Avatar
                   size='large'
-                  src={`/api/${chatroom.Group?.avatar || chatroom.User?.avatar}`}
-                />
+                  src={chatroom.Group?.avatar === '' && chatroom.User?.avatar === ''
+                    ? '' : `/api/${chatroom.Group?.avatar || chatroom.User?.avatar}`}
+                >{(chatroom.Group?.name || chatroom.User?.name)?.slice(0, 1)}</Avatar>
               </Badge>
             </div>
             <p>{chatroom.Group?.name || chatroom.User?.name}</p>

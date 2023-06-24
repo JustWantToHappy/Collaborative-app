@@ -10,8 +10,7 @@ import { defaultCssStyles } from '@/utils';
 import LogoSvg from '@/assets/logo/logo.svg';
 import type { Router, ChatRecord } from '@/types';
 import { Avatar, Badge, Button, Popover } from 'antd';
-import { BellFilled, UserOutlined } from '@ant-design/icons';
-import { Config, Chat, LocalStorageKey, FileType } from '@/enum';
+import { Config, Chat, LocalStorageKey } from '@/enum';
 
 export default function Index() {
   const [src, setSrc] = React.useState('');
@@ -59,11 +58,14 @@ export default function Index() {
             placement="bottom"
             content={<AvatarHover setImgSrc={(src: string) => setSrc(src)}
             />} >
-            <Avatar
-              icon={<UserOutlined />}
-              style={{ marginLeft: '2rem', cursor: 'pointer' }}
-              src={'/api' + (src === '' ? userInfo.avatar : src)}>
-            </Avatar>
+            {userInfo.avatar !== '' ?
+              <Avatar
+                src={userInfo.avatar}
+                style={{ marginLeft: '2rem', cursor: 'pointer' }} />
+              : <Avatar
+                style={{ marginLeft: '2rem', cursor: 'pointer' }}>
+                {userInfo.name.slice(0, 1)}
+              </Avatar>}
           </Popover>
         </div>
       </header>
