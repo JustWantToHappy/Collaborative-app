@@ -24,7 +24,7 @@ model User {
   RePorts        Report[]
   Approvals      Approval[]
   Friends        Friend[]
-  ChatRoom       ChatRoom? //限制一个用户对应一个聊天室，用于私聊
+  ChatRooms       ChatRoom[] //一个用户具有多个私聊聊天室
 }
 
 model Friend {
@@ -52,7 +52,7 @@ model ChatRoom {
   groupId  String?   @unique
   Messages Message[]
   User     User?     @relation(fields: [userId], references: [id])
-  userId   String?   @unique
+  userId   String?
 }
 
 model Message {
