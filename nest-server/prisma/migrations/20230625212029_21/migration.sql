@@ -3,7 +3,6 @@
 
   - You are about to drop the column `chatRecordId` on the `message` table. All the data in the column will be lost.
   - You are about to drop the `chatrecord` table. If the table is not empty, all the data it contains will be lost.
-  - A unique constraint covering the columns `[userId]` on the table `ChatRoom` will be added. If there are existing duplicate values, this will fail.
 
 */
 -- DropForeignKey
@@ -29,9 +28,6 @@ ALTER TABLE `message` DROP COLUMN `chatRecordId`,
 
 -- DropTable
 DROP TABLE `chatrecord`;
-
--- CreateIndex
-CREATE UNIQUE INDEX `ChatRoom_userId_key` ON `ChatRoom`(`userId`);
 
 -- AddForeignKey
 ALTER TABLE `ChatRoom` ADD CONSTRAINT `ChatRoom_groupId_fkey` FOREIGN KEY (`groupId`) REFERENCES `Group`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

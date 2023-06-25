@@ -47,7 +47,7 @@ export default function Index() {
         <Button type="primary" onClick={() => setShowLogin(true)}>登录 / 注册</Button>
       </header>
       <main>
-        <h1>在线文档协同平台</h1>
+        <h1>在线文档协作平台</h1>
         <h4>多人实时聊天、团队协同编辑文档、实时消息推送</h4>
         <div >
           <Popover content={content} title='邮箱地址' placement='bottom'>

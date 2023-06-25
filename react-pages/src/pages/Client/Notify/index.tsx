@@ -1,14 +1,15 @@
 import React from 'react';
 import StyleDiv from './style';
 import { Manager } from 'socket.io-client';
-import { Config, MessageType, State } from '@/enum';
 import type { Message } from '@/types';
 import { Avatar, Button, message } from 'antd';
+import { Config, MessageType, State } from '@/enum';
 import { getAllPendingMessages, updateMessage } from '@/api';
 import { useLocation } from 'react-router-dom';
 
 export default function Index() {
   const { state } = useLocation();
+
   const [messageApi, contextHolder] = message.useMessage();
   const [manager] = React.useState(new Manager(Config.ServerUrl));
   const [messages, setMessages] = React.useState<Array<Message>>(state);
@@ -23,7 +24,7 @@ export default function Index() {
     if (statusCode === 200) {
       setMessages(data as Message[]);
       PubSub.publish('setNotify', data);
-      manager.socket('/message').emit('fetchChatRoom', id);
+      manager.socket('/message').emit('fetchChatRoom', { id });
     } else {
       messageApi.error({ content: `${statusCode} ${msg}` });
     }

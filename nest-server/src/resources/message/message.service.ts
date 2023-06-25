@@ -52,7 +52,7 @@ export class MessageService {
       if (message.type === MessageType.ApplyGroup) {
         this.handleApplyGroup(message);
       } else if (message.type === MessageType.ApplyFriend) {
-        await this.handleApplyFriend(message);
+        this.handleApplyFriend(message);
       }
     }
     await this.prisma.message.update({

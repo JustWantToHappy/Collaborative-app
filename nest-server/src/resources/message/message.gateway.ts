@@ -1,10 +1,12 @@
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import { Chat } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MessageService } from './message.service';
 
@@ -31,9 +33,15 @@ export class MessageGateway {
    * 更新用户和好友最新的聊天列表
    */
   @SubscribeMessage('fetchChatRoom')
-  async fetchChatRoom(@MessageBody() id: string) {
-    const message = await this.messageService.find(id);
-    console.info('触发', message);
+  async fetchChatRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { id: string },
+  ) {
+    const message = await this.messageService.find(body.id);
+    //
+    //将用户加入新建的房间
+    //client.join(body.chatRoomId);
+    //client.to(body.chatRoomId).emit(Chat.Join);
     this.ws.emit(`${message.senderId}fetchChatRoom`);
     this.ws.emit(`${message.receiverId}fetchChatRoom`);
   }
