@@ -38,6 +38,10 @@ export class MessageService {
     });
   }
 
+  find(id: string) {
+    return this.prisma.message.findUnique({ where: { id } });
+  }
+
   async update(id: string, userId: string, updateMessageDto: UpdateMessageDto) {
     const message = await this.prisma.message.findUnique({ where: { id } });
     if (!message) {
@@ -48,7 +52,7 @@ export class MessageService {
       if (message.type === MessageType.ApplyGroup) {
         this.handleApplyGroup(message);
       } else if (message.type === MessageType.ApplyFriend) {
-        this.handleApplyFriend(message);
+        await this.handleApplyFriend(message);
       }
     }
     await this.prisma.message.update({
@@ -83,7 +87,10 @@ export class MessageService {
       await this.prisma.friend.update({
         where: { userId: message.senderId },
         data: {
-          friendList: senderFriend.friendList + `,${message.receiverId}`,
+          friendList:
+            senderFriend.friendList === ''
+              ? message.receiverId
+              : senderFriend.friendList + `,${message.receiverId}`,
         },
       });
     }
@@ -95,7 +102,10 @@ export class MessageService {
       await this.prisma.friend.update({
         where: { userId: message.receiverId },
         data: {
-          friendList: receiverFriend.friendList + `,${message.senderId}`,
+          friendList:
+            senderFriend.friendList === ''
+              ? message.senderId
+              : receiverFriend.friendList + `,${message.senderId}`,
         },
       });
     }

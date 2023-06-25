@@ -2,7 +2,7 @@ import React from 'react';
 import StyleDiv from './style';
 import type { Friend } from '@/types';
 import { myFriends, deleteFriend } from '@/api';
-import { message, Avatar, Button } from 'antd';
+import { message, Avatar, Button, Divider } from 'antd';
 
 
 interface Props {
@@ -36,20 +36,39 @@ export default function Index(props: Props) {
     } else {
       messageApi.info({ content: `statusCode ${msg}` });
     }
-
   };
 
   return (
     <StyleDiv>
       {contextHolder}
-      {friendsInfo.map(friend => <div key={friend.email} className='friend_info'>
-        <Avatar size='large' />
-        <h5>{friend.name}</h5>
-        <span>邮箱地址：{friend.email}</span>
-        <small>
-          <Button type='link' danger onClick={() => removeFriend(friend.id)}>删除好友</Button>
-        </small>
-      </div>)}
+      <div className='panel'>
+        <p>
+          <span>我的好友</span>
+        </p>
+        {friendsInfo.map(friend => <div key={friend.email} className='friend_info'>
+          <Avatar size='large' src={friend.avatar === '' ? '' : `/api/${friend.avatar}`}>
+            {friend.name.slice(0, 1)}
+          </Avatar>
+          <h5>{friend.name}</h5>
+          <span>邮箱地址：{friend.email}</span>
+          <small>
+            <Button type='link' danger onClick={() => removeFriend(friend.id)}>删除好友</Button>
+          </small>
+        </div>)}
+      </div>
+      <div className='panel'>
+        <p>
+          <span>我的群组</span>
+        </p>
+        {friendsInfo.map(friend => <div key={friend.email} className='friend_info'>
+          <Avatar size='large' />
+          <h5>{friend.name}</h5>
+          <span>邮箱地址：{friend.email}</span>
+          <small>
+            <Button type='link' danger onClick={() => removeFriend(friend.id)}>删除好友</Button>
+          </small>
+        </div>)}
+      </div>
     </StyleDiv>
   );
 }

@@ -27,7 +27,7 @@ export default function Index() {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: `我加入的`,
+      label: `我的联系人`,
       children: <MyJoin option={key} />,
     },
     {

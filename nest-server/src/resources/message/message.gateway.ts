@@ -28,10 +28,13 @@ export class MessageGateway {
     this.ws.emit(`${id}fetchNotify`, messages);
   }
   /**
-   * 获取用户最新的聊天列表
+   * 更新用户和好友最新的聊天列表
    */
-  @SubscribeMessage('fetchChatList')
-  async fetchChatList(@MessageBody() id: string) {
-    //
+  @SubscribeMessage('fetchChatRoom')
+  async fetchChatRoom(@MessageBody() id: string) {
+    const message = await this.messageService.find(id);
+    console.info('触发', message);
+    this.ws.emit(`${message.senderId}fetchChatRoom`);
+    this.ws.emit(`${message.receiverId}fetchChatRoom`);
   }
 }

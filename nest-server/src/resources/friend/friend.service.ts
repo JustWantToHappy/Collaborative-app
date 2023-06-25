@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MessageType, State } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ChatroomService } from '../chatroom/chatroom.service';
 import { MessageService } from '../message/message.service';
+import { UserService } from '../user/user.service';
 import { UpdateFriendDto } from './dto/update-friend.dto';
 
 @Injectable()
 export class FriendService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly userService: UserService,
     private readonly messageService: MessageService,
+    private readonly chatRoomService: ChatroomService,
   ) {}
   async create(id: string, email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
@@ -60,7 +64,25 @@ export class FriendService {
     });
   }
 
-  async findAll(id: string) {}
+  async findUserFriends(id: string) {
+    const friendIds = (await this.findOne(id))?.friendList.split(',');
+    if (friendIds?.length > 0 && friendIds.join(',') !== '') {
+      const result = await Promise.all(
+        friendIds.map(async (friendId) => {
+          const user = await this.userService.findOne(friendId);
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            avatar: user.avatar,
+          };
+        }),
+      );
+      return result;
+    } else {
+      return [];
+    }
+  }
 
   async invitedInfo(id: string) {
     return [];
@@ -70,5 +92,58 @@ export class FriendService {
     return 'update success';
   }
 
-  async remove(id: string) {}
+  async deleteUserFriend(userId: string, friendId: string) {
+    const a = await this.prisma.friend.findUnique({
+      where: { userId },
+    });
+    const b = await this.prisma.friend.findUnique({
+      where: { userId: friendId },
+    });
+    const privateChatRoom = await this.prisma.chatRoom.findFirst({
+      where: { OR: [{ userId }, { userId: friendId }] },
+    });
+    if (a && b) {
+      //删除好友之间的关系
+      const deleteABRelation = this.prisma.friend.update({
+        where: { userId },
+        data: {
+          friendList: a.friendList
+            .split(',')
+            .filter((userId) => userId !== b.userId)
+            .join(','),
+        },
+      });
+      const deleteBARelation = this.prisma.friend.update({
+        where: { userId: friendId },
+        data: {
+          friendList: b.friendList
+            .split(',')
+            .filter((userId) => userId !== a.userId)
+            .join(','),
+        },
+      });
+      //删除好友之间的消息
+      const deleteMessages = this.prisma.message.deleteMany({
+        where: {
+          OR: [
+            { senderId: userId, receiverId: friendId },
+            { senderId: friendId, receiverId: userId },
+          ],
+          type: MessageType.Chat,
+          chatRoomId: privateChatRoom.id,
+        },
+      });
+      //删除私用聊天室
+      const deleteChatRoom = this.chatRoomService.remove(privateChatRoom.id);
+      await this.prisma.$transaction([
+        deleteABRelation,
+        deleteBARelation,
+        deleteMessages,
+        deleteChatRoom,
+      ]);
+      return '删除成功';
+    } else {
+      throw new HttpException('删除失败', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }

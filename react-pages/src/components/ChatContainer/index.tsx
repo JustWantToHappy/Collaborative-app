@@ -19,7 +19,7 @@ export default function Index() {
   const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
   const [asideWidth, setAsideWidth] = React.useState('18rem');
   const [chatRecords, setChatRecords] = React.useState<ChatRecord[]>([]);
   const [manager] = React.useState(new Manager(Config.ServerUrl));

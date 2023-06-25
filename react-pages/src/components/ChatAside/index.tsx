@@ -1,10 +1,13 @@
 import React from 'react';
-import * as dayjs from 'dayjs';
 import StyleDiv from './style';
+import * as dayjs from 'dayjs';
+import { Config, LocalStorageKey } from '@/enum';
+import { useLocalStorage } from '@/hooks';
+import type { ChatRoom } from '@/types';
+import { Manager } from 'socket.io-client';
 import { getAllChatRoom } from '@/api';
 import { defaultCssStyles } from '@/utils';
 import { NavLink, useParams } from 'react-router-dom';
-import type { ChatRoom } from '@/types';
 import { Avatar, Badge, Button, Popover, message } from 'antd';
 import { EllipsisOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 
@@ -15,12 +18,13 @@ type IProps = {
 
 
 export default function Index(props: IProps) {
-  const { wide, changeWide } = props;
   const { id } = useParams();
-  const [chatrooms, setChatRooms] = React.useState<ChatRoom[]>([]);
-  const [messageApi, contextHolder] = message.useMessage();
+  const { wide, changeWide } = props;
   const [active, setActive] = React.useState(id);
-  console.info(props.wide, 'hhh');
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
+  const [manager] = React.useState(new Manager(Config.ServerUrl));
+  const [messageApi, contextHolder] = message.useMessage();
+  const [chatrooms, setChatRooms] = React.useState<ChatRoom[]>([]);
 
   const getData = React.useCallback(async function () {
     const { statusCode, msg, data } = await getAllChatRoom();
@@ -33,8 +37,14 @@ export default function Index(props: IProps) {
 
   React.useEffect(() => {
     getData();
+    manager.socket('/message').on(`${userInfo.id}fetchChatRoom`, () => {
+      getData();
+    });
+    return function () {
+      manager.socket('/message').off(`${userInfo.id}fetchChatRoom`);
+    };
+  }, [getData, manager, userInfo]);
 
-  }, [getData]);
 
   return (
     <StyleDiv wide={wide}>
@@ -82,7 +92,6 @@ export default function Index(props: IProps) {
                         flexDirection: 'column'
                       }}>
                       <Button type='link'>邀请好友</Button>
-                      <Button type='link'>退出该群</Button>
                     </div>
                   </div>
                 }

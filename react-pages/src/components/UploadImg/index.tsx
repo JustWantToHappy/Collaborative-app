@@ -18,7 +18,7 @@ const Index: React.FC<Props> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = React.useState<UploadFile[]>([]);
   const { title, action, showUploadList, manualUpload, setFile, showFileList } = props;
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const beforeUpload = (file: UploadFile) => {
     if (!file?.size) return false;

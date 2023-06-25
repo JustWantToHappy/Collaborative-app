@@ -13,7 +13,7 @@ export default function Index() {
   const [group, setGroup] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [manager] = React.useState(new Manager(Config.ServerUrl));
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const inviteFriend = async () => {
     if (userInfo.email === email) {

@@ -14,7 +14,7 @@ export default function Index() {
   const navigate = useNavigate();
   const [messages, setMessages] = React.useState<Array<Message>>([]);
   const [socket] = React.useState(io(Config.ServerUrl + '/message'));
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
   const [messageApi, contextHolder] = message.useMessage();
   const receiverEventName = `${userInfo.id}fetchNotify`;
 
@@ -38,11 +38,12 @@ export default function Index() {
     })();
     socket.on(receiverEventName, (messages: Message[]) => {
       setMessages(messages);
+      PubSub.publish('getNotify', messages);
     });
     return function () {
       socket.off(receiverEventName);
     };
-  }, [socket, receiverEventName, messageApi]);
+  }, [socket, receiverEventName, messageApi, navigate]);
 
   React.useEffect(() => {
     const fetchNotifyToken = PubSub.subscribe('fetchNotify',

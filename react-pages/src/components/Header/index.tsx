@@ -18,7 +18,7 @@ export default function Index() {
   const lists = routes[0].children as Array<Router>;
   const [active, setActive] = React.useState('/chat');
   const [manager] = React.useState(new Manager(Config.ServerUrl));
-  const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info);
+  const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const loginOut = () => {
     removeUserInfo();
@@ -39,7 +39,7 @@ export default function Index() {
     manager.socket('/chatroom').on(Chat.Leave, () => {
       //
     });
-    manager.socket('/chatroom').emit(Chat.Join, userInfo.id);
+    manager.socket('/chatroom').emit(Chat.Join, userInfo.id);//用户加入房间
     return function () {
       manager.socket('/chatroom').off(Chat.Join);
       manager.socket('/chatroom').off(Chat.Message);

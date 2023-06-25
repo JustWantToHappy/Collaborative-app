@@ -9,8 +9,8 @@ import { useLocation } from 'react-router-dom';
 
 export default function Index() {
   const { state } = useLocation();
-  const [manager] = React.useState(new Manager(Config.ServerUrl));
   const [messageApi, contextHolder] = message.useMessage();
+  const [manager] = React.useState(new Manager(Config.ServerUrl));
   const [messages, setMessages] = React.useState<Array<Message>>(state);
 
   const strategy = new Map([
@@ -23,6 +23,7 @@ export default function Index() {
     if (statusCode === 200) {
       setMessages(data as Message[]);
       PubSub.publish('setNotify', data);
+      manager.socket('/message').emit('fetchChatRoom', id);
     } else {
       messageApi.error({ content: `${statusCode} ${msg}` });
     }
@@ -38,6 +39,15 @@ export default function Index() {
       }
     })();
   }, [messageApi]);
+
+  React.useEffect(() => {
+    const getNotifyToken = PubSub.subscribe('getNotify', (_, data: Message[]) => {
+      setMessages(data);
+    });
+    return function () {
+      PubSub.unsubscribe(getNotifyToken);
+    };
+  }, []);
 
   return (
     <StyleDiv >
