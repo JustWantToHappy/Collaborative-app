@@ -1,5 +1,6 @@
 import { FileType } from '@/enum';
 import type { Group } from './group';
+import type { Message } from './message';
 import type { User } from './user';
 
 export type ChatRoom = {
@@ -7,7 +8,8 @@ export type ChatRoom = {
   userIds: string;
   type: string;
   User?: User,
-  Group?:Group
+  Group?: Group,
+  Messages?:Message[]
 }
 
 export type ChatRecord = {

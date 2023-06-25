@@ -1,4 +1,5 @@
 import React from 'react';
+import * as dayjs from 'dayjs';
 import StyleDiv from './style';
 import { getAllChatRoom } from '@/api';
 import { defaultCssStyles } from '@/utils';
@@ -19,17 +20,21 @@ export default function Index(props: IProps) {
   const [chatrooms, setChatRooms] = React.useState<ChatRoom[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [active, setActive] = React.useState(id);
+  console.info(props.wide, 'hhh');
+
+  const getData = React.useCallback(async function () {
+    const { statusCode, msg, data } = await getAllChatRoom();
+    if (statusCode === 200) {
+      setChatRooms(data || []);
+    } else {
+      messageApi.error({ content: `${statusCode} ${msg}` });
+    }
+  }, [messageApi]);
 
   React.useEffect(() => {
-    (async function () {
-      const { statusCode, msg, data } = await getAllChatRoom();
-      if (statusCode === 200) {
-        setChatRooms(data || []);
-      } else {
-        messageApi.error({ content: `${statusCode} ${msg}` });
-      }
-    })();
-  }, [messageApi]);
+    getData();
+
+  }, [getData]);
 
   return (
     <StyleDiv wide={wide}>
@@ -61,8 +66,10 @@ export default function Index(props: IProps) {
               </Badge>
             </div>
             <p>{chatroom.Group?.name || chatroom.User?.name}</p>
-            <p>登录操作通知</p>
-            <small className='chat_item_date'>{chatroom.Group?.create_at}</small>
+            <p>{chatroom.Messages && chatroom.Messages[0]?.text}</p>
+            <small className='chat_item_date'>
+              {chatroom.Messages && dayjs(chatroom.Messages[0]?.createdAt).format('YYYY/MM/DD HH:mm:ss')}
+            </small>
             <span>
               <Popover
                 placement="top"

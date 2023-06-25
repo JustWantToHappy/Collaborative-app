@@ -1,23 +1,33 @@
 import React from 'react';
 import StyleDiv from './style';
 import Bell from '@/components/Bell';
+import UserInfoModal from '../UserInfoModal';
 import { routes } from '@/layout';
 import { Manager } from 'socket.io-client';
-import AvatarHover from './AvatarHover';
 import { useLocalStorage } from '@/hooks';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { defaultCssStyles } from '@/utils';
 import LogoSvg from '@/assets/logo/logo.svg';
 import type { Router, ChatRecord } from '@/types';
-import { Avatar, Badge, Button, Popover } from 'antd';
+import { Avatar, Button, Popover } from 'antd';
 import { Config, Chat, LocalStorageKey } from '@/enum';
 
 export default function Index() {
-  const [src, setSrc] = React.useState('');
+  const navigate = useNavigate();
+  const [show, setShow] = React.useState(false);
   const lists = routes[0].children as Array<Router>;
   const [active, setActive] = React.useState('/chat');
   const [manager] = React.useState(new Manager(Config.ServerUrl));
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
+  const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info);
+
+  const loginOut = () => {
+    removeUserInfo();
+    navigate('/');
+  };
+
+  const showUserInfoModal = () => setShow(true);
+
+  const closeUserInfoModal = () => setShow(false);
 
   React.useEffect(() => {
     manager.socket('/chatroom').on(Chat.Join, (chatRoomId: string, userId: string) => {
@@ -39,8 +49,12 @@ export default function Index() {
 
   return (
     <StyleDiv>
+      <UserInfoModal
+        show={show}
+        close={closeUserInfoModal}
+        loginOut={loginOut} />
       <header>
-        <NavLink to='/chat' title="" > <img src={LogoSvg} /></NavLink>
+        <NavLink to='/chat' title='' > <img src={LogoSvg} /></NavLink>
         <ul>
           {lists.map(route => <li key={route.path}>
             <NavLink to={route.path}>
@@ -55,12 +69,22 @@ export default function Index() {
         <div>
           <Bell />
           <Popover
-            placement="bottom"
-            content={<AvatarHover setImgSrc={(src: string) => setSrc(src)}
-            />} >
-            {userInfo.avatar !== '' ?
+            content={<div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Button
+                type='link'
+                onClick={showUserInfoModal}
+              >
+                个人信息
+              </Button>
+              <Button
+                type='link'
+                onClick={loginOut}>
+                退出登录
+              </Button>
+            </div>} >
+            {userInfo?.avatar !== '' ?
               <Avatar
-                src={userInfo.avatar}
+                src={`/api/${userInfo.avatar}`}
                 style={{ marginLeft: '2rem', cursor: 'pointer' }} />
               : <Avatar
                 style={{ marginLeft: '2rem', cursor: 'pointer' }}>

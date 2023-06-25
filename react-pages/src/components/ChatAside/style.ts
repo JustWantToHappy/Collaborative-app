@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import {ellipsis } from '@/common';
 
 interface Props{
   wide:boolean
@@ -16,7 +17,9 @@ const StyleDiv = styled('div')<Props>`
 
   p{
     margin:0;
-    display: ${props=>props.wide?'block':'none'};
+    ${ellipsis};
+    line-height: 1.5rem;
+    display: ${props => props.wide ? 'flex-box' : 'none'};
   }
 
   header{
@@ -75,7 +78,7 @@ const StyleDiv = styled('div')<Props>`
         font-weight: 100;
         position:absolute;
         top: 0.5rem;
-        right:0;
+        right:.5rem;
         display: ${props=>props.wide?'block':'none'};
       }
 

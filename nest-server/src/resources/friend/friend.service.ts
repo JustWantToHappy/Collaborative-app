@@ -33,6 +33,10 @@ export class FriendService {
     if (message2) {
       return '对方已对你发出好友申请';
     }
+    const isFriend = await this.isFriend(id, user.id);
+    if (isFriend) {
+      return '好友关系已存在';
+    }
     await this.messageService.create({
       senderId: id,
       receiverId: user.id,
@@ -43,6 +47,17 @@ export class FriendService {
 
   findOne(userId: string) {
     return this.prisma.friend.findUnique({ where: { userId } });
+  }
+
+  isFriend(userId: string, friendId: string) {
+    return this.prisma.friend.findFirst({
+      where: {
+        userId,
+        friendList: {
+          contains: friendId,
+        },
+      },
+    });
   }
 
   async findAll(id: string) {}

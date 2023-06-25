@@ -29,13 +29,11 @@ export class ChatroomService {
       },
       select: {
         id: true,
-        userId: true,
         userIds: true,
         type: true,
         Group: true,
         User: {
           select: {
-            id: true,
             name: true,
             avatar: true,
           },
@@ -47,7 +45,7 @@ export class ChatroomService {
             createdAt: true,
           },
           take: 1,
-          skip: 1,
+          skip: 0,
           orderBy: {
             createdAt: 'desc',
           },
@@ -61,7 +59,6 @@ export class ChatroomService {
           const receiverId = userIds[0] === id ? userIds[1] : userIds[0];
           const receiver = await this.userService.findOne(receiverId);
           value.User = {
-            id: receiver.id,
             name: receiver.name,
             avatar: receiver.avatar,
           };
@@ -69,7 +66,6 @@ export class ChatroomService {
         return value;
       }),
     );
-    console.info(result);
     //按照时间顺序对聊天列表进行排序
     result.sort((a: any, b: any) => {
       return b.Messages[0]?.createdAt - a.Messages[0]?.createdAt;
