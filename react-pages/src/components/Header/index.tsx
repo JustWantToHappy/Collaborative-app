@@ -5,15 +5,18 @@ import UserInfoModal from '../UserInfoModal';
 import { routes } from '@/layout';
 import { Manager } from 'socket.io-client';
 import { useLocalStorage } from '@/hooks';
-import { NavLink, useNavigate } from 'react-router-dom';
 import { defaultCssStyles } from '@/utils';
 import LogoSvg from '@/assets/logo/logo.svg';
+import SunSvg from '@/assets/logo/sun.svg';
+import MoonSvg from '@/assets/logo/moon.svg';
+import { NavLink, useNavigate } from 'react-router-dom';
 import type { Router, ChatRecord } from '@/types';
-import { Avatar, Button, Popover } from 'antd';
+import { Avatar, Button, Popover, Switch } from 'antd';
 import { Config, Chat, LocalStorageKey } from '@/enum';
 
 export default function Index() {
   const navigate = useNavigate();
+  const [dark, setDark] = React.useState(false);
   const [show, setShow] = React.useState(false);
   const lists = routes[0].children as Array<Router>;
   const [active, setActive] = React.useState('/chat');
@@ -28,6 +31,8 @@ export default function Index() {
   const showUserInfoModal = () => setShow(true);
 
   const closeUserInfoModal = () => setShow(false);
+
+  const shiftTheme = (value: boolean) => setDark(value);
 
   React.useEffect(() => {
     manager.socket('/chatroom').on(Chat.Join, (chatRoomId: string, userId: string) => {
@@ -80,6 +85,10 @@ export default function Index() {
                 type='link'
                 onClick={loginOut}>
                 退出登录
+              </Button>
+              <Button type='link' style={{ display: 'flex', alignItems: 'center' }}>
+                <Switch defaultChecked onChange={shiftTheme} size='small' />
+                <img src={dark ? MoonSvg : SunSvg} style={{ width: '1.2rem', marginLeft: '.5rem' }} />
               </Button>
             </div>} >
             {userInfo?.avatar !== '' ?

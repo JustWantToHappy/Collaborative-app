@@ -112,8 +112,8 @@ export default function Index() {
     <StyleDiv asideWidth={asideWidth}>
       {contextHolder}
       <div className='chat_record_header'>
-        <h4>{state}</h4>
-        <small>成员列表</small>
+        <h4>{state.name}</h4>
+        <small style={{ display: state.type === 'private' ? 'none' : 'inline' }}>成员列表</small>
       </div>
       <div className='chat_record'>
         <div style={{ textAlign: 'center', padding: '2rem', display: chatRecords.length === 0 ? 'block' : 'none' }}>
