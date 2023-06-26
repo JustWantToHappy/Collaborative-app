@@ -88,7 +88,7 @@ export default function Index() {
                 style={{ marginLeft: '2rem', cursor: 'pointer' }} />
               : <Avatar
                 style={{ marginLeft: '2rem', cursor: 'pointer' }}>
-                {userInfo.name.slice(0, 1)}
+                {userInfo.name.slice(0, 2)}
               </Avatar>}
           </Popover>
         </div>

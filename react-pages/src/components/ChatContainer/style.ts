@@ -108,6 +108,10 @@ const StyleDiv = styled('div') <Props>`
     column-gap:1rem;
     border-top:1px solid var(--ab-grey-200);
   }
+  .return_top{
+    right:1vw;
+    bottom:calc(var(--chat-tool-height) + 2vh);
+  }
 `;
 
 export default StyleDiv;

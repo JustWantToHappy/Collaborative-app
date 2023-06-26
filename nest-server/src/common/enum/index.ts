@@ -23,6 +23,7 @@ export enum Role {
 //聊天指令
 export enum Chat {
   Join = 'join',
+  JoinOne = 'joinOne',
   Leave = 'leave',
   Message = 'message',
 }

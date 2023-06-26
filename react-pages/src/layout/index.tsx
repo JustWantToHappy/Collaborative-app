@@ -38,7 +38,7 @@ export const routes: Array<Router> = [
           },
           {
             name: '聊天记录',
-            path: 'record/:id',
+            path: 'record/:chatRoomId',
             element: <ChatContainer />
           },
           {

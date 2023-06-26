@@ -44,6 +44,7 @@ export class MessageService {
 
   async update(id: string, userId: string, updateMessageDto: UpdateMessageDto) {
     const message = await this.prisma.message.findUnique({ where: { id } });
+    let chatRoom = null;
     if (!message) {
       throw new HttpException(`message${id}不存在`, HttpStatus.NOT_FOUND);
     }
@@ -52,12 +53,12 @@ export class MessageService {
       if (message.type === MessageType.ApplyGroup) {
         this.handleApplyGroup(message);
       } else if (message.type === MessageType.ApplyFriend) {
-        this.handleApplyFriend(message);
+        chatRoom = await this.handleApplyFriend(message);
       }
     }
     await this.prisma.message.update({
       where: { id },
-      data: updateMessageDto,
+      data: Object.assign(updateMessageDto, { chatRoomId: chatRoom?.id }),
     });
     return this.findAllPending(userId);
   }
@@ -110,7 +111,7 @@ export class MessageService {
       });
     }
     //创建私聊聊天室
-    await this.chatroomService.create({
+    return this.chatroomService.create({
       userId: message.senderId,
       userIds: `${message.senderId},${message.receiverId}`,
       type: 'private',

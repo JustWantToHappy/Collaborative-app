@@ -36,14 +36,24 @@ export class ChatRoomGateway {
     });
   }
 
-  //将用户加入房间...
+  //将socket加入所有房间...
   @SubscribeMessage(Chat.Join)
-  async onJoinRoom(client: Socket, userId: string) {
+  async onJoinAllRooms(client: Socket, userId: string) {
     const rooms = await this.chatRoomService.findAllChatRoomId(userId);
     rooms.forEach((room) => {
       client.join(room.id);
       client.to(room.id).emit(Chat.Join, room.id, userId);
     });
+  }
+
+  //将socket加入指定房间
+  @SubscribeMessage(Chat.JoinOne)
+  async onJoinOneRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { userId: string; roomId: string },
+  ) {
+    client.join(body.roomId);
+    client.to(body.roomId).emit(Chat.Join, body.roomId, body.userId);
   }
 
   //当用户离开房间(用户主动断开连接)...
@@ -84,6 +94,7 @@ export class ChatRoomGateway {
       };
       const message = await this.messageService.create(createMessage);
       if (message) {
+        console.info('看看我', body);
         const res: ChatrecordDto = Object.assign(body, {
           id: message.id,
           name: user.name,

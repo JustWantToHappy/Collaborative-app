@@ -17,7 +17,7 @@ const Index: React.FC<Props> = (props) => {
       //响应式
       size={{ xs: 30, sm: 32, md: 36, lg: 38, xl: 40, xxl: 50 }}
     >
-      {props.children?.slice(0, 1)}
+      {props.children?.slice(0, 2)}
     </Avatar >
   );
 };

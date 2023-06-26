@@ -6,7 +6,7 @@ import { useLocalStorage, useDebouce } from '@/hooks';
 import { Manager } from 'socket.io-client';
 import type { ChatRecord } from '@/types';
 import UploadImg from '@/components/UploadImg';
-import { Avatar, Button, Input, message } from 'antd';
+import { Avatar, Button, Input, message, FloatButton } from 'antd';
 import { useParams, useLocation } from 'react-router-dom';
 import { uploadImg, getChatRecordsByChatRoomId } from '@/api';
 import { Chat, Config, FileType, LocalStorageKey } from '@/enum';
@@ -15,7 +15,7 @@ import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 export default function Index() {
   const { state } = useLocation();
-  const { id: chatRoomId } = useParams();
+  const { chatRoomId } = useParams();
   const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -121,7 +121,9 @@ export default function Index() {
         </div>
         {chatRecords.map(chatRecord => <ul key={chatRecord.id} className='chat_record_userInfo'>
           <li>
-            <Avatar size='large' src={`/api/${chatRecord.avatar}`} />
+            <Avatar size='large' src={`/api/${chatRecord.avatar}`} >
+              {chatRecord.name.slice(0, 2)}
+            </Avatar>
             <div
               className={chatRecord.senderId === userInfo.id ? 'chat_record_content highlight' : 'chat_record_content'}
             >
@@ -152,6 +154,7 @@ export default function Index() {
           manualUpload={true}
           showUploadList={false} />
       </div>
+      <FloatButton.BackTop className='return_top' />
     </StyleDiv>
   );
 }

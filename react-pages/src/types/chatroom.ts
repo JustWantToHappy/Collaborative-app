@@ -14,7 +14,7 @@ export type ChatRoom = {
 
 export type ChatRecord = {
   id: string;
-  name: string;
+  name: string;//用户名称
   avatar: string;
   senderId: string;
   receiverId: string;

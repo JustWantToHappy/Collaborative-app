@@ -1,7 +1,7 @@
 import React from 'react';
 import StyleDiv from './style';
 import * as dayjs from 'dayjs';
-import { Config, LocalStorageKey } from '@/enum';
+import { Chat, Config, LocalStorageKey } from '@/enum';
 import { useLocalStorage } from '@/hooks';
 import type { ChatRoom } from '@/types';
 import { Manager } from 'socket.io-client';
@@ -18,9 +18,9 @@ type IProps = {
 
 
 export default function Index(props: IProps) {
-  const { id } = useParams();
+  const { chatRoomId } = useParams();
   const { wide, changeWide } = props;
-  const [active, setActive] = React.useState(id);
+  const [active, setActive] = React.useState(chatRoomId);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
   const [manager] = React.useState(new Manager(Config.ServerUrl));
   const [messageApi, contextHolder] = message.useMessage();
@@ -37,8 +37,10 @@ export default function Index(props: IProps) {
 
   React.useEffect(() => {
     getData();
-    manager.socket('/message').on(`${userInfo.id}fetchChatRoom`, () => {
+    manager.socket('/message').on(`${userInfo.id}fetchChatRoom`, (chatRoomId: string) => {
+      //获取最新的聊天列表并将用户加入到指定房间
       getData();
+      manager.socket('/chatroom').emit(Chat.JoinOne, { userId: userInfo.id, roomId: chatRoomId });
     });
     return function () {
       manager.socket('/message').off(`${userInfo.id}fetchChatRoom`);
@@ -72,7 +74,7 @@ export default function Index(props: IProps) {
                   size='large'
                   src={chatroom.Group?.avatar === '' && chatroom.User?.avatar === ''
                     ? '' : `/api/${chatroom.Group?.avatar || chatroom.User?.avatar}`}
-                >{(chatroom.Group?.name || chatroom.User?.name)?.slice(0, 1)}</Avatar>
+                >{(chatroom.Group?.name || chatroom.User?.name)?.slice(0, 2)}</Avatar>
               </Badge>
             </div>
             <p>{chatroom.Group?.name || chatroom.User?.name}</p>

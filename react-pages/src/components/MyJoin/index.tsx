@@ -47,7 +47,7 @@ export default function Index(props: Props) {
         </p>
         {friendsInfo.map(friend => <div key={friend.email} className='friend_info'>
           <Avatar size='large' src={friend.avatar === '' ? '' : `/api/${friend.avatar}`}>
-            {friend.name.slice(0, 1)}
+            {friend.name.slice(0, 2)}
           </Avatar>
           <h5>{friend.name}</h5>
           <span>邮箱地址：{friend.email}</span>
