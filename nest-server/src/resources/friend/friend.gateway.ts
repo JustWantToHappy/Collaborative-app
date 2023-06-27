@@ -7,7 +7,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { FriendService } from './friend.service';
 
-@WebSocketGateway({ cors: true, port: 8080, namespace: 'friend' })
+@WebSocketGateway({
+  cors: { origin: /.*/, credentials: true },
+  port: 8080,
+  namespace: '/friend',
+})
 export class FriendGateway {
   constructor(
     private readonly friendService: FriendService,

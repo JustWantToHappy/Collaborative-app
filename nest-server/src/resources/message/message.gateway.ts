@@ -9,7 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MessageService } from './message.service';
 
 @WebSocketGateway({
-  cors: true,
+  cors: { origin: /.*/, credentials: true },
   port: 8080,
   namespace: '/message',
 })

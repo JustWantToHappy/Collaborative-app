@@ -10,6 +10,12 @@ declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  //使用cors
+  /*  app.enableCors({
+    origin: ['http://localhost:5000'],
+    credentials: true,
+  });*/
+
   //使用全局管道
   app.useGlobalPipes(
     new ValidationPipe({

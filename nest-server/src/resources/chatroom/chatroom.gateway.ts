@@ -3,8 +3,9 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { Chat, FileType, State } from 'src/common/enum';
 import { MessageService } from '../message/message.service';
 import { UserService } from '../user/user.service';
@@ -16,8 +17,19 @@ import { CreateMessageDto } from '../message/dto/create-message.dto';
  * chatRoom包含了群聊和私聊
  */
 
-@WebSocketGateway({ cors: true, port: 8080, namespace: '/chatroom' })
+@WebSocketGateway({
+  cors: { origin: /.*/, credentials: true },
+  port: 8080,
+  namespace: '/chatroom',
+  /**
+   * 可以指定path:""属性创建更加复杂的应用，同时客服端需要设置path
+   * 注意点:
+   * 1. 如果使用了path，那么就会涉及到跨域问题，需要设置cors以及身份验证的请求头
+   * 2. 如果只是使用namespace，啥都不需要干
+   */
+})
 export class ChatRoomGateway {
+  @WebSocketServer() private io: Server;
   constructor(
     private readonly chatRoomService: ChatroomService,
     private readonly messageService: MessageService,
@@ -39,6 +51,7 @@ export class ChatRoomGateway {
   //将socket加入所有房间...
   @SubscribeMessage(Chat.Join)
   async onJoinAllRooms(client: Socket, userId: string) {
+    console.info(`client ${client.id} join rooms`);
     const rooms = await this.chatRoomService.findAllChatRoomId(userId);
     rooms.forEach((room) => {
       client.join(room.id);
@@ -59,6 +72,7 @@ export class ChatRoomGateway {
   //当用户离开房间(用户主动断开连接)...
   @SubscribeMessage(Chat.Leave)
   async onLeaveRoom(client: Socket, userId: string) {
+    console.info('leave');
     const rooms = await this.chatRoomService.findAllChatRoomId(userId);
     rooms.forEach((room) => {
       client.leave(room.id);
@@ -94,14 +108,17 @@ export class ChatRoomGateway {
       };
       const message = await this.messageService.create(createMessage);
       if (message) {
-        console.info('看看我', body);
         const res: ChatrecordDto = Object.assign(body, {
           id: message.id,
           name: user.name,
           avatar: user.avatar,
           createdAt: message.createdAt,
         });
-        client.to(body.chatRoomId).emit(Chat.Message, res);
+        /*
+          client.to(body.chatRoomId).emit(Chat.Message, res);//向房间内所有客服端除了发送方发送数据
+          client.emit(Chat.Message, res);//向发送方自己发送数据
+        */
+        this.io.in(body.chatRoomId).emit(Chat.Message, res); //向房间内所有客服端发送数据
       }
     } else {
       return '发送失败';
