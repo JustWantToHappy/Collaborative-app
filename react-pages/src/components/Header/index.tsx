@@ -1,9 +1,9 @@
 import React from 'react';
 import StyleDiv from './style';
+import { chatRoomSocket } from '@/utils';
 import Bell from '@/components/Bell';
 import UserInfoModal from '../UserInfoModal';
 import { routes } from '@/layout';
-import { Manager } from 'socket.io-client';
 import { useLocalStorage } from '@/hooks';
 import { defaultCssStyles } from '@/utils';
 import LogoSvg from '@/assets/logo/logo.svg';
@@ -12,7 +12,7 @@ import MoonSvg from '@/assets/logo/moon.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
 import type { Router, ChatRecord } from '@/types';
 import { Avatar, Button, Popover, Switch } from 'antd';
-import { Config, Chat, LocalStorageKey } from '@/enum';
+import { Chat, LocalStorageKey } from '@/enum';
 
 export default function Index() {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ export default function Index() {
   const [show, setShow] = React.useState(false);
   const lists = routes[0].children as Array<Router>;
   const [active, setActive] = React.useState('/chat');
-  const [manager] = React.useState(new Manager(Config.ServerUrl));
+  const avatarStyle: React.CSSProperties = { marginLeft: '2rem', cursor: 'pointer' };
   const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const loginOut = () => {
@@ -35,22 +35,33 @@ export default function Index() {
   const shiftTheme = (value: boolean) => setDark(value);
 
   React.useEffect(() => {
-    manager.socket('/chatroom').on(Chat.Join, (chatRoomId: string, userId: string) => {
+    if (!chatRoomSocket.connected) {
+      chatRoomSocket.connect();
+    }
+    chatRoomSocket.on(Chat.Join, (chatRoomId: string, userId: string) => {
       //这里可以进行一些处理，比如在线人数展示，用户离线状态等。
     });
-    manager.socket('/chatroom').on(Chat.Message, (body: ChatRecord) => {
+    chatRoomSocket.on(Chat.Message, (body: ChatRecord) => {
       PubSub.publish('fetchChatRecord', body);
     });
-    manager.socket('/chatroom').on(Chat.Leave, () => {
+    chatRoomSocket.on(Chat.Leave, () => {
       //
     });
-    manager.socket('/chatroom').emit(Chat.Join, userInfo.id);//用户加入房间
+    chatRoomSocket.on('connect', () => {
+      if (chatRoomSocket.connected) {
+        chatRoomSocket.emit(Chat.Join, userInfo.id);//用户加入房间
+      } else {
+        chatRoomSocket.connect();
+      }
+    });
     return function () {
-      manager.socket('/chatroom').off(Chat.Join);
-      manager.socket('/chatroom').off(Chat.Message);
-      manager.socket('/chatroom').off(Chat.Leave);
+      chatRoomSocket.off(Chat.Join);
+      chatRoomSocket.off(Chat.Message);
+      chatRoomSocket.off(Chat.Leave);
+      chatRoomSocket.off('connect');
+      if (chatRoomSocket.connected) chatRoomSocket.disconnect();
     };
-  }, [manager, userInfo.id]);
+  }, [userInfo.id]);
 
   return (
     <StyleDiv>
@@ -91,14 +102,10 @@ export default function Index() {
                 <img src={dark ? MoonSvg : SunSvg} style={{ width: '1.2rem', marginLeft: '.5rem' }} />
               </Button>
             </div>} >
-            {userInfo?.avatar !== '' ?
-              <Avatar
-                src={`/api/${userInfo.avatar}`}
-                style={{ marginLeft: '2rem', cursor: 'pointer' }} />
-              : <Avatar
-                style={{ marginLeft: '2rem', cursor: 'pointer' }}>
-                {userInfo.name.slice(0, 2)}
-              </Avatar>}
+            {userInfo.avatar ?
+              <Avatar src={userInfo.avatar} style={avatarStyle} size='large' /> :
+              <Avatar style={avatarStyle} size='large'>{userInfo.name.slice(0, 2)}</Avatar>
+            }
           </Popover>
         </div>
       </header>

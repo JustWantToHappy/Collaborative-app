@@ -1,10 +1,9 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
-import { LocalStorageKey, MessageType } from '@/enum';
+import { friendSocket } from '@/utils';
+import { LocalStorageKey } from '@/enum';
 import { useLocalStorage } from '@/hooks';
-import { Manager } from 'socket.io-client';
-import { Config } from '@/enum';
 import { applyJoinGroup } from '@/api';
 import { Button, Input, message } from 'antd';
 
@@ -12,7 +11,6 @@ export default function Index() {
   const [messageApi, contextHolder] = message.useMessage();
   const [group, setGroup] = React.useState('');
   const [email, setEmail] = React.useState('');
-  const [manager] = React.useState(new Manager(Config.ServerUrl));
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const inviteFriend = async () => {
@@ -21,7 +19,7 @@ export default function Index() {
       return;
     }
     //发送好友邀请
-    manager.socket('/friend').emit('applyfriend',
+    friendSocket.emit('applyfriend',
       { email, id: userInfo.id },
       (data: { msg: string, receiverId: string }) => {
         messageApi.info({ content: data?.msg });
@@ -40,6 +38,15 @@ export default function Index() {
       messageApi.error({ content: `${statusCode} ${msg}` });
     }
   };
+
+  React.useEffect(() => {
+    if (!friendSocket.connected) {
+      friendSocket.connect();
+    }
+    return function () {
+      if (friendSocket.connected) friendSocket.disconnect();
+    };
+  }, []);
 
   return (
     <StyleDiv >

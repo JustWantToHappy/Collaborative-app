@@ -1,14 +1,15 @@
 import React from 'react';
-import StyleDiv from './style';
 import * as dayjs from 'dayjs';
-import { Chat, Config, LocalStorageKey } from '@/enum';
+import StyleDiv from './style';
 import { useLocalStorage } from '@/hooks';
-import type { ChatRoom } from '@/types';
-import { Manager } from 'socket.io-client';
 import { getAllChatRoom } from '@/api';
+import type { ChatRoom } from '@/types';
 import { defaultCssStyles } from '@/utils';
+import { Chat, LocalStorageKey } from '@/enum';
+import MyAvatar from '@/components/MyAvatar';
 import { NavLink, useParams } from 'react-router-dom';
-import { Avatar, Badge, Button, Popover, message } from 'antd';
+import { Badge, Button, Popover, message } from 'antd';
+import { chatRoomSocket, messageSocket } from '@/utils';
 import { EllipsisOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 
 type IProps = {
@@ -22,7 +23,6 @@ export default function Index(props: IProps) {
   const { wide, changeWide } = props;
   const [active, setActive] = React.useState(chatRoomId);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
-  const [manager] = React.useState(new Manager(Config.ServerUrl));
   const [messageApi, contextHolder] = message.useMessage();
   const [chatrooms, setChatRooms] = React.useState<ChatRoom[]>([]);
 
@@ -37,15 +37,15 @@ export default function Index(props: IProps) {
 
   React.useEffect(() => {
     getData();
-    manager.socket('/message').on(`${userInfo.id}fetchChatRoom`, (chatRoomId: string) => {
+    messageSocket.on(`${userInfo.id}fetchChatRoom`, (chatRoomId: string) => {
       //获取最新的聊天列表并将用户加入到指定房间
       getData();
-      manager.socket('/chatroom').emit(Chat.JoinOne, { userId: userInfo.id, roomId: chatRoomId });
+      chatRoomSocket.emit(Chat.JoinOne, { userId: userInfo.id, roomId: chatRoomId });
     });
     return function () {
-      manager.socket('/message').off(`${userInfo.id}fetchChatRoom`);
+      messageSocket.off(`${userInfo.id}fetchChatRoom`);
     };
-  }, [getData, manager, userInfo]);
+  }, [getData, userInfo.id]);
 
 
   return (
@@ -61,7 +61,7 @@ export default function Index(props: IProps) {
         {chatrooms.map(chatroom => <NavLink
           key={chatroom.id}
           to={`/chat/record/${chatroom.id}`}
-          state={chatroom.Group?.name || chatroom.User?.name}
+          state={{ title: chatroom.Group?.name || chatroom.User?.name, type: chatroom.type }}
           style={{ color: active === chatroom.id ? '#fff' : '#000', textDecoration: 'none' }}>
           <li
             className='chat_item'
@@ -70,11 +70,9 @@ export default function Index(props: IProps) {
           >
             <div className='chat_item_avatar'>
               <Badge count={0} size='small'>
-                <Avatar
-                  size='large'
-                  src={chatroom.Group?.avatar === '' && chatroom.User?.avatar === ''
-                    ? '' : `/api/${chatroom.Group?.avatar || chatroom.User?.avatar}`}
-                >{(chatroom.Group?.name || chatroom.User?.name)?.slice(0, 2)}</Avatar>
+                <MyAvatar src={chatroom.Group?.avatar || chatroom.User?.avatar} >
+                  {chatroom.Group?.name || chatroom.User?.name}
+                </MyAvatar>
               </Badge>
             </div>
             <p>{chatroom.Group?.name || chatroom.User?.name}</p>

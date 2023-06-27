@@ -5,6 +5,6 @@ export function getAllChatRoom() {
   return request.get<ChatRoom[]>('/chatroom');
 }
 
-export function getChatRecordsByChatRoomId(id:string) {
+export function getChatRecordsByChatRoomId(id: string) {
   return request.get<ChatRecord[]>(`/chatroom/records/${id}`);
 }

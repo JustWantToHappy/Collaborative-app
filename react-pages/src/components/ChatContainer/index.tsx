@@ -2,14 +2,15 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
 import * as dayjs from 'dayjs';
-import { useLocalStorage, useDebouce } from '@/hooks';
-import { Manager } from 'socket.io-client';
+import { chatRoomSocket } from '@/utils';
 import type { ChatRecord } from '@/types';
+import MyAvatar from '@/components/MyAvatar';
 import UploadImg from '@/components/UploadImg';
-import { Avatar, Button, Input, message, FloatButton } from 'antd';
+import { useLocalStorage, useDebouce } from '@/hooks';
 import { useParams, useLocation } from 'react-router-dom';
 import { uploadImg, getChatRecordsByChatRoomId } from '@/api';
 import { Chat, Config, FileType, LocalStorageKey } from '@/enum';
+import { Button, Input, message, FloatButton } from 'antd';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 
@@ -22,7 +23,6 @@ export default function Index() {
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
   const [asideWidth, setAsideWidth] = React.useState('18rem');
   const [chatRecords, setChatRecords] = React.useState<ChatRecord[]>([]);
-  const [manager] = React.useState(new Manager(Config.ServerUrl));
 
   const showDrawer = () => setOpen(true);
 
@@ -34,7 +34,7 @@ export default function Index() {
       messageApi.warning('请输入文字');
       return;
     }
-    manager.socket('/chatroom').emit(Chat.Message,
+    chatRoomSocket.emit(Chat.Message,
       {
         senderId: userInfo.id,
         receiverId: userInfo.id,
@@ -53,7 +53,7 @@ export default function Index() {
     form.append('file', file as RcFile);
     const { statusCode, msg, data } = await uploadImg(form);
     if (statusCode === 200) {
-      manager.socket('/chatroom').emit(Chat.Message,
+      chatRoomSocket.emit(Chat.Message,
         {
           senderId: userInfo.id,
           receiverId: userInfo.id,
@@ -112,18 +112,16 @@ export default function Index() {
     <StyleDiv asideWidth={asideWidth}>
       {contextHolder}
       <div className='chat_record_header'>
-        <h4>{state.name}</h4>
+        <h4>{state?.title}</h4>
         <small style={{ display: state.type === 'private' ? 'none' : 'inline' }}>成员列表</small>
       </div>
       <div className='chat_record'>
         <div style={{ textAlign: 'center', padding: '2rem', display: chatRecords.length === 0 ? 'block' : 'none' }}>
           <small>暂无消息</small>
         </div>
-        {chatRecords.map(chatRecord => <ul key={chatRecord.id} className='chat_record_userInfo'>
+        {chatRecords.map((chatRecord) => <ul key={chatRecord.id} className='chat_record_userInfo'>
           <li>
-            <Avatar size='large' src={`/api/${chatRecord.avatar}`} >
-              {chatRecord.name.slice(0, 2)}
-            </Avatar>
+            <MyAvatar src={chatRecord.avatar}>{chatRecord.name}</MyAvatar>
             <div
               className={chatRecord.senderId === userInfo.id ? 'chat_record_content highlight' : 'chat_record_content'}
             >
@@ -154,7 +152,7 @@ export default function Index() {
           manualUpload={true}
           showUploadList={false} />
       </div>
-      <FloatButton.BackTop className='return_top' />
+      {/*<FloatButton.BackTop className='return_top' />*/}
     </StyleDiv>
   );
 }

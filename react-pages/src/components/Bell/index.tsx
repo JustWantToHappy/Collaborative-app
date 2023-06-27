@@ -1,19 +1,18 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
+import { messageSocket } from '@/utils';
 import StyleDiv from './style';
 import { Badge, message } from 'antd';
 import type { Message } from '@/types';
-import { io } from 'socket.io-client';
 import { useLocalStorage } from '@/hooks';
 import { getAllPendingMessages } from '@/api';
-import { Config, LocalStorageKey } from '@/enum';
+import { LocalStorageKey } from '@/enum';
 import { BellFilled } from '@ant-design/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function Index() {
   const navigate = useNavigate();
   const [messages, setMessages] = React.useState<Array<Message>>([]);
-  const [socket] = React.useState(io(Config.ServerUrl + '/message'));
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
   const [messageApi, contextHolder] = message.useMessage();
   const receiverEventName = `${userInfo.id}fetchNotify`;
@@ -36,19 +35,23 @@ export default function Index() {
         messageApi.error({ content: `${statusCode} ${msg}` });
       }
     })();
-    socket.on(receiverEventName, (messages: Message[]) => {
+    if (!messageSocket.connected) {
+      messageSocket.connect();
+    }
+    messageSocket.on(receiverEventName, (messages: Message[]) => {
       setMessages(messages);
       PubSub.publish('getNotify', messages);
     });
     return function () {
-      socket.off(receiverEventName);
+      messageSocket.off(receiverEventName);
+      if (messageSocket.connected) messageSocket.disconnect();
     };
-  }, [socket, receiverEventName, messageApi, navigate]);
+  }, [receiverEventName, messageApi, navigate]);
 
   React.useEffect(() => {
     const fetchNotifyToken = PubSub.subscribe('fetchNotify',
       (_, receiverId: string) => {
-        socket.emit('fetchNotify', receiverId);
+        messageSocket.emit('fetchNotify', receiverId);
       });
     const notifyToken = PubSub.subscribe('setNotify', (_, newMessages: Message[]) => {
       setMessages(newMessages);
@@ -57,7 +60,7 @@ export default function Index() {
       PubSub.unsubscribe(fetchNotifyToken);
       PubSub.unsubscribe(notifyToken);
     };
-  }, [messages, socket]);
+  }, [messages]);
 
   return (
     <StyleDiv>
