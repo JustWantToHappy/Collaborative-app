@@ -80,6 +80,14 @@ export class ChatroomService {
     });
   }
 
+  async findChatRoomByGroupName(name: string) {
+    const group = await this.prisma.group.findUnique({
+      where: { name },
+      include: { ChatRoom: true },
+    });
+    return group.ChatRoom.id;
+  }
+
   async findChatRecordsByChatRoomId(id: string) {
     const result = await this.prisma.$queryRaw`
       select user.name,user.avatar,message.id,senderId,receiverId,chatRoomId,text,fileType,message.createdAt

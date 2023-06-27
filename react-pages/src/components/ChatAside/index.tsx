@@ -42,7 +42,13 @@ export default function Index(props: IProps) {
       getData();
       chatRoomSocket.emit(Chat.JoinOne, { userId: userInfo.id, roomId: chatRoomId });
     });
+    const fetchChatRoomToken = PubSub.subscribe('fetchChatRoom', (_, chatRoomId: string) => {
+      getData();
+      chatRoomSocket.emit(Chat.JoinOne, { roomId: chatRoomId, userId: userInfo.id });
+    });
+
     return function () {
+      PubSub.unsubscribe(fetchChatRoomToken);
       messageSocket.off(`${userInfo.id}fetchChatRoom`);
     };
   }, [getData, userInfo.id]);

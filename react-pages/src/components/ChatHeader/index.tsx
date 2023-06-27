@@ -34,12 +34,14 @@ export default function Index() {
     formData.set('name', (values.name as string).trim());
     formData.set('description', values.description ?? '');
     try {
-      const { statusCode, msg } = await buildGroup(formData);
+      const { statusCode, msg, data: chatRoomId } = await buildGroup(formData);
       if (statusCode === 200) {
         messageApi.success({ content: '创建成功' });
         form.resetFields();
         setShowGroup(false);
         setShowFileList(false);
+        //更新聊天列表
+        PubSub.publish('fetchChatRoom',chatRoomId);
       } else {
         messageApi.info({ content: `${statusCode} ${msg}` });
       }

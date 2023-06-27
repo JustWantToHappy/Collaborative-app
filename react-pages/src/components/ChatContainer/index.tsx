@@ -9,13 +9,14 @@ import UploadImg from '@/components/UploadImg';
 import { useLocalStorage, useDebouce } from '@/hooks';
 import { useParams, useLocation } from 'react-router-dom';
 import { uploadImg, getChatRecordsByChatRoomId } from '@/api';
-import { Chat, Config, FileType, LocalStorageKey } from '@/enum';
+import { Chat, FileType, LocalStorageKey } from '@/enum';
 import { Button, Input, message, FloatButton } from 'antd';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 
 export default function Index() {
   const { state } = useLocation();
+  const backTopRef = React.useRef(null);
   const { chatRoomId } = useParams();
   const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -152,7 +153,7 @@ export default function Index() {
           manualUpload={true}
           showUploadList={false} />
       </div>
-      {/*<FloatButton.BackTop className='return_top' />*/}
+      <FloatButton.BackTop className='return_top' />
     </StyleDiv>
   );
 }

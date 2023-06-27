@@ -5,7 +5,7 @@ export const myGroups = () => {
 };
 
 export const buildGroup = (team:FormData) => {
-  return request.post('/group',team,{ headers: { 'Content-Type': 'multipart/formdata' } });
+  return request.post<string>('/group',team,{ headers: { 'Content-Type': 'multipart/formdata' } });
 };
 
 export const applyJoinGroup = (name:string) => {

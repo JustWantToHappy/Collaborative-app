@@ -1,12 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MessageType, State } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ChatroomService } from '../chatroom/chatroom.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 
 @Injectable()
 export class GroupService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly chatRoomService: ChatroomService,
+  ) {}
   async create(createGroupDto: CreateGroupDto) {
     const group = await this.prisma.group.findUnique({
       where: { name: createGroupDto.name },
@@ -29,7 +33,10 @@ export class GroupService {
         },
       },
     });
-    return 'create success';
+    const chatRoomId = await this.chatRoomService.findChatRoomByGroupName(
+      createGroupDto.name,
+    );
+    return chatRoomId;
   }
 
   findAll() {

@@ -35,7 +35,7 @@ model Friend {
 
 model Group {
   id          String    @id @default(uuid())
-  leaderId    String
+  leaderId    String    
   name        String    @unique
   avatar      String?   @default("")
   description String    @default("")
