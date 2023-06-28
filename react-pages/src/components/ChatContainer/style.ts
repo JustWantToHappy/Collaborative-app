@@ -12,6 +12,8 @@ const StyleDiv = styled('div') <Props>`
   margin-bottom:calc(var(--chat-tool-height) + 2rem);
   padding:0 1rem;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  position: relative;
+  overflow: hidden;
 
   @media screen and (max-width:900px) {
     min-width:320px;
@@ -25,11 +27,9 @@ const StyleDiv = styled('div') <Props>`
     display: flex;
     align-items: center;
     justify-content: center;
-    small{
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      cursor: pointer;
+    &>small{
       position: absolute;
+      cursor: pointer;
       right:2rem;
       top:50%;
       transform: translateY(-50%);

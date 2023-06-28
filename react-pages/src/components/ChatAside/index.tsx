@@ -21,6 +21,7 @@ type IProps = {
 export default function Index(props: IProps) {
   const { chatRoomId } = useParams();
   const { wide, changeWide } = props;
+  const chatContainerRef = React.useRef<HTMLUListElement>(null);
   const [active, setActive] = React.useState(chatRoomId);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
   const [messageApi, contextHolder] = message.useMessage();
@@ -54,9 +55,20 @@ export default function Index(props: IProps) {
     };
   }, [getData, userInfo.id]);
 
+  React.useEffect(() => {
+    const handleScrolling = (event: Event) => {
+      event.stopPropagation();
+    };
+    chatContainerRef.current?.addEventListener('scroll', handleScrolling);
+    return function () {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.removeEventListener('scroll', handleScrolling);
+      }
+    };
+  }, []);
 
   return (
-    <StyleDiv wide={wide}>
+    <StyleDiv wide={wide} >
       {contextHolder}
       <header >
         <i onClick={changeWide}>
@@ -64,11 +76,15 @@ export default function Index(props: IProps) {
         </i>
         <h4>消息</h4>
       </header>
-      <ul className='chat_aside'>
+      <ul className='chat_aside' ref={chatContainerRef}>
         {chatrooms.map(chatroom => <NavLink
           key={chatroom.id}
           to={`/chat/record/${chatroom.id}`}
-          state={{ title: chatroom.Group?.name || chatroom.User?.name, type: chatroom.type }}
+          state={
+            {
+              title: chatroom.Group?.name || chatroom.User?.name,
+              type: chatroom.type,
+            }}
           style={{ color: active === chatroom.id ? '#fff' : '#000', textDecoration: 'none' }}>
           <li
             className='chat_item'
@@ -82,8 +98,8 @@ export default function Index(props: IProps) {
                 </MyAvatar>
               </Badge>
             </div>
-            <p>{chatroom.Group?.name || chatroom.User?.name}</p>
-            <p>{chatroom.Messages && chatroom.Messages[0]?.text}</p>
+            <p style={{maxWidth:'5rem'}}>{chatroom.Group?.name || chatroom.User?.name}</p>
+            <p style={{marginRight:'1rem'}}>{chatroom.Messages && (chatroom.Messages[0]?.fileType === 'image' ? '图片' : chatroom.Messages[0]?.text)}</p>
             <small className='chat_item_date'>
               {chatroom.Messages && dayjs(chatroom.Messages[0]?.createdAt).format('YYYY/MM/DD HH:mm:ss')}
             </small>

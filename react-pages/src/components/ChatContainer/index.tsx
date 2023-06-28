@@ -2,21 +2,23 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
 import * as dayjs from 'dayjs';
+import MembersSvg from '../MembersSvg';
 import { chatRoomSocket } from '@/utils';
 import type { ChatRecord } from '@/types';
 import MyAvatar from '@/components/MyAvatar';
 import UploadImg from '@/components/UploadImg';
+import MemberList from '@/components/MemberList';
 import { useLocalStorage, useDebouce } from '@/hooks';
-import { useParams, useLocation } from 'react-router-dom';
 import { uploadImg, getChatRecordsByChatRoomId } from '@/api';
 import { Chat, FileType, LocalStorageKey } from '@/enum';
 import { Button, Input, message, FloatButton } from 'antd';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
 
 export default function Index() {
   const { state } = useLocation();
-  const backTopRef = React.useRef(null);
+  const navigate = useNavigate();
   const { chatRoomId } = useParams();
   const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -25,9 +27,7 @@ export default function Index() {
   const [asideWidth, setAsideWidth] = React.useState('18rem');
   const [chatRecords, setChatRecords] = React.useState<ChatRecord[]>([]);
 
-  const showDrawer = () => setOpen(true);
-
-  const onClose = () => setOpen(false);
+  const hide = () => setOpen(false);
 
   //发送文字
   const sendText = useDebouce(() => {
@@ -71,13 +71,14 @@ export default function Index() {
 
   //获取聊天记录
   const getMessages = React.useCallback(async () => {
-    const { statusCode, data, msg } = await getChatRecordsByChatRoomId(chatRoomId as string);
+    hide();
+    const { statusCode, data } = await getChatRecordsByChatRoomId(chatRoomId as string);
     if (statusCode === 200) {
       setChatRecords(data || []);
     } else {
-      messageApi.error(`${statusCode} ${msg}`);
+      navigate('/chat');
     }
-  }, [chatRoomId, messageApi]);
+  }, [chatRoomId, navigate]);
 
   React.useEffect(() => {
     getMessages();
@@ -112,9 +113,14 @@ export default function Index() {
   return (
     <StyleDiv asideWidth={asideWidth}>
       {contextHolder}
+      <MemberList show={open} hide={hide} />
       <div className='chat_record_header'>
         <h4>{state?.title}</h4>
-        <small style={{ display: state.type === 'private' ? 'none' : 'inline' }}>成员列表</small>
+        <small
+          onClick={() => setOpen(true)}
+          style={{ display: state?.type === 'private' ? 'none' : 'inline' }}>
+          <MembersSvg />
+        </small>
       </div>
       <div className='chat_record'>
         <div style={{ textAlign: 'center', padding: '2rem', display: chatRecords.length === 0 ? 'block' : 'none' }}>

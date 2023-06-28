@@ -98,7 +98,7 @@ export default function Index() {
                 退出登录
               </Button>
               <Button type='link' style={{ display: 'flex', alignItems: 'center' }}>
-                <Switch defaultChecked onChange={shiftTheme} size='small' />
+                <Switch onChange={shiftTheme} size='small' />
                 <img src={dark ? MoonSvg : SunSvg} style={{ width: '1.2rem', marginLeft: '.5rem' }} />
               </Button>
             </div>} >
