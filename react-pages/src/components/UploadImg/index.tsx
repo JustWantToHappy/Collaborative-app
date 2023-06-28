@@ -12,12 +12,14 @@ interface Props {
   manualUpload?: boolean;
   setFile?: (file: UploadFile) => void;
   showFileList?: boolean;
+  size?: 'large' | 'small' | 'middle'
+  type?: 'primary' | 'text' | 'link' | 'dashed' | 'ghost'
 }
 
 const Index: React.FC<Props> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = React.useState<UploadFile[]>([]);
-  const { title, action, showUploadList, manualUpload, setFile, showFileList } = props;
+  const { title, action, showUploadList, manualUpload, setFile, showFileList, size, type } = props;
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const beforeUpload = (file: UploadFile) => {
@@ -66,7 +68,7 @@ const Index: React.FC<Props> = (props) => {
     onChange={onChange}
     showUploadList={showUploadList}>
     {contextHolder}
-    <Button type='primary'>{title}</Button>
+    <Button type={type} size={size} >{title}</Button>
   </Upload>;
 };
 

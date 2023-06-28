@@ -145,19 +145,28 @@ export default function Index() {
       </div>
       <div className='chat_record_tool'>
         <div style={{ flex: '1' }}>
-          <Input
+          <Input.TextArea
+            style={{ minWidth: '200px', padding: '0', overflow: 'hidden' }}
             value={text}
-            placeholder='你想要说些什么...'
+            autoFocus
+            autoSize={{ minRows: 1, maxRows: 4 }}
+            placeholder='现在你想要说些什么，表达你的看法、分享你的观点...'
             onChange={e => setText(e.target.value)}
-            allowClear />
+            //bordered={false}
+            allowClear >
+          </Input.TextArea>
         </div>
-        <Button type='primary' onClick={sendText}>发送</Button>
-        <UploadImg
-          title='发送图片'
-          action=''
-          setFile={sendImgFile}
-          manualUpload={true}
-          showUploadList={false} />
+        <div className='chat_record_btns'>
+          <Button type='link' onClick={sendText} size='small' >发送</Button>
+          <UploadImg
+            title='发送图片'
+            type='link'
+            action=''
+            size='small'
+            setFile={sendImgFile}
+            manualUpload={true}
+            showUploadList={false} />
+        </div>
       </div>
       <FloatButton.BackTop className='return_top' />
     </StyleDiv>

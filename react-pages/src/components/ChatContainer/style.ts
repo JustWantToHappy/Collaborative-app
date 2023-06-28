@@ -13,7 +13,7 @@ const StyleDiv = styled('div') <Props>`
   padding:0 1rem;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   position: relative;
-  overflow: hidden;
+  /*overflow-x: hidden;*/
 
   @media screen and (max-width:900px) {
     min-width:320px;
@@ -96,18 +96,27 @@ const StyleDiv = styled('div') <Props>`
   /*  */
   .chat_record_tool{
     display: flex;
-    height:var(--chat-tool-height);
+    overflow: auto;
+    overflow-x: hidden;
+    min-height:var(--chat-tool-height);
+    max-height:30vh;
     position: fixed;
     bottom:0;
     width:calc(100vw - var(--chat-aside-width));
     left:calc(var(--chat-aside-width) + 2px);
-    padding:0 4vw;
-    justify-content: space-around;
-    align-items: center;
+    padding:1rem;
     background-color: #fff;
     column-gap:1rem;
     border-top:1px solid var(--ab-grey-200);
   }
+
+  .chat_record_btns{
+    display: flex;
+    column-gap: .5rem;
+    align-items: flex-end;
+    padding-bottom: 4px;
+  }
+
   .return_top{
     right:1vw;
     bottom:calc(var(--chat-tool-height) + 2vh);

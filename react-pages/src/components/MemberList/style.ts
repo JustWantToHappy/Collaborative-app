@@ -2,10 +2,11 @@ import styled from 'styled-components';
 
 const StyleDiv = styled('div')<{show:boolean}>`
   position: absolute;
-  right:${props=>props.show?'0':'-100%'};
+  right: 0;
   min-width: 140px;
-  transition: right 300ms ease;
-  z-index:1;
+  transition: all 300ms ease;
+  opacity: ${props=>props.show?1:0};
+  z-index:${props=>props.show?1:-1};
   border-radius: 1rem;
   background-color: var(--ab-white-100);
   box-shadow: rgba(0, 0, 0, 0.2) -4px 9px 25px -6px;

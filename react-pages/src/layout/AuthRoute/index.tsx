@@ -11,7 +11,7 @@ const AuthRoute: React.FC<IProps> = (props) => {
   const login = isLogin();
   const { children, redirect } = props;
 
-  return login ? <>{children}</> : <Navigate to={redirect} />;
+  return login ? <>{children}</> : <Navigate to={redirect} replace={true} />;
 };
 
 export default AuthRoute;

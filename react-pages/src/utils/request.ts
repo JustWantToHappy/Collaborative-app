@@ -33,9 +33,10 @@ class Request{
             this.handleAuthorization(config);
             return config;
         }, (err: AxiosError) => {
-           /* if (err.response?.status === 401) {
+            if (err.response?.status === 401) {
                 window.localStorage.removeItem(LocalStorageKey.User_Info);
-            }*/
+                history.replaceState('','','/');
+            }
             return Promise.reject(err.response?.data);
         });
 
