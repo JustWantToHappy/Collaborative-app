@@ -51,7 +51,7 @@ export class MessageService {
     //如果用户同意
     if (updateMessageDto?.state === State.Agree) {
       if (message.type === MessageType.ApplyGroup) {
-        this.handleApplyGroup(message);
+        chatRoom = await this.handleApplyGroup(message);
       } else if (message.type === MessageType.ApplyFriend) {
         chatRoom = await this.handleApplyFriend(message);
       }
@@ -71,6 +71,7 @@ export class MessageService {
     await this.chatroomService.updateByGroupId(group.id, {
       userIds: chatroom.userIds + `,${message.senderId}`,
     });
+    return chatroom;
   }
 
   async handleApplyFriend(message: Message) {
