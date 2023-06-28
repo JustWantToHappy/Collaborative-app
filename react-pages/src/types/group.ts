@@ -1,8 +1,12 @@
-export type Group=Partial<{
+import type { Friend } from './friend';
+
+export type Group = Partial<{
   id: number;
-  leader_id: number;
+  leaderId: number;
   name: string;
   description: string;
   avatar: string;
-  create_at: string;
+  createdAt: string;
 }>
+
+export type Contact = { friends: Friend[], groups: Group[] }

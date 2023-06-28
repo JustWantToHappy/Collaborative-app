@@ -43,8 +43,15 @@ export class GroupService {
     return `This action returns all group`;
   }
 
-  async findUserGroups(id: string) {
+  async findUserLeadGroups(id: string) {
     return [];
+  }
+
+  async findUserJoinGroups(id: string) {
+    return this.prisma.chatRoom.findMany({
+      include: { Group: true },
+      where: { userIds: { contains: id }, type: 'public' },
+    });
   }
 
   findOne(id: string) {

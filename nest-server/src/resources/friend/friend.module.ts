@@ -6,6 +6,7 @@ import { MessageModule } from '../message/message.module';
 import { FriendController } from './friend.controller';
 import { UserService } from '../user/user.service';
 import { ChatroomService } from '../chatroom/chatroom.service';
+import { GroupService } from '../group/group.service';
 
 @Module({
   //1.MessageService中注入了其他service依赖，如果使用providers注册，其他service也需要注册
@@ -17,6 +18,7 @@ import { ChatroomService } from '../chatroom/chatroom.service';
     FriendGateway,
     UserService,
     ChatroomService,
+    GroupService,
   ],
   exports: [FriendService],
   controllers: [FriendController],

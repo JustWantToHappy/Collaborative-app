@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MessageType, State } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatroomService } from '../chatroom/chatroom.service';
+import { GroupService } from '../group/group.service';
 import { MessageService } from '../message/message.service';
 import { UserService } from '../user/user.service';
 import { UpdateFriendDto } from './dto/update-friend.dto';
@@ -13,6 +14,7 @@ export class FriendService {
     private readonly userService: UserService,
     private readonly messageService: MessageService,
     private readonly chatRoomService: ChatroomService,
+    private readonly groupService: GroupService,
   ) {}
   async create(id: string, email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
@@ -63,8 +65,9 @@ export class FriendService {
       },
     });
   }
-
-  async findUserFriends(id: string) {
+  //用户联系人(包括好友和加入的群组)
+  async findUserLinkMan(id: string) {
+    const linkMan = { friends: [], groups: [] };
     const friendIds = (await this.findOne(id))?.friendList.split(',');
     if (friendIds?.length > 0 && friendIds.join(',') !== '') {
       const result = await Promise.all(
@@ -78,10 +81,11 @@ export class FriendService {
           };
         }),
       );
-      return result;
-    } else {
-      return [];
+      linkMan.friends = result;
     }
+    const chatrooms = await this.groupService.findUserJoinGroups(id);
+    linkMan.groups = chatrooms.map((chatroom) => chatroom.Group);
+    return linkMan;
   }
 
   async invitedInfo(id: string) {

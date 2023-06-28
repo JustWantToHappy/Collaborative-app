@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import {ellipsis } from '@/common';
 
 const StyleDiv = styled('div')`
-  min-width:300px;
   display: flex;
   gap: 2rem;
   align-items: flex-start;
@@ -23,7 +22,7 @@ const StyleDiv = styled('div')`
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   }
 
-  .friend_info{
+  .panel_info{
     position: relative;
     display: grid;
     grid-template-columns:1fr 1fr 2fr 1fr;

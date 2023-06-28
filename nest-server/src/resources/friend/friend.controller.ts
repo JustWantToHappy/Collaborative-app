@@ -5,8 +5,8 @@ import { FriendService } from './friend.service';
 export class FriendController {
   constructor(private readonly friendService: FriendService) {}
   @Get()
-  findUserFriends(@Request() request) {
-    return this.friendService.findUserFriends(request.user.id);
+  findUserLinkMan(@Request() request) {
+    return this.friendService.findUserLinkMan(request.user.id);
   }
 
   @Delete(':id')

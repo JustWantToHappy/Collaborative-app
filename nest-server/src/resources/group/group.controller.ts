@@ -33,8 +33,8 @@ export class GroupController {
   }
 
   @Get()
-  findUserGroups(@Request() request) {
-    return this.groupService.findUserGroups(request.user.id);
+  findUserLeadGroups(@Request() request) {
+    return this.groupService.findUserLeadGroups(request.user.id);
   }
 
   @Patch(':id')

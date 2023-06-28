@@ -1,25 +1,30 @@
 import React from 'react';
 import StyleDiv from './style';
-import type { Friend } from '@/types';
-import { myFriends, deleteFriend } from '@/api';
-import { message, Avatar, Button, Divider } from 'antd';
+import MyAvatar from '@/components/MyAvatar';
+import type { Contact } from '@/types';
+import { myjoins, deleteFriend } from '@/api';
+import { message, Button } from 'antd';
+import { useLocalStorage } from '@/hooks';
+import { LocalStorageKey } from '@/enum';
 
 
 interface Props {
   option: string;
 }
 
+
 export default function Index(props: Props) {
   const [messageApi, contextHolder] = message.useMessage();
-  const [friendsInfo, SetFriendsInfo] = React.useState<Friend[]>([]);
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
+  const [contacts, setContacts] = React.useState<Contact>({ friends: [], groups: [] });
 
 
   React.useEffect(() => {
     if (props.option === '1') {
       (async () => {
-        const { statusCode, data, msg } = await myFriends();
+        const { statusCode, data, msg } = await myjoins();
         if (statusCode === 200) {
-          SetFriendsInfo(data || []);
+          setContacts(data as Contact);
         } else {
           messageApi.info({ content: `statusCode ${msg}` });
         }
@@ -31,8 +36,9 @@ export default function Index(props: Props) {
     const { statusCode, msg } = await deleteFriend(id);
     if (statusCode === 200) {
       message.success({ content: '删除成功!' });
-      const restFriends = friendsInfo.filter(friend => friend.id !== id);
-      SetFriendsInfo(restFriends);
+      const restFriends = contacts?.friends.filter(friend => friend.id !== id);
+      contacts.friends = restFriends;
+      setContacts(contacts);
     } else {
       messageApi.info({ content: `statusCode ${msg}` });
     }
@@ -45,10 +51,8 @@ export default function Index(props: Props) {
         <p>
           <span>我的好友</span>
         </p>
-        {friendsInfo.map(friend => <div key={friend.email} className='friend_info'>
-          <Avatar size='large' src={friend.avatar === '' ? '' : `/api/${friend.avatar}`}>
-            {friend.name.slice(0, 2)}
-          </Avatar>
+        {contacts.friends.map(friend => <div key={friend.email} className='panel_info'>
+          <MyAvatar size='large' />
           <h5>{friend.name}</h5>
           <span>邮箱地址：{friend.email}</span>
           <small>
@@ -60,12 +64,14 @@ export default function Index(props: Props) {
         <p>
           <span>我的群组</span>
         </p>
-        {friendsInfo.map(friend => <div key={friend.email} className='friend_info'>
-          <Avatar size='large' />
-          <h5>{friend.name}</h5>
-          <span>邮箱地址：{friend.email}</span>
+        {contacts.groups.map(group => <div key={group.id} className='panel_info'>
+          <MyAvatar size='large' src={group.avatar}>{group.name}</MyAvatar>
+          <span></span>
+          <h5>{group.name}</h5>
           <small>
-            <Button type='link' danger onClick={() => removeFriend(friend.id)}>删除好友</Button>
+            <Button type='link' danger>
+              {userInfo.id === group.leaderId ? '解散此群' : '退出此群'}
+            </Button>
           </small>
         </div>)}
       </div>
