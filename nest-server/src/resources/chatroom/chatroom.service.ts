@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { MessageType } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from '../user/user.service';
@@ -79,6 +79,26 @@ export class ChatroomService {
       where: { userIds: { contains: userId } },
     });
   }
+  //群组成员
+  async findUsersByChatRoomId(id: string) {
+    const chatroom = await this.findOne(id);
+    return await Promise.all(
+      chatroom.userIds
+        .split(',')
+        .filter((userId) => userId !== '')
+        .map((userId) => {
+          return this.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+              email: true,
+            },
+          });
+        }),
+    );
+  }
 
   async findChatRoomByGroupName(name: string) {
     const group = await this.prisma.group.findUnique({
@@ -89,6 +109,10 @@ export class ChatroomService {
   }
 
   async findChatRecordsByChatRoomId(id: string) {
+    const chatroom = await this.findOne(id);
+    if (!chatroom) {
+      throw new HttpException(`房间${id}不存在`, HttpStatus.NOT_FOUND);
+    }
     const result = await this.prisma.$queryRaw`
       select user.name,user.avatar,message.id,senderId,receiverId,chatRoomId,text,fileType,message.createdAt
       from message inner join user on message.senderId=user.id

@@ -65,27 +65,41 @@ export class FriendService {
       },
     });
   }
+
   //用户联系人(包括好友和加入的群组)
   async findUserLinkMan(id: string) {
     const linkMan = { friends: [], groups: [] };
-    const friendIds = (await this.findOne(id))?.friendList.split(',');
-    if (friendIds?.length > 0 && friendIds.join(',') !== '') {
-      const result = await Promise.all(
-        friendIds.map(async (friendId) => {
-          const user = await this.userService.findOne(friendId);
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            avatar: user.avatar,
-          };
-        }),
-      );
-      linkMan.friends = result;
-    }
+    const friends = await this.findUserFriends(id);
+    linkMan.friends = friends;
     const chatrooms = await this.groupService.findUserJoinGroups(id);
     linkMan.groups = chatrooms.map((chatroom) => chatroom.Group);
     return linkMan;
+  }
+
+  //用户好友列表
+  async findUserFriends(id: string) {
+    const friendIds = (await this.findOne(id))?.friendList.split(',');
+    if (friendIds?.length > 0 && friendIds.join(',') !== '') {
+      const result = (
+        await Promise.all(
+          friendIds.map(async (friendId) => {
+            const user = await this.userService.findOne(friendId);
+            if (user) {
+              return {
+                id: user?.id,
+                email: user.email,
+                name: user.name,
+                avatar: user.avatar,
+              };
+            } else {
+              return null;
+            }
+          }),
+        )
+      ).filter((user) => user !== null);
+      return result;
+    }
+    return [];
   }
 
   async invitedInfo(id: string) {

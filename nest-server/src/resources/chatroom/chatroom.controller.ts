@@ -34,6 +34,11 @@ export class ChatroomController {
     return this.chatroomService.findChatRecordsByChatRoomId(id);
   }
 
+  @Get('users/:id')
+  findUsersByChatRoomId(@Param('id') id: string) {
+    return this.chatroomService.findUsersByChatRoomId(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.chatroomService.remove(id);
