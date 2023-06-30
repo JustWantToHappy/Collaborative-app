@@ -85,6 +85,7 @@ export default function Index(props: Props) {
         <Form.Item label='头像'>
           <UploadImg
             title='上传头像'
+            type='primary'
             manualUpload={true}
             setFile={setImgFile}
             showUploadList={true}

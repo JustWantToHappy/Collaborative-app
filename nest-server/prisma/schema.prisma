@@ -20,8 +20,9 @@ model User {
   updatedAt      DateTime?       @default(now())
   roles          Json?
   ChatRooms      ChatRoom[] //一个用户具有多个私聊聊天室
-  CloudDocuments CloudDocument[]
   CloudFiles     CloudFile[]
+  CloudDocuments CloudDocument[]
+  Images         Image[]
   RePorts        Report[]
   Approvals      Approval[]
   Friends        Friend[]
@@ -38,7 +39,7 @@ model Group {
   leaderId    String
   name        String    @unique
   avatar      String?   @default("")
-  description String    @default("")
+  description String    @db.Text
   createdAt   DateTime  @default(now())
   ChatRoom    ChatRoom? //限制一个团队对应一个聊天室，用于群聊
 }
@@ -75,27 +76,46 @@ model Message {
 
 model CloudFile {
   id             String          @id @default(uuid())
+  parentId       String          @default("0")
+  isshared       Int             @default(0) //0表示已共享，1表示未共享
   title          String
-  parentId       String          @default("")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @default(now())
+  description    String          @db.Text
   User           User?           @relation(fields: [userId], references: [id])
   userId         String?
   CloudDocuments CloudDocument[]
+  Images         Image[]
 }
 
 model CloudDocument {
   id                String             @id @default(uuid())
+  isshared          Int                @default(0)
   title             String
-  text              String             @db.Text
+  text              String             @db.LongText
   version           String
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @default(now())
   ownerId           String
-  collaborators     String //协作者id，逗号隔开
+  collaborators     String             @db.Text //协作者id，逗号隔开
   User              User?              @relation(fields: [userId], references: [id])
   userId            String?
-  CloudFile         CloudFile?         @relation(fields: [cloudFileId], references: [id])
-  cloudFileId       String?
+  CloudFile         CloudFile          @relation(fields: [cloudFileId], references: [id])
+  cloudFileId       String             @default("") //如果是空字符串，说明当前文件在顶层目录
   OnlineEditPersons OnlineEditPerson[]
+}
+
+model Image {
+  id          String    @id @default(uuid())
+  isshared    Int       @default(0)
+  path        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  description String    @db.Text
+  User        User?     @relation(fields: [userId], references: [id])
+  userId      String?
+  CloudFile   CloudFile @relation(fields: [cloudFileId], references: [id])
+  cloudFileId String    @default("")
 }
 
 //在线编辑的用户
@@ -129,10 +149,10 @@ model Report {
 }
 
 model Calendar {
-  id        String   @id @default(uuid())
-  title     String
-  startTime DateTime @default(now())
-  endTime   DateTime @default(now())
-  createdAt DateTime @default(now())
-  desc      String   @db.Text
+  id          String   @id @default(uuid())
+  title       String
+  startTime   DateTime @default(now())
+  endTime     DateTime @default(now())
+  createdAt   DateTime @default(now())
+  description String   @db.Text
 }

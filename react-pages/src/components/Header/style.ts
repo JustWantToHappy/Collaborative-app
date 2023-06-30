@@ -7,7 +7,7 @@ const StyleDiv = styled('div')`
   background-color: #fff;
 
   header{
-    height:4rem;
+    height:var(--ab-nav-height);
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     display: flex;
     align-items: center;

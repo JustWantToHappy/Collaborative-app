@@ -32,7 +32,7 @@
   --ab-theme:var(--ab-green-600);
   
   --ab-padding-x:2rem;
-  --ab-nav-height:4rem;
+  --ab-nav-height:3.5rem;
   
   --ab-main-header-height:3rem;
 }
@@ -48,15 +48,6 @@ body {
   scroll-behavior: smooth;
  /* background-color: #000;
   color: #fff;*/
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-h1,h2,h3,h4,h5,h6{
-  margin:1rem;
-  letter-spacing: 2px;
 }
 
 ul{

@@ -16,9 +16,7 @@ export const StyleDiv = styled('div') <Props>`
     display: block;
     position: fixed;
     height:calc(100vh - var(--ab-nav-height));
-    box-shadow: var(--ab-green-200) 1px 4px 4px;
-    border-right:1px solid var(--ab-grey-100);
-    /*transition:width 100ms ease;*/
+    border-right:1px solid var(--ab-grey-200);
   }
   main{
     left:var(--aside-width);
@@ -51,11 +49,40 @@ export const StyleDiv = styled('div') <Props>`
     margin-top:20vh;
   }
 
-  .clouddocument_header{
+  .cloud_header{
     padding:1rem;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .cloud_add{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding:1rem .5rem;
+    h4{
+      margin:0;
+    }
+  }
+
+  .cloud_share{
+    display: flex;
+    column-gap:1rem;
+  }
+
+  .shared_header{
+    padding:1rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .shared_editor{
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
   }
 `;

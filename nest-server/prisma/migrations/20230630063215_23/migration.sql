@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `cloudfile` ADD COLUMN `type` VARCHAR(191) NOT NULL DEFAULT 'folder',
+    MODIFY `parentId` VARCHAR(191) NOT NULL DEFAULT '0';

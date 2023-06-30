@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button, Tree, Space, Table, Tag } from 'antd';
 import { StyleDiv } from '@/common';
+import { useNavigate } from 'react-router-dom';
 import Badges from '@/components/Badges';
+import { Button, Tree, Space, Table, Tag, Popover } from 'antd';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
-const { Column, ColumnGroup } = Table;
 
+const { Column, ColumnGroup } = Table;
 const { DirectoryTree } = Tree;
 
 interface DataType {
@@ -64,8 +65,11 @@ const treeData: DataNode[] = [
 
 
 export default function Index() {
+  const navigate = useNavigate();
+
   const onSelect: DirectoryTreeProps['onSelect'] = (keys, info) => {
     console.log('Trigger Select', keys, info);
+    navigate(`/cloud/${info.node.key}`);
   };
 
   const onExpand: DirectoryTreeProps['onExpand'] = (keys, info) => {
@@ -74,26 +78,36 @@ export default function Index() {
 
   return (
     <StyleDiv asideWidth={'15rem'}>
-      <aside >
-        <h4 style={{ marginLeft: '.5rem' }}>目录</h4>
+      <aside>
+        <div className='cloud_add'>
+          <h4>目录</h4>
+          <Popover
+            arrow={false}
+            placement='bottom'
+            content={<div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Button type='link'>新建顶层文件夹</Button>
+              <Button type='link'>新建子文件夹&emsp;</Button>
+              <Button type='link'>新建子文件&emsp;&emsp;</Button>
+            </div>}>
+            <Button size='small'>+</Button>
+          </Popover>
+        </div>
         <DirectoryTree
           multiple
-          defaultExpandAll
           onSelect={onSelect}
           onExpand={onExpand}
           treeData={treeData}
         />
       </aside>
       <main>
-        <div className='header clouddocument_header'>
+        <div className='header cloud_header'>
           <Badges />
-          <div>
-            <Button type='primary' size='small'>创建文件</Button>
-            <Button type='primary' size='small' style={{ marginLeft: '.5rem' }}>创建文件夹</Button>
-            <Button type='primary' danger size='small' style={{ marginLeft: '.5rem' }}>删除此文件夹</Button>
+          <div className='cloud_share'>
+            <Button type='primary'>共享</Button>
+            <Button type='primary' danger>删除</Button>
           </div>
         </div>
-        <div className='container' style={{}}>
+        <div className='container'>
           <Table dataSource={data}>
             <ColumnGroup title="Name">
               <Column title="First Name" dataIndex="firstName" key="firstName" />

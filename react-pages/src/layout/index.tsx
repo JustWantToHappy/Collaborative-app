@@ -59,7 +59,7 @@ export const routes: Array<Router> = [
       },
       {
         name: '云文档',
-        path: '/cloud',
+        path: '/cloud/:id',
         element: <AuthRoute redirect='/'>
           <CloudDocument />
         </AuthRoute>

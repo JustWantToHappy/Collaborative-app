@@ -103,7 +103,7 @@ const StyleDiv = styled('div') <Props>`
     position: fixed;
     bottom:0;
     width:calc(100vw - var(--chat-aside-width));
-    left:calc(var(--chat-aside-width) + 2px);
+    left:var(--chat-aside-width);
     padding:1rem;
     background-color: #fff;
     column-gap:1rem;

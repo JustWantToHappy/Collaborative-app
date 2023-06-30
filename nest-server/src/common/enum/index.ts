@@ -12,7 +12,7 @@ export enum MessageType {
   Chat = 'chat',
   ApplyFriend = 'applyfriend', //申请好友
   ApplyGroup = 'applygroup', //申请加群
-  InviteCollaborator='invitecollaborator',//邀请协作者
+  InviteCollaborator = 'invitecollaborator', //邀请协作者
   FriendInviteJoinGroup = 'friendInviteJoinGroup', //好友邀请加群
 }
 //权限标识
@@ -27,8 +27,9 @@ export enum Chat {
   Leave = 'leave',
   Message = 'message',
 }
-//聊天类型
+//文件类型
 export enum FileType {
-  Text = 'text',
+  Folder = 'folder', //文件夹
+  Text = 'text', //聊天文本或者文档
   Image = 'image',
 }
