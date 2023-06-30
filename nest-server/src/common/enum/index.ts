@@ -12,8 +12,8 @@ export enum MessageType {
   Chat = 'chat',
   ApplyFriend = 'applyfriend', //申请好友
   ApplyGroup = 'applygroup', //申请加群
+  InviteCollaborator='invitecollaborator',//邀请协作者
   FriendInviteJoinGroup = 'friendInviteJoinGroup', //好友邀请加群
-  GroupInvite = 'groupInvite', //群申请
 }
 //权限标识
 export enum Role {

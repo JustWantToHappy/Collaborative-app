@@ -25,7 +25,7 @@ const StyleDiv = styled('div')`
   .panel_info{
     position: relative;
     display: grid;
-    grid-template-columns:1fr 1fr 2fr 1fr;
+    grid-template-columns:1fr 1fr 3fr 1fr;
     align-items: center;
     padding:.5rem;
     padding-right:9vw;

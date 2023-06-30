@@ -35,7 +35,7 @@ model Friend {
 
 model Group {
   id          String    @id @default(uuid())
-  leaderId    String    
+  leaderId    String
   name        String    @unique
   avatar      String?   @default("")
   description String    @default("")
@@ -68,21 +68,13 @@ model Message {
   type         String    @default("chat") //消息类型，有聊天，好友邀请，群邀请,申请好友，申请加群等
   state        String    @default("pending") //pending|agree|reject
   fileType     String    @default("text")
-  image        Image?
   isread       Int       @default(0) //0表示未读，1表示已读
   ChatRoom     ChatRoom? @relation(fields: [chatRoomId], references: [id])
   chatRoomId   String?
 }
 
-model Image {
-  id      String  @id @default(uuid())
-  Message Message @relation(fields: [path], references: [id])
-  path    String  @unique
-}
-
-//CloudFile的id不给默认值，这是因为CloudFile的id必须和用户id保持一致
 model CloudFile {
-  id             String          @id
+  id             String          @id @default(uuid())
   title          String
   parentId       String          @default("")
   User           User?           @relation(fields: [userId], references: [id])

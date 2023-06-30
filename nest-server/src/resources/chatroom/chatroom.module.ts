@@ -6,6 +6,8 @@ import { ChatRoomGateway } from './chatroom.gateway';
 import { MessageService } from '../message/message.service';
 import { GroupService } from '../group/group.service';
 import { UserService } from '../user/user.service';
+import { OnOffLineService } from './on-off-line.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   controllers: [ChatroomController],
@@ -16,6 +18,8 @@ import { UserService } from '../user/user.service';
     MessageService,
     GroupService,
     UserService,
+    OnOffLineService,
+    JwtService,
   ],
 })
 export class ChatroomModule {}

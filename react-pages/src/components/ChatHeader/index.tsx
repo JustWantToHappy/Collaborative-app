@@ -1,11 +1,12 @@
 import React from 'react';
 import StyleDiv from './style';
-import UploadImg from '@/components/UploadImg';
 import { buildGroup } from '@/api';
 import type { Group } from '@/types';
 import { defaultCssStyles } from '@/utils';
+import Badges from '@/components/Badges';
+import UploadImg from '@/components/UploadImg';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Form, Input, Modal, message, Space, Badge } from 'antd';
+import { Button, Form, Input, Modal, message } from 'antd';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 
@@ -41,7 +42,7 @@ export default function Index() {
         setShowGroup(false);
         setShowFileList(false);
         //更新聊天列表
-        PubSub.publish('fetchChatRoom',chatRoomId);
+        PubSub.publish('fetchChatRoom', chatRoomId);
       } else {
         messageApi.info({ content: `${statusCode} ${msg}` });
       }
@@ -53,11 +54,7 @@ export default function Index() {
 
   return <StyleDiv>
     {contextHolder}
-    <Space style={{ left: '2rem' }}>
-      <Badge status="success" />
-      <Badge color='blue' />
-      <Badge status="warning" />
-    </Space>
+    <Badges />
     <div>
       <Button
         type='link'
@@ -96,6 +93,7 @@ export default function Index() {
         >
           <UploadImg
             action=''
+            type='primary'
             title='上传群头像'
             manualUpload={true}
             setFile={setImgFile}

@@ -43,7 +43,7 @@ export default function Index() {
   }, [wide]);
 
   return (
-    <StyleDiv asideWidth={asideWidth}>
+    <StyleDiv asideWidth={asideWidth} showHeaderBorder>
       <aside >
         <ChatAside wide={wide} changeWide={changeWide} />
       </aside>

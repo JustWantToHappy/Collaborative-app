@@ -4,6 +4,7 @@ import {
   MessageBody,
   ConnectedSocket,
   WebSocketServer,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Chat, FileType, State } from 'src/common/enum';
@@ -12,6 +13,8 @@ import { UserService } from '../user/user.service';
 import { ChatroomService } from './chatroom.service';
 import { ChatrecordDto } from './dto/chatrecord.dto';
 import { CreateMessageDto } from '../message/dto/create-message.dto';
+import { OnOffLineService } from './on-off-line.service';
+import { JwtService } from '@nestjs/jwt';
 
 /**
  * chatRoom包含了群聊和私聊
@@ -28,34 +31,45 @@ import { CreateMessageDto } from '../message/dto/create-message.dto';
    * 2. 如果只是使用namespace，啥都不需要干
    */
 })
-export class ChatRoomGateway {
+export class ChatRoomGateway implements OnGatewayConnection {
   @WebSocketServer() private io: Server;
   constructor(
     private readonly chatRoomService: ChatroomService,
     private readonly messageService: MessageService,
     private readonly userService: UserService,
+    private readonly onOffLineService: OnOffLineService,
+    private readonly jwtService: JwtService,
   ) {}
   handleConnection(client: Socket) {
     console.log(`Client ${client.id} connected`);
+    client.on('disconnecting', (reason) => {
+      //
+    });
   }
   //当应用程序断开连接时
   handleDisconnect(client: Socket) {
     console.log(`Client ${client.id} disconnected`);
-    //用户离线，通知其他客服端
-    client.rooms.forEach((room) => {
-      client.leave(room);
-      client.to(room).emit(Chat.Leave, room, client.id);
-    });
   }
 
   //将socket加入所有房间...
   @SubscribeMessage(Chat.Join)
   async onJoinAllRooms(client: Socket, userId: string) {
-    console.info(`client ${client.id} join rooms`);
+    console.info(`Client ${client.id} join rooms`);
     const rooms = await this.chatRoomService.findAllChatRoomId(userId);
     rooms.forEach((room) => {
       client.join(room.id);
       client.to(room.id).emit(Chat.Join, room.id, userId);
+    });
+  }
+
+  //当用户离开房间(用户主动断开连接)...
+  @SubscribeMessage(Chat.Leave)
+  async onLeaveRoom(client: Socket, userId: string) {
+    console.info(`Client ${client.id} leave rooms`);
+    const rooms = await this.chatRoomService.findAllChatRoomId(userId);
+    rooms.forEach((room) => {
+      client.leave(room.id);
+      client.to(room.id).emit(Chat.Leave, room.id, userId);
     });
   }
 
@@ -67,17 +81,6 @@ export class ChatRoomGateway {
   ) {
     client.join(body.roomId);
     client.to(body.roomId).emit(Chat.Join, body.roomId, body.userId);
-  }
-
-  //当用户离开房间(用户主动断开连接)...
-  @SubscribeMessage(Chat.Leave)
-  async onLeaveRoom(client: Socket, userId: string) {
-    console.info('leave');
-    const rooms = await this.chatRoomService.findAllChatRoomId(userId);
-    rooms.forEach((room) => {
-      client.leave(room.id);
-      client.to(room.id).emit(Chat.Leave, room.id, client.id);
-    });
   }
 
   //当用户发送消息的时候...

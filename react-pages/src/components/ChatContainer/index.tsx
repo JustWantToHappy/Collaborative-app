@@ -113,7 +113,7 @@ export default function Index() {
   return (
     <StyleDiv asideWidth={asideWidth}>
       {contextHolder}
-      <MemberList show={open} hide={hide} />
+      {state?.type === 'public' && <MemberList show={open} hide={hide} />}
       <div className='chat_record_header'>
         <h4>{state?.title}</h4>
         <small
@@ -152,17 +152,15 @@ export default function Index() {
             autoSize={{ minRows: 1, maxRows: 4 }}
             placeholder='现在你想要说些什么，表达你的看法、分享你的观点...'
             onChange={e => setText(e.target.value)}
-            //bordered={false}
             allowClear >
           </Input.TextArea>
         </div>
         <div className='chat_record_btns'>
-          <Button type='link' onClick={sendText} size='small' >发送</Button>
+          <Button type='primary' onClick={sendText}  >发送</Button>
           <UploadImg
             title='发送图片'
-            type='link'
+            type='primary'
             action=''
-            size='small'
             setFile={sendImgFile}
             manualUpload={true}
             showUploadList={false} />

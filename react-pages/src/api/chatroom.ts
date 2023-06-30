@@ -10,5 +10,5 @@ export function getChatRecordsByChatRoomId(id: string) {
 }
 
 export function getGroupAllUsers(id: string) {
-  return request.get<User[]>(`/chatroom/users/${id}`);
+  return request.get<{leaderId:string,users:User[]}>(`/chatroom/users/${id}`);
 }

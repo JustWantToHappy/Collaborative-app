@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 interface Props{
   asideWidth: string;
+  showHeaderBorder?: boolean;
 }
 
 export const StyleDiv = styled('div') <Props>`
@@ -32,12 +33,12 @@ export const StyleDiv = styled('div') <Props>`
     z-index:999;
     height: var(--ab-main-header-height);
     background-color: #fff;
-    border-bottom:1px solid var(--ab-grey-200);
+    border-bottom:${props=>props.showHeaderBorder?'1px solid var(--ab-grey-200)':'0'};
   }
   .container{
     width:var(--main-width);
     padding:0 2rem;
-    margin-top: var(--ab-main-header-height);
+    margin-top:var(--ab-main-header-height);
     display: flex;
   }
 
@@ -48,5 +49,13 @@ export const StyleDiv = styled('div') <Props>`
     justify-content: center;
     margin:0 auto;
     margin-top:20vh;
+  }
+
+  .clouddocument_header{
+    padding:1rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 `;

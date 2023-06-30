@@ -32,12 +32,14 @@ const StyleDiv = styled('div')<{show:boolean}>`
   .member_container{
     padding:0 .5rem;
     &>li{
+      overflow: hidden;
       cursor: pointer;
       margin-bottom:.5rem;
+      position: relative;
       display: flex;
       align-items: center;
       column-gap:.5rem;
-      padding:2px .5rem;
+      padding:.5rem;
       border-radius: .5rem;
       transition: background-color 200ms ease;
       &:hover{
@@ -46,10 +48,25 @@ const StyleDiv = styled('div')<{show:boolean}>`
     }
   }
 
-  .member_state{
+  .member_info{
     display: flex;
     flex-direction:column ;
-    justify-content: center;
+    justify-content: space-between;
+    
+    &>small:first-of-type{
+      padding-bottom:2px;
+      font-weight: 600;
+    }
+    &>small:last-of-type{
+      padding-top:2px;
+    }
+  }
+
+  .member_state{
+    position: absolute;
+    right:.5rem;
+    top:50%;
+    color:grey;
   }
 `;
 

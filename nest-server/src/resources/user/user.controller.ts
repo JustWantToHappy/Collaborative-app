@@ -59,7 +59,8 @@ export class UserController {
 
   @Public()
   @Post('login')
-  login(@Body() body: LoginUserDto) {
-    return this.authService.signIn(body.email, body.password);
+  async login(@Body() body: LoginUserDto) {
+    const result = await this.authService.signIn(body.email, body.password);
+    return result;
   }
 }

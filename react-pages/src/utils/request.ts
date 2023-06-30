@@ -34,8 +34,8 @@ class Request{
             return config;
         }, (err: AxiosError) => {
             if (err.response?.status === 401) {
-                window.localStorage.removeItem(LocalStorageKey.User_Info);
-                history.replaceState('','','/');
+                //window.localStorage.removeItem(LocalStorageKey.User_Info);
+                //history.replaceState('','','/');
             }
             return Promise.reject(err.response?.data);
         });

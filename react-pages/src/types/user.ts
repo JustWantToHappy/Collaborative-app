@@ -1,5 +1,5 @@
 export type User =Partial< {
-  id:number,
+  id:string,
   name: string;
   email: string;
   password: string;

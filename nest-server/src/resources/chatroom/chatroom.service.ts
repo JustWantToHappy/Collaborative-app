@@ -81,8 +81,11 @@ export class ChatroomService {
   }
   //群组成员
   async findUsersByChatRoomId(id: string) {
-    const chatroom = await this.findOne(id);
-    return await Promise.all(
+    const chatroom = await this.prisma.chatRoom.findUnique({
+      where: { id },
+      include: { Group: true },
+    });
+    const users = await Promise.all(
       chatroom.userIds
         .split(',')
         .filter((userId) => userId !== '')
@@ -98,6 +101,7 @@ export class ChatroomService {
           });
         }),
     );
+    return { users, leaderId: chatroom.Group.leaderId };
   }
 
   async findChatRoomByGroupName(name: string) {

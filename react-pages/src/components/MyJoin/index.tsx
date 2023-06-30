@@ -64,10 +64,14 @@ export default function Index(props: Props) {
         <p>
           <span>我的群组</span>
         </p>
-        {contacts.groups.map(group => <div key={group.id} className='panel_info'>
-          <MyAvatar size='large' src={group.avatar}>{group.name}</MyAvatar>
-          <span></span>
-          <h5>{group.name}</h5>
+        {contacts.groups.map(group => <div
+          key={group.id}
+          style={{ gridTemplateColumns: 'repeat(2,1fr)' }}
+          className='panel_info'>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <MyAvatar size='large' src={group.avatar}>{group.name}</MyAvatar>
+            <h5>{group.name}</h5>
+          </div>
           <small>
             <Button type='link' danger>
               {userInfo.id === group.leaderId ? '解散此群' : '退出此群'}
