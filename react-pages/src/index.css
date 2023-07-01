@@ -54,6 +54,7 @@ ul{
   list-style: none;
   padding:0;
 }
+
 .app{
   /*background-color:#000;*/
   /*color:#fff;*/
@@ -68,5 +69,11 @@ ul{
 @media screen and (max-width:768px) {
   h1{
     font-size:2.5rem;
+  }
+}
+
+@media screen and (min-width:768px) {
+  h1{
+    font-size:3rem;
   }
 }

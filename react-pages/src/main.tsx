@@ -1,9 +1,9 @@
 import React from 'react';
+import Quill from 'quill';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
-import 'quill/dist/quill.snow.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

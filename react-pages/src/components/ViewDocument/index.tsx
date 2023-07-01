@@ -1,36 +1,44 @@
 import React from 'react';
-import Quill from 'quill';
 import StyleDiv from './style';
+import ReactQuill from 'react-quill';
+import { Delta as TypeDelta, Sources } from 'quill';
+import Delta from 'quill-delta';
+import 'react-quill/dist/quill.snow.css';
+
+
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ['bold', 'italic', 'underline'],
+    [{ 'align': [] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    ['code-block'],
+  ],
+};
+
+const delta = (new Delta([]) as unknown) as TypeDelta;
 
 const Index = () => {
-  const quillRef = React.useRef<Quill>();
-  const editContainerRef = React.useRef<HTMLDivElement>(null);
+  const editorRef = React.useRef<ReactQuill | null>(null);
+  const [value, setValue] = React.useState(delta);
 
-  React.useLayoutEffect(() => {
-    const quill = new Quill('#editor_container', {
-      //readOnly: true, //只读模式
-      modules: {
-        toolbar: [
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          ['bold', 'italic', 'underline', 'align', 'clean'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          ['code-block', 'image'],
-        ]
-      },
-      placeholder: '请输入文字...',
-      theme: 'snow'  // or 'bubble',
-    });
-    quill.focus();
-    quill.on('text-change', function (event) {
-      //console.info(event, 'hhh');
-      
-    });
-    quillRef.current = quill;
+  const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
+    setValue(editor.getContents());
+  };
+
+  React.useEffect(() => {
+    editorRef.current?.focus();
   }, []);
-  
+
   return (
     <StyleDiv>
-      <div ref={editContainerRef} className='editor_container' id='editor_container'></div>
+      <ReactQuill
+        ref={editorRef}
+        value={value}
+        modules={modules}
+        onChange={onEditorChange}
+        placeholder='请输入文字...'
+        style={{ height: '100vh' }} />
     </StyleDiv>
   );
 };

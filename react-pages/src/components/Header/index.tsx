@@ -104,7 +104,7 @@ export default function Index() {
             </div>} >
             {userInfo.avatar ?
               <Avatar src={userInfo.avatar} style={avatarStyle} size='large' /> :
-              <Avatar style={avatarStyle} size='large'>{userInfo.name.slice(0, 2)}</Avatar>
+              <Avatar style={avatarStyle} size='large'>{userInfo.name?.slice(0, 2)}</Avatar>
             }
           </Popover>
         </div>
