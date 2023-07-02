@@ -34,6 +34,7 @@ export class ChatroomService {
         Group: true,
         User: {
           select: {
+            id: true,
             name: true,
             avatar: true,
           },
@@ -59,6 +60,7 @@ export class ChatroomService {
           const receiverId = userIds[0] === id ? userIds[1] : userIds[0];
           const receiver = await this.userService.findOne(receiverId);
           value.User = {
+            id: receiver.id,
             name: receiver.name,
             avatar: receiver.avatar,
           };
@@ -101,7 +103,7 @@ export class ChatroomService {
           });
         }),
     );
-    return { users, leaderId: chatroom.Group.leaderId };
+    return { users, leaderId: chatroom.Group?.leaderId };
   }
 
   async findChatRoomByGroupName(name: string) {

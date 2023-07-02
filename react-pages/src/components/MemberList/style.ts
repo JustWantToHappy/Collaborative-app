@@ -60,6 +60,9 @@ const StyleDiv = styled('div')<{show:boolean}>`
     bottom:0;
     color:grey;
   }
+  .active{
+    color:var(--ab-green-600);
+  }
 `;
 
 export default StyleDiv;

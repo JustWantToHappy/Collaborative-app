@@ -67,12 +67,6 @@ export default function Index(props: IProps) {
     };
   }, []);
 
-  React.useEffect(() => {
-    chatRoomSocket.emit(Chat.Online, chatRoomId, (onlines: string[]) => {
-      PubSub.publish('online', onlines);
-    });
-  }, [chatRoomId]);
-
   return (
     <StyleDiv wide={wide} >
       {contextHolder}
@@ -88,6 +82,7 @@ export default function Index(props: IProps) {
           to={`/chat/record/${chatroom.id}`}
           state={
             {
+              friendId:chatroom.User?.id,
               title: chatroom.Group?.name || chatroom.User?.name,
               type: chatroom.type,
             }}

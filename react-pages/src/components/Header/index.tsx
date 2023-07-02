@@ -26,6 +26,7 @@ export default function Index() {
   const loginOut = () => {
     removeUserInfo();
     navigate('/');
+    chatRoomSocket.emit(Chat.Leave,userInfo.id);
   };
 
   const showUserInfoModal = () => setShow(true);

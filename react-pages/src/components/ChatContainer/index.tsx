@@ -23,6 +23,7 @@ export default function Index() {
   const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [online, setOnline] = React.useState(false);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
   const [asideWidth, setAsideWidth] = React.useState('18rem');
   const [chatRecords, setChatRecords] = React.useState<ChatRecord[]>([]);
@@ -109,10 +110,19 @@ export default function Index() {
     };
   }, [chatRoomId, chatRecords]);
 
+  React.useEffect(() => {
+    const onlineToken = PubSub.subscribe('online', (_, onlines: string[]) => {
+      setOnline(onlines.includes(state?.friendId));
+    });
+    return function () {
+      PubSub.unsubscribe(onlineToken);
+    };
+  }, [state?.friendId]);
+
   return (
     <StyleDiv asideWidth={asideWidth}>
       {contextHolder}
-      {state?.type === 'public' && <MemberList show={open} hide={hide} />}
+      <MemberList show={open} hide={hide} />
       <div className='chat_record_header'>
         <h4>{state?.title}</h4>
         <small
@@ -120,6 +130,12 @@ export default function Index() {
           style={{ display: state?.type === 'private' ? 'none' : 'inline' }}>
           <MembersSvg />
         </small>
+        {/*<small
+          style={{
+            display: state?.type === 'public' ? 'none' : 'inline',
+          }}>
+          {online ? '在线' : '离线'}
+        </small>*/}
       </div>
       <div className='chat_record'>
         <div style={{ textAlign: 'center', padding: '2rem', display: chatRecords.length === 0 ? 'block' : 'none' }}>

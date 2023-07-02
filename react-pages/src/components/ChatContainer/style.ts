@@ -24,19 +24,26 @@ const StyleDiv = styled('div') <Props>`
   
   .chat_record_header{
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
+    padding-top:1rem;
+    
+    h4{
+      margin:0;
+    }
+
     &>small{
       position: absolute;
-      cursor: pointer;
       right:2rem;
-      top:50%;
-      transform: translateY(-50%);
+      bottom:0;
+    }
+
+    &>small:first-of-type{
+      cursor: pointer;
       &:hover{
         color:var(--ab-green-600);
       }
     }
+
   }
   
   .chat_record{

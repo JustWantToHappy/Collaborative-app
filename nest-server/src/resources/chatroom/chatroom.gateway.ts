@@ -42,6 +42,16 @@ export class ChatRoomGateway implements OnGatewayConnection {
     private readonly onOffLineService: OnOffLineService,
     private readonly jwtService: JwtService,
   ) {}
+  //通知用户加入的所有的房间内所有其他用户
+  async notifyAllUser(client: Socket, userId: string) {
+    const rooms = await this.chatRoomService.findAllChatRoomId(userId);
+    rooms.forEach(async (room) => {
+      client.join(room.id);
+      const onlines = await this.onOffLineService.getChatRoomOnlines(room.id);
+      this.io.in(room.id).emit(Chat.Online, onlines);
+    });
+  }
+
   handleConnection(client: Socket) {
     console.log(`Client ${client.id} connected`);
     client.on('disconnecting', (reason) => {
@@ -51,28 +61,24 @@ export class ChatRoomGateway implements OnGatewayConnection {
   //当应用程序断开连接时
   handleDisconnect(client: Socket) {
     console.log(`Client ${client.id} disconnected`);
-    this.onOffLineService.offline(client.id);
+    this.onOffLineService.offline(client.id); //离线
+    const userId = this.onOffLineService.getUserId(client.id);
+    this.notifyAllUser(client, userId);
   }
 
   //将socket加入所有房间...
   @SubscribeMessage(Chat.Join)
   async onJoinAllRooms(client: Socket, userId: string) {
     console.info(`Client ${client.id} join rooms`);
-    this.onOffLineService.online(client.id, userId);
-    const rooms = await this.chatRoomService.findAllChatRoomId(userId);
-    rooms.forEach((room) => {
-      client.join(room.id);
-    });
+    this.onOffLineService.online(client.id, userId); //上线
+    this.notifyAllUser(client, userId);
   }
 
   //当用户离开房间(用户主动断开连接)...
   @SubscribeMessage(Chat.Leave)
   async onLeaveRoom(client: Socket, userId: string) {
-    console.info(`Client ${client.id} leave rooms`);
-    const rooms = await this.chatRoomService.findAllChatRoomId(userId);
-    rooms.forEach((room) => {
-      client.leave(room.id);
-    });
+    this.onOffLineService.offline(client.id); //离线
+    this.notifyAllUser(client, userId);
   }
 
   //将socket加入指定房间

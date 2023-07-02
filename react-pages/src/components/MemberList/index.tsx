@@ -1,5 +1,5 @@
 import React from 'react';
-import PubSub from 'pubsub-js';
+import { chatRoomSocket } from '@/utils';
 import { message } from 'antd';
 import StyleDiv from './style';
 import type { User } from '@/types';
@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import MyAvatar from '@/components/MyAvatar';
 import { getGroupAllUsers } from '@/api';
 import CloseSvg from '@/assets/logo/close.svg';
+import { Chat } from '@/enum';
 
 type Props = {
   show: boolean;
@@ -34,13 +35,22 @@ const Index: React.FC<Props> = (props) => {
   }, [chatRoomId, messageApi]);
 
   React.useEffect(() => {
-    const onlineToken = PubSub.subscribe('online', (_, onlines: string[]) => {
+    chatRoomSocket.emit(Chat.Online, chatRoomId, (onlines: string[]) => {
+      setOnlines(onlines);
+    });
+    chatRoomSocket.on(Chat.Online, (onlines: string[]) => {
       setOnlines(onlines);
     });
     return function () {
-      PubSub.unsubscribe(onlineToken);
+      chatRoomSocket.off(Chat.Online);
     };
-  }, []);
+  }, [chatRoomId]);
+
+  React.useEffect(() => {
+    if (!show) {
+      PubSub.publish('online', onlines);
+    }
+  }, [onlines, show]);
 
   return (
     <StyleDiv show={show}>
@@ -56,7 +66,7 @@ const Index: React.FC<Props> = (props) => {
             <small>{member.name}</small>
             <small>{leader === member.id ? '群主' : '普通用户'}</small>
           </div>
-          <small className='member_state'>
+          <small className={onlines.includes(member.id ?? '') ? 'member_state active' : 'member_state'} >
             {onlines.includes(member.id ?? '') ? '在线' : '离线'}
           </small>
         </li>)}
