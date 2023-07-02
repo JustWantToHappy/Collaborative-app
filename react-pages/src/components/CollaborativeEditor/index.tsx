@@ -1,10 +1,16 @@
 import React from 'react';
 import StyleDiv from './style';
 import ReactQuill from 'react-quill';
-import { Delta as TypeDelta, Sources } from 'quill';
+import * as Y from 'yjs';
+import Quill from 'quill';
 import Delta from 'quill-delta';
+import { QuillBinding } from 'y-quill';
+import QuillCursors from 'quill-cursors';
+import { WebrtcProvider } from 'y-webrtc';
 import 'react-quill/dist/quill.snow.css';
+import { Delta as TypeDelta, Sources } from 'quill';
 
+Quill.register('modules/cursors', QuillCursors);
 
 const modules = {
   toolbar: [
@@ -12,7 +18,7 @@ const modules = {
     ['bold', 'italic', 'underline'],
     [{ 'align': [] }],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    ['code-block'],
+    ['code-block', 'image'],
   ],
 };
 
@@ -24,10 +30,19 @@ const Index = () => {
 
   const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
     setValue(editor.getContents());
+    console.info(editor.getContents(), 'hhh');
   };
 
   React.useEffect(() => {
     editorRef.current?.focus();
+    /*    const ydoc = new Y.Doc();
+    
+        const provider = new WebrtcProvider('quill-demo-room', ydoc);
+    
+        // Define a shared text type on the document
+        const ytext = ydoc.getText('quill');
+    
+        const binding = new QuillBinding(ytext, editorRef.current, provider.awareness);*/
   }, []);
 
   return (

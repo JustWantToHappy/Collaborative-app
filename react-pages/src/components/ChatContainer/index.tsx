@@ -97,18 +97,17 @@ export default function Index() {
           setChatRecords([...chatRecords]);
         }
       });
+
+    //滚动到底部
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 0);
+
     return function () {
       PubSub.unsubscribe(asideWidthToken);
       PubSub.unsubscribe(fetchChatRecordToken);
     };
   }, [chatRoomId, chatRecords]);
-
-  React.useEffect(() => {
-    //滚动到底部
-    setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }, 0);
-  }, [chatRecords]);
 
   return (
     <StyleDiv asideWidth={asideWidth}>

@@ -67,6 +67,12 @@ export default function Index(props: IProps) {
     };
   }, []);
 
+  React.useEffect(() => {
+    chatRoomSocket.emit(Chat.Online, chatRoomId, (onlines: string[]) => {
+      PubSub.publish('online', onlines);
+    });
+  }, [chatRoomId]);
+
   return (
     <StyleDiv wide={wide} >
       {contextHolder}
@@ -98,8 +104,8 @@ export default function Index(props: IProps) {
                 </MyAvatar>
               </Badge>
             </div>
-            <p style={{maxWidth:'5rem'}}>{chatroom.Group?.name || chatroom.User?.name}</p>
-            <p style={{marginRight:'1rem'}}>{chatroom.Messages && (chatroom.Messages[0]?.fileType === 'image' ? '图片' : chatroom.Messages[0]?.text)}</p>
+            <p style={{ maxWidth: '5rem' }}>{chatroom.Group?.name || chatroom.User?.name}</p>
+            <p style={{ marginRight: '1rem' }}>{chatroom.Messages && (chatroom.Messages[0]?.fileType === 'image' ? '图片' : chatroom.Messages[0]?.text)}</p>
             <small className='chat_item_date'>
               {chatroom.Messages && dayjs(chatroom.Messages[0]?.createdAt).format('YYYY/MM/DD HH:mm:ss')}
             </small>

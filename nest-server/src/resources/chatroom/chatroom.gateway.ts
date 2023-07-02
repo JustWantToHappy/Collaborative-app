@@ -6,6 +6,7 @@ import {
   WebSocketServer,
   OnGatewayConnection,
 } from '@nestjs/websockets';
+import { UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { Chat, FileType, State } from 'src/common/enum';
 import { MessageService } from '../message/message.service';
@@ -13,13 +14,14 @@ import { UserService } from '../user/user.service';
 import { ChatroomService } from './chatroom.service';
 import { ChatrecordDto } from './dto/chatrecord.dto';
 import { CreateMessageDto } from '../message/dto/create-message.dto';
-import { OnOffLineService } from './on-off-line.service';
 import { JwtService } from '@nestjs/jwt';
+import { OnOffLineService } from './on-off-line.service';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 
 /**
  * chatRoom包含了群聊和私聊
  */
-
+//@UseGuards(JwtAuthGuard) 可以给websocket进行身份验证。
 @WebSocketGateway({
   cors: { origin: /.*/, credentials: true },
   port: 8080,
@@ -43,22 +45,23 @@ export class ChatRoomGateway implements OnGatewayConnection {
   handleConnection(client: Socket) {
     console.log(`Client ${client.id} connected`);
     client.on('disconnecting', (reason) => {
-      //
+      //正在断开连接...
     });
   }
   //当应用程序断开连接时
   handleDisconnect(client: Socket) {
     console.log(`Client ${client.id} disconnected`);
+    this.onOffLineService.offline(client.id);
   }
 
   //将socket加入所有房间...
   @SubscribeMessage(Chat.Join)
   async onJoinAllRooms(client: Socket, userId: string) {
     console.info(`Client ${client.id} join rooms`);
+    this.onOffLineService.online(client.id, userId);
     const rooms = await this.chatRoomService.findAllChatRoomId(userId);
     rooms.forEach((room) => {
       client.join(room.id);
-      client.to(room.id).emit(Chat.Join, room.id, userId);
     });
   }
 
@@ -69,7 +72,6 @@ export class ChatRoomGateway implements OnGatewayConnection {
     const rooms = await this.chatRoomService.findAllChatRoomId(userId);
     rooms.forEach((room) => {
       client.leave(room.id);
-      client.to(room.id).emit(Chat.Leave, room.id, userId);
     });
   }
 
@@ -81,6 +83,13 @@ export class ChatRoomGateway implements OnGatewayConnection {
   ) {
     client.join(body.roomId);
     client.to(body.roomId).emit(Chat.Join, body.roomId, body.userId);
+  }
+
+  //获取房间在线人员
+
+  @SubscribeMessage(Chat.Online)
+  onChatOnline(client: Socket, chatRoomId) {
+    return this.onOffLineService.getChatRoomOnlines(chatRoomId);
   }
 
   //当用户发送消息的时候...

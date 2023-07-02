@@ -1,4 +1,5 @@
 import React from 'react';
+import PubSub from 'pubsub-js';
 import { message } from 'antd';
 import StyleDiv from './style';
 import type { User } from '@/types';
@@ -17,6 +18,7 @@ const Index: React.FC<Props> = (props) => {
   const { chatRoomId } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [leader, setLeader] = React.useState('');
+  const [onlines, setOnlines] = React.useState<string[]>([]); //在线用户
   const [members, setMembers] = React.useState<User[]>([]);
 
   React.useEffect(() => {
@@ -30,6 +32,15 @@ const Index: React.FC<Props> = (props) => {
       }
     }, 0);
   }, [chatRoomId, messageApi]);
+
+  React.useEffect(() => {
+    const onlineToken = PubSub.subscribe('online', (_, onlines: string[]) => {
+      setOnlines(onlines);
+    });
+    return function () {
+      PubSub.unsubscribe(onlineToken);
+    };
+  }, []);
 
   return (
     <StyleDiv show={show}>
@@ -45,7 +56,9 @@ const Index: React.FC<Props> = (props) => {
             <small>{member.name}</small>
             <small>{leader === member.id ? '群主' : '普通用户'}</small>
           </div>
-          <small className='member_state'>离线</small>
+          <small className='member_state'>
+            {onlines.includes(member.id ?? '') ? '在线' : '离线'}
+          </small>
         </li>)}
       </ul>
     </StyleDiv>

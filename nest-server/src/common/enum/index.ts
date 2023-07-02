@@ -26,6 +26,7 @@ export enum Chat {
   JoinOne = 'joinOne',
   Leave = 'leave',
   Message = 'message',
+  Online = 'online',
 }
 //文件类型
 export enum FileType {

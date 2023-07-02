@@ -38,15 +38,7 @@ export default function Index() {
     if (!chatRoomSocket.connected) {
       chatRoomSocket.connect();
     }
-    chatRoomSocket.on(Chat.Join, (chatRoomId: string, userId: string) => {
-      //这里可以进行一些处理，比如在线人数展示，用户离线状态等。
-    });
-    chatRoomSocket.on(Chat.Message, (body: ChatRecord) => {
-      PubSub.publish('fetchChatRecord', body);
-    });
-    chatRoomSocket.on(Chat.Leave, () => {
-      //
-    });
+
     chatRoomSocket.on('connect', () => {
       if (chatRoomSocket.connected) {
         chatRoomSocket.emit(Chat.Join, userInfo.id);//用户加入房间
@@ -54,10 +46,12 @@ export default function Index() {
         chatRoomSocket.connect();
       }
     });
+
+    chatRoomSocket.on(Chat.Message, (body: ChatRecord) => {
+      PubSub.publish('fetchChatRecord', body);
+    });
     return function () {
-      chatRoomSocket.off(Chat.Join);
       chatRoomSocket.off(Chat.Message);
-      chatRoomSocket.off(Chat.Leave);
       chatRoomSocket.off('connect');
       if (chatRoomSocket.connected) chatRoomSocket.disconnect();
     };

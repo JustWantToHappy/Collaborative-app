@@ -22,6 +22,9 @@ const StyleDiv = styled('div')`
   }*/
   .ql-container{
     border:none;
+    img{
+      height:50vh;
+    }
   }
   
 `;

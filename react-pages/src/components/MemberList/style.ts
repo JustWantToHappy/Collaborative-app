@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const StyleDiv = styled('div')<{show:boolean}>`
   position: absolute;
   right: 0;
-  min-width: 140px;
+  min-width: 200px;
   transition: all 300ms ease;
   opacity: ${props=>props.show?1:0};
   z-index:${props=>props.show?1:-1};
@@ -50,22 +50,14 @@ const StyleDiv = styled('div')<{show:boolean}>`
 
   .member_info{
     display: flex;
-    flex-direction:column ;
-    justify-content: space-between;
-    
-    &>small:first-of-type{
-      padding-bottom:2px;
-      font-weight: 600;
-    }
-    &>small:last-of-type{
-      padding-top:2px;
-    }
+    align-items: center;
+    column-gap: 1rem;
   }
 
   .member_state{
     position: absolute;
     right:.5rem;
-    top:50%;
+    bottom:0;
     color:grey;
   }
 `;

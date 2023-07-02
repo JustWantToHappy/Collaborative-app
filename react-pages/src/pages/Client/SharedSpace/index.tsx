@@ -1,5 +1,5 @@
 import React from 'react';
-import Test from '@/components/ViewDocument';
+import Test from '@/components/CollaborativeEditor';
 import Badges from '@/components/Badges';
 import { StyleDiv } from '@/common';
 import { Button, Popover } from 'antd';

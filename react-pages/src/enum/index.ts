@@ -1,5 +1,6 @@
 export enum LocalStorageKey{
-  User_Info='user_info',
+  User_Info = 'user_info',
+  System_Info='system_config'
 }
 
 export enum Role{
@@ -17,6 +18,7 @@ export enum Chat {
   JoinOne='joinOne',
   Leave = 'leave',
   Message = 'message',
+  Online='online'
 }
 
 //聊天类型
