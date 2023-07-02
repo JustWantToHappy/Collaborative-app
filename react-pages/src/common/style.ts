@@ -50,7 +50,7 @@ export const StyleDiv = styled('div') <Props>`
   }
 
   .cloud_header{
-    padding:1rem;
+    padding:2rem 1rem;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -67,13 +67,21 @@ export const StyleDiv = styled('div') <Props>`
     }
   }
 
+  .cloud_delete{
+    color:red;
+    &:hover{
+      cursor: pointer;
+      color:red;
+    }
+  }
+  
   .cloud_share{
     display: flex;
     column-gap:1rem;
   }
 
   .shared_header{
-    padding:1rem;
+    padding:2rem 1rem;
     overflow: hidden;
     display: flex;
     align-items: center;

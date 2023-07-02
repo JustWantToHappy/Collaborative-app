@@ -22,6 +22,8 @@ const StyleDiv = styled('div')`
     background-color: #fff;
     z-index:1;
     position: fixed;
+    width:100%;
+    margin-top:.5rem;
     height:3rem;
   }
 
@@ -36,7 +38,7 @@ const StyleDiv = styled('div')`
   }
   
   .ql-editor{
-    margin-top:2.5rem;
+    margin-top:3.5rem;
     margin-bottom:1rem;
   }
 `;

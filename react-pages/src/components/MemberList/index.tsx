@@ -64,7 +64,7 @@ const Index: React.FC<Props> = (props) => {
           <MyAvatar src={member.avatar} >{member.name}</MyAvatar>
           <div className='member_info'>
             <small>{member.name}</small>
-            <small>{leader === member.id ? '群主' : '普通用户'}</small>
+            <small>{leader === member.id ? '群主' : '用户'}</small>
           </div>
           <small className={onlines.includes(member.id ?? '') ? 'member_state active' : 'member_state'} >
             {onlines.includes(member.id ?? '') ? '在线' : '离线'}

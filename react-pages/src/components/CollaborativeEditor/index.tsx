@@ -24,9 +24,15 @@ const modules = {
 
 const delta = (new Delta([]) as unknown) as TypeDelta;
 
-const Index = () => {
-  const editorRef = React.useRef<ReactQuill | null>(null);
+
+interface Props {
+  isEditor: boolean;
+}
+
+const Index: React.FC<Props> = (props) => {
+  const { isEditor } = props;
   const [value, setValue] = React.useState(delta);
+  const editorRef = React.useRef<ReactQuill | null>(null);
 
   const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
     setValue(editor.getContents());
@@ -52,7 +58,8 @@ const Index = () => {
         value={value}
         modules={modules}
         onChange={onEditorChange}
-        placeholder='请输入文字...'/>
+        readOnly={!isEditor}
+        placeholder='请输入文字...' />
     </StyleDiv>
   );
 };

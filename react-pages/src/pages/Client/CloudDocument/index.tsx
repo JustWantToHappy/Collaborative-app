@@ -1,11 +1,13 @@
 import React from 'react';
 import { StyleDiv } from '@/common';
-import { useNavigate } from 'react-router-dom';
 import Badges from '@/components/Badges';
-import { Button, Tree, Space, Table, Tag, Popover } from 'antd';
+import AddFileModal from '@/components/AddFileModal';
+import { useNavigate } from 'react-router-dom';
+import { Button, Tree, Table, Popover } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 
-const { Column, ColumnGroup } = Table;
+const { Column } = Table;
 const { DirectoryTree } = Tree;
 
 interface DataType {
@@ -66,6 +68,8 @@ const treeData: DataNode[] = [
 
 export default function Index() {
   const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const [type, setType] = React.useState<'file' | 'folder' | 'subfolder'>('file');
 
   const onSelect: DirectoryTreeProps['onSelect'] = (keys, info) => {
     console.log('Trigger Select', keys, info);
@@ -76,8 +80,26 @@ export default function Index() {
     console.log('Trigger Expand', keys, info);
   };
 
+  const close = () => setOpen(false);
+
+  const buildFile = () => {
+    setType('file');
+    setOpen(true);
+  };
+
+  const buildFolder = () => {
+    setType('folder');
+    setOpen(true);
+  };
+
+  const buildSubFolder = () => {
+    setType('subfolder');
+    setOpen(true);
+  };
+
   return (
     <StyleDiv asideWidth={'15rem'}>
+      <AddFileModal open={open} type={type} close={close} />
       <aside>
         <div className='cloud_add'>
           <h4>目录</h4>
@@ -85,9 +107,9 @@ export default function Index() {
             arrow={false}
             placement='bottom'
             content={<div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Button type='link'>新建顶层文件夹</Button>
-              <Button type='link'>新建子文件夹&emsp;</Button>
-              <Button type='link'>新建子文件&emsp;&emsp;</Button>
+              <Button type='link' onClick={buildFolder}>新建顶层文件夹</Button>
+              <Button type='link' onClick={buildSubFolder}>新建子文件夹&emsp;</Button>
+              <Button type='link' onClick={buildFile}>新建子文件&emsp;&emsp;</Button>
             </div>}>
             <Button size='small'>+</Button>
           </Popover>
@@ -108,35 +130,17 @@ export default function Index() {
           </div>
         </div>
         <div className='container'>
-          <Table dataSource={data}>
-            <ColumnGroup title="Name">
-              <Column title="First Name" dataIndex="firstName" key="firstName" />
-              <Column title="Last Name" dataIndex="lastName" key="lastName" />
-            </ColumnGroup>
-            <Column title="Age" dataIndex="age" key="age" />
-            <Column title="Address" dataIndex="address" key="address" />
+          <Table dataSource={data} style={{ width: '100%', minWidth: '400px' }}>
+            <Column title="名称" dataIndex="age" key="age" />
+            <Column title="创建时间" dataIndex="address" key="address" />
+            <Column title="修改时间" dataIndex="address" key="address" />
+            <Column title="简介" dataIndex="address" key="address" />
             <Column
-              title="Tags"
-              dataIndex="tags"
-              key="tags"
-              render={(tags: string[]) => (
-                <>
-                  {tags.map((tag) => (
-                    <Tag color="blue" key={tag}>
-                      {tag}
-                    </Tag>
-                  ))}
-                </>
-              )}
-            />
-            <Column
-              title="Action"
+              title="操作"
               key="action"
+              align='center'
               render={(_: any, record: DataType) => (
-                <Space size="middle">
-                  <a>Invite {record.lastName}</a>
-                  <a>Delete</a>
-                </Space>
+                <DeleteOutlined className='cloud_delete' />
               )}
             />
           </Table>
