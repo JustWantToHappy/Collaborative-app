@@ -52,8 +52,7 @@ const Index = () => {
         value={value}
         modules={modules}
         onChange={onEditorChange}
-        placeholder='请输入文字...'
-        style={{ height: '100vh' }} />
+        placeholder='请输入文字...'/>
     </StyleDiv>
   );
 };

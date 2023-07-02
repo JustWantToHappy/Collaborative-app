@@ -13,8 +13,16 @@ const StyleDiv = styled('div')`
   p{
     letter-spacing: 1px;
   }
+
+  .quill{
+    position: relative;
+  }
   .ql-toolbar{
     border:none;
+    background-color: #fff;
+    z-index:1;
+    position: fixed;
+    height:3rem;
   }
 
   /*.ql-snow.ql-toolbar button:hover,.ql-snow .ql-toolbar button:hover,.ql-snow.ql-toolbar button:focus,.ql-snow .ql-toolbar button:focus, .ql-snow.ql-toolbar button.ql-active, .ql-snow .ql-toolbar button.ql-active, .ql-snow.ql-toolbar .ql-picker-label:hover, .ql-snow .ql-toolbar .ql-picker-label:hover, .ql-snow.ql-toolbar .ql-picker-label.ql-active, .ql-snow .ql-toolbar .ql-picker-label.ql-active, .ql-snow.ql-toolbar .ql-picker-item:hover, .ql-snow .ql-toolbar .ql-picker-item:hover, .ql-snow.ql-toolbar .ql-picker-item.ql-selected, .ql-snow .ql-toolbar .ql-picker-item.ql-selected{
@@ -27,6 +35,10 @@ const StyleDiv = styled('div')`
     }
   }
   
+  .ql-editor{
+    margin-top:2.5rem;
+    margin-bottom:1rem;
+  }
 `;
 
 export default StyleDiv;
