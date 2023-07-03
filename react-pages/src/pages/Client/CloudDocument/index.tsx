@@ -1,10 +1,12 @@
 import React from 'react';
 import { StyleDiv } from '@/common';
+import { getFilesTree } from '@/api';
 import Badges from '@/components/Badges';
 import AddFileModal from '@/components/AddFileModal';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tree, Table, Popover } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 
 const { Column } = Table;
@@ -51,8 +53,8 @@ const treeData: DataNode[] = [
     title: 'parent 0',
     key: '0-0',
     children: [
-      { title: 'leaf 0-0', key: '0-0-0', isLeaf: true },
-      { title: 'leaf 0-1', key: '0-0-1', isLeaf: true },
+      { title: 'leaf 0-0', key: '0-0-0', isLeaf: true, children: [] },
+      { title: 'leaf 0-1', key: '0-0-1', isLeaf: false },
     ],
   },
   {
@@ -69,6 +71,7 @@ const treeData: DataNode[] = [
 export default function Index() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [tree, setTree] = React.useState<DataNode[]>([]);
   const [type, setType] = React.useState<'file' | 'folder' | 'subfolder'>('file');
 
   const onSelect: DirectoryTreeProps['onSelect'] = (keys, info) => {
@@ -97,6 +100,17 @@ export default function Index() {
     setOpen(true);
   };
 
+  const getData = React.useCallback(async () => {
+    const { statusCode, data } = await getFilesTree();
+    if (statusCode === 200) {
+      setTree(data || []);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    getData();
+  }, [getData]);
+
   return (
     <StyleDiv asideWidth={'15rem'}>
       <AddFileModal open={open} type={type} close={close} />
@@ -118,7 +132,7 @@ export default function Index() {
           multiple
           onSelect={onSelect}
           onExpand={onExpand}
-          treeData={treeData}
+          treeData={tree}
         />
       </aside>
       <main>

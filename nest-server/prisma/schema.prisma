@@ -91,7 +91,7 @@ model CloudFile {
 model CloudDocument {
   id                String             @id @default(uuid())
   isshared          Int                @default(0)
-  title             String
+  title             String             @default("文档")
   text              String             @db.LongText
   version           String
   createdAt         DateTime           @default(now())
@@ -101,13 +101,14 @@ model CloudDocument {
   User              User?              @relation(fields: [userId], references: [id])
   userId            String?
   CloudFile         CloudFile          @relation(fields: [cloudFileId], references: [id])
-  cloudFileId       String             @default("") //如果是空字符串，说明当前文件在顶层目录
+  cloudFileId       String             @default("0") //如果是0，说明当前文件在顶层目录
   OnlineEditPersons OnlineEditPerson[]
 }
 
 model Image {
   id          String    @id @default(uuid())
   isshared    Int       @default(0)
+  title       String    @default("图片")
   path        String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
@@ -115,7 +116,7 @@ model Image {
   User        User?     @relation(fields: [userId], references: [id])
   userId      String?
   CloudFile   CloudFile @relation(fields: [cloudFileId], references: [id])
-  cloudFileId String    @default("")
+  cloudFileId String    @default("0")
 }
 
 //在线编辑的用户
