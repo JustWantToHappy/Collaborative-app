@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCloudFileDto } from './dto/create-cloud-file.dto';
 import { UpdateCloudFileDto } from './dto/update-cloud-file.dto';
 import { CloudFileTreeDto } from './dto/cloud-file-tree.dto';
-import { Prisma, Image, CloudDocument } from '@prisma/client';
+import { Prisma, Image, CloudDocument, CloudFile } from '@prisma/client';
 
-type FileType = Prisma.CloudFileGetPayload<{
+type FoldeType = Prisma.CloudFileGetPayload<{
   include: {
     Images: true;
     CloudDocuments: true;
   };
 }>;
+
+type FileType = Image | CloudDocument | CloudFile;
 
 @Injectable()
 export class CloudFileService {
@@ -23,7 +25,12 @@ export class CloudFileService {
 
   addImagesToTree(ans: CloudFileTreeDto[], images: Image[]) {
     images.forEach((image) =>
-      ans.push({ key: image.id, title: image.title, isLeaf: true }),
+      ans.push({
+        key: image.id,
+        title: image.title,
+        isLeaf: true,
+        type: 'image',
+      }),
     );
   }
 
@@ -33,12 +40,14 @@ export class CloudFileService {
         key: cloudDocument.id,
         title: cloudDocument.title,
         isLeaf: true,
+        type: 'cloudDocument',
       }),
     );
   }
 
+  //以树的形式返回文件
   buildFilesTree(
-    files: FileType[],
+    files: FoldeType[],
     ans: CloudFileTreeDto[],
     parentId = '0',
     visited = new Set(), //判断某个文件是否遍历过
@@ -60,10 +69,23 @@ export class CloudFileService {
     }
   }
 
+  //以列表的形式返回文件
+  buildFilesList() {
+    //
+  }
+
+  //所有文件夹以及子目录文件
+  async getAllFiles(userId: string): Promise<FoldeType[]> {
+    return this.prisma.cloudFile.findMany({
+      where: { userId },
+      include: { Images: true, CloudDocuments: true },
+    });
+  }
+
   //返回文件树结构
   async findAll(userId: string) {
     const ans: CloudFileTreeDto[] = [];
-    const root = await this.findOne('0');
+    const root = await this.prisma.cloudFile.findUnique({ where: { id: '0' } });
     //技巧:在遍历文件时候，先创建一个根节点
     if (!root) {
       await this.create({
@@ -76,11 +98,7 @@ export class CloudFileService {
     } else {
       await this.update('0', { userId });
     }
-    //所有文件夹以及子目录文件
-    const files: FileType[] = await this.prisma.cloudFile.findMany({
-      where: { userId },
-      include: { Images: true, CloudDocuments: true },
-    });
+    const files = await this.getAllFiles(userId);
     this.buildFilesTree(files, ans);
     //将根目录下的文件加入
     const rootFolder = files.find((file) => file.id === '0');
@@ -89,8 +107,11 @@ export class CloudFileService {
     return ans;
   }
 
-  findOne(id: string) {
-    return this.prisma.cloudFile.findUnique({ where: { id } });
+  async findOne(id: string, userId: string) {
+    //const file=await this.prisma.cloudFile
+    //const files = await this.getAllFiles(userId);
+    this.buildFilesList();
+    return [];
   }
 
   update(id: string, updateCloudFileDto: UpdateCloudFileDto) {

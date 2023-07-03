@@ -79,7 +79,7 @@ export default function Index(props: IProps) {
       <ul className='chat_aside' ref={chatContainerRef}>
         {chatrooms.map(chatroom => <NavLink
           key={chatroom.id}
-          to={`/chat/record/${chatroom.id}`}
+          to={`/chat/room/${chatroom.id}`}
           state={
             {
               friendId:chatroom.User?.id,

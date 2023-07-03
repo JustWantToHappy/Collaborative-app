@@ -28,8 +28,8 @@ export class CloudFileController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cloudFileService.findOne(id);
+  findOne(@Param('id') id: string, @Request() request) {
+    return this.cloudFileService.findOne(id, request.user.id);
   }
 
   @Patch(':id')

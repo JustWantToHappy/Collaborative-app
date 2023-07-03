@@ -25,7 +25,6 @@ export default function Index() {
             arrow={false}
             placement='bottom'
             content={<div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Button type='link'>新建顶层文件夹</Button>
               <Button type='link'>新建子文件夹&emsp;</Button>
               <Button type='link'>新建子文件&emsp;&emsp;</Button>
             </div>}>

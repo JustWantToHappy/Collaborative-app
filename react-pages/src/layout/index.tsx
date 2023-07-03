@@ -8,7 +8,8 @@ import WorkSpace from '../pages/Client/WorkSpace';
 import PageNotFound from '../pages/PageNotFound';
 import ChatContainer from '@/components/ChatContainer';
 import Notify from '@/pages/Client/Notify';
-import CloudDocument from '../pages/Client/CloudDocument';
+import CloudFile from '../pages/Client/CloudFile';
+import CloudFileContent from '@/components/CloudFileContent';
 import SharedSpace from '../pages/Client/SharedSpace';
 
 //后台路由
@@ -38,7 +39,7 @@ export const routes: Array<Router> = [
           },
           {
             name: '聊天记录',
-            path: 'record/:chatRoomId',
+            path: 'room/:chatRoomId',
             element: <ChatContainer />
           },
           {
@@ -59,10 +60,16 @@ export const routes: Array<Router> = [
       },
       {
         name: '云文档',
-        path: '/cloud/:id',
+        path: '/cloud',
         element: <AuthRoute redirect='/'>
-          <CloudDocument />
-        </AuthRoute>
+          <CloudFile />
+        </AuthRoute>,
+        children: [
+          {
+            name: '文件',
+            path: 'file/:cloudFileId',
+            element: <CloudFileContent />
+          }]
       },
       {
         name: '共享空间',

@@ -9,6 +9,7 @@ interface Props{
 export const StyleDiv = styled('div') <Props>`
   --aside-width:${props => props.asideWidth};
   --main-width:calc(100% - var(--aside-width));
+  
 
   aside{
     width:var(--aside-width);
@@ -56,6 +57,11 @@ export const StyleDiv = styled('div') <Props>`
     align-items: center;
     justify-content: space-between;
   }
+  
+  .cloud_container{
+    margin-top:calc(var(--ab-main-header-height) + 1rem);
+  }
+
 
   .cloud_add{
     display: flex;
@@ -80,8 +86,17 @@ export const StyleDiv = styled('div') <Props>`
     column-gap:1rem;
   }
 
+  .cloud_home{
+    width:100%;
+    margin-top:20vh;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-align: center;
+  }
+
   .shared_header{
     padding:2rem 1rem;
+    min-width: 350px;
     overflow: hidden;
     display: flex;
     align-items: center;
