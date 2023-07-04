@@ -58,12 +58,21 @@ export class CloudFileService {
       if (!visited.has(files[i].id) && files[i].parentId === parentId) {
         visited.add(files[i].id);
         ans.push(files[i]);
+        this.buildFilesList(files, ans, files[i].id, visited);
       }
     }
   }
 
+  async findOne(id: string) {
+    const file = await this.prisma.cloudFile.findUnique({ where: { id } });
+    if (!file) {
+      throw new HttpException('文件不存在', HttpStatus.NOT_FOUND);
+    }
+    return file;
+  }
+
   //所有文件夹以及子目录文件
-  getUserFiles(userId: string) {
+  findUserFiles(userId: string) {
     return this.prisma.cloudFile.findMany({
       where: { userId },
     });
@@ -72,20 +81,24 @@ export class CloudFileService {
   //返回文件树结构
   async findAll(userId: string) {
     const ans: CloudFileTreeDto[] = [];
-    const files = await this.getUserFiles(userId);
+    const files = await this.findUserFiles(userId);
     this.buildFilesTree(files, ans);
     return ans;
   }
 
   //返回当前文件夹下的第一级内容或者当前文件内容
-  async findOne(id: string, userId: string) {
+  async findFolderAndFirstLevelFiles(id: string, userId: string) {
     const ans = [];
-    const root = await this.prisma.cloudFile.findUnique({ where: { id } });
+    const root = await this.findOne(id);
     if (root.type === FileType.Image) {
       ans.push(root);
     } else {
-      const files = await this.getUserFiles(userId);
-      this.buildFilesList(files, ans, id);
+      const files = await this.findUserFiles(userId);
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].parentId === id) {
+          ans.push(files[i]);
+        }
+      }
     }
     return ans;
   }
@@ -98,7 +111,16 @@ export class CloudFileService {
   }
 
   //删除文件夹以及文件夹下的所有文件
-  remove(id: string) {
-    //const files=await this.findAll()
+  async remove(id: string, userId: string) {
+    const ans: CloudFile[] = [];
+    const root = await this.findOne(id);
+    ans.push(root);
+    const files = await this.findUserFiles(userId);
+    this.buildFilesList(files, ans, id);
+    this.prisma.$transaction(
+      ans.map((cloudFile) =>
+        this.prisma.cloudFile.delete({ where: { id: cloudFile.id } }),
+      ),
+    );
   }
 }

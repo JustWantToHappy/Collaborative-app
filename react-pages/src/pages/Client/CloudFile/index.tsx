@@ -5,7 +5,7 @@ import { useDebouce } from '@/hooks';
 import Badges from '@/components/Badges';
 import { Button, Tree, Popover, message } from 'antd';
 import AddFileModal from '@/components/AddFileModal';
-import { getFilesTree, getFolderContents } from '@/api';
+import { getFilesTree, getFolderContents, deleteFolder } from '@/api';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
 
@@ -23,9 +23,8 @@ export default function Index() {
 
 
   const onSelect: DirectoryTreeProps['onSelect'] = async (_, info) => {
-    const { statusCode, data } = await getFolderContents(info.node.key + '');
-    console.info(info.node.isLeaf, 'leaf');
     info.node.isLeaf ? setDisabled(true) : setDisabled(false);
+    const { statusCode, data } = await getFolderContents(info.node.key + '');
     if (statusCode === 200) {
       navigate(`/cloud/file/${info.node.key}`);
     } else {
@@ -53,12 +52,18 @@ export default function Index() {
   const shareFile = useDebouce(async () => {
     //
   }, 300);
-  
-  
+
+
   const deleteFile = useDebouce(async () => {
-    //
+    const { statusCode, msg } = await deleteFolder(cloudFileId ?? '');
+    if (statusCode === 200) {
+      getData();
+      navigate('/cloud');
+    } else {
+      messageApi.error(`${statusCode} ${msg}`);
+    }
   }, 300);
-  
+
   const updateFileTree = () => {
     getData();
   };

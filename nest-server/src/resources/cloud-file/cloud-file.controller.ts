@@ -39,8 +39,11 @@ export class CloudFileController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() request) {
-    return this.cloudFileService.findOne(id, request.user.id);
+  findFolderAndFirstLevelFiles(@Param('id') id: string, @Request() request) {
+    return this.cloudFileService.findFolderAndFirstLevelFiles(
+      id,
+      request.user.id,
+    );
   }
 
   @Patch(':id')
@@ -52,7 +55,7 @@ export class CloudFileController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cloudFileService.remove(id);
+  remove(@Param('id') id: string, @Request() request) {
+    return this.cloudFileService.remove(id, request.user.id);
   }
 }

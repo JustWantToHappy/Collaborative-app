@@ -15,3 +15,8 @@ export function getFilesTree() {
 export function getFolderContents(id: string) {
   return request.get(`/cloudFile/${id}`);
 }
+
+//删除当前文件夹
+export function deleteFolder(id: string) {
+  return request.delete(`/cloudFile/${id}`);
+}
