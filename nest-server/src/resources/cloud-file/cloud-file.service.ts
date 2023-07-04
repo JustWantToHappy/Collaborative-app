@@ -3,16 +3,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCloudFileDto } from './dto/create-cloud-file.dto';
 import { UpdateCloudFileDto } from './dto/update-cloud-file.dto';
 import { CloudFileTreeDto } from './dto/cloud-file-tree.dto';
-import { Prisma, Image, CloudDocument, CloudFile } from '@prisma/client';
+import { CloudFile } from '@prisma/client';
 
-type FoldeType = Prisma.CloudFileGetPayload<{
+/*type FoldeType = Prisma.CloudFileGetPayload<{
   include: {
     Images: true;
     CloudDocuments: true;
   };
-}>;
-
-type FileType = Image | CloudDocument | CloudFile;
+}>;*/
 
 @Injectable()
 export class CloudFileService {
@@ -23,31 +21,9 @@ export class CloudFileService {
     return this.prisma.cloudFile.create({ data: createCloudFileDto });
   }
 
-  addImagesToTree(ans: CloudFileTreeDto[], images: Image[]) {
-    images.forEach((image) =>
-      ans.push({
-        key: image.id,
-        title: image.title,
-        isLeaf: true,
-        type: 'image',
-      }),
-    );
-  }
-
-  addDocumentsToTree(ans: CloudFileTreeDto[], cloudDocuments: CloudDocument[]) {
-    cloudDocuments.forEach((cloudDocument) =>
-      ans.push({
-        key: cloudDocument.id,
-        title: cloudDocument.title,
-        isLeaf: true,
-        type: 'cloudDocument',
-      }),
-    );
-  }
-
   //以树的形式返回文件
   buildFilesTree(
-    files: FoldeType[],
+    files: CloudFile[],
     ans: CloudFileTreeDto[],
     parentId = '0',
     visited = new Set(), //判断某个文件是否遍历过
@@ -62,9 +38,9 @@ export class CloudFileService {
         };
         ans.push(file);
         this.buildFilesTree(files, file.children, files[i].id, visited);
-        //加入当前文件夹下的子文件
-        this.addImagesToTree(file.children, files[i].Images);
-        this.addDocumentsToTree(file.children, files[i].CloudDocuments);
+        if (file.children.length === 0) {
+          //
+        }
       }
     }
   }
@@ -75,10 +51,9 @@ export class CloudFileService {
   }
 
   //所有文件夹以及子目录文件
-  async getAllFiles(userId: string): Promise<FoldeType[]> {
+  async getAllFiles(ownerId: string) {
     return this.prisma.cloudFile.findMany({
-      where: { userId },
-      include: { Images: true, CloudDocuments: true },
+      where: { ownerId, isshared: 0 },
     });
   }
 
@@ -100,10 +75,6 @@ export class CloudFileService {
     }
     const files = await this.getAllFiles(userId);
     this.buildFilesTree(files, ans);
-    //将根目录下的文件加入
-    const rootFolder = files.find((file) => file.id === '0');
-    this.addImagesToTree(ans, rootFolder.Images);
-    this.addDocumentsToTree(ans, rootFolder.CloudDocuments);
     return ans;
   }
 
