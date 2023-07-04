@@ -28,7 +28,7 @@ export class CloudFileController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     createCloudFileDto.path = file?.path ?? '';
-    createCloudFileDto.ownerId = request.user.id;
+    createCloudFileDto.userId = request.user.id;
     delete createCloudFileDto.file;
     return this.cloudFileService.create(createCloudFileDto);
   }
@@ -53,6 +53,6 @@ export class CloudFileController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cloudFileService.remove(+id);
+    return this.cloudFileService.remove(id);
   }
 }

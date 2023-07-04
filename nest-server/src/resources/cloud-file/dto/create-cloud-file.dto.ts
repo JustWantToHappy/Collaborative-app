@@ -9,7 +9,7 @@ export class CreateCloudFileDto {
 
   @IsString()
   @IsOptional()
-  ownerId: string;
+  userId: string;
 
   @IsString()
   @IsOptional()

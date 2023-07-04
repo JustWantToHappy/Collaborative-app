@@ -11,19 +11,20 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(uuid())
-  email      String      @unique
-  name       String
-  password   String
-  avatar     String?     @default("")
-  createdAt  DateTime?   @default(now())
-  updatedAt  DateTime?   @default(now())
-  roles      Json?
-  ChatRooms  ChatRoom[] //一个用户具有多个私聊聊天室
-  CloudFiles CloudFile[]
-  RePorts    Report[]
-  Approvals  Approval[]
-  Friends    Friend[]
+  id              String            @id @default(uuid())
+  email           String            @unique
+  name            String
+  password        String
+  avatar          String?           @default("")
+  createdAt       DateTime?         @default(now())
+  updatedAt       DateTime?         @default(now())
+  roles           Json?
+  ChatRooms       ChatRoom[] //一个用户具有多个私聊聊天室
+  CloudFiles      CloudFile[]
+  RePorts         Report[]
+  Approvals       Approval[]
+  Friends         Friend[]
+  SharedCloudFile SharedCloudFile[]
 }
 
 model Friend {
@@ -75,6 +76,21 @@ model Message {
 model CloudFile {
   id               String             @id @default(uuid())
   parentId         String             @default("0")
+  title            String
+  description      String             @db.Text
+  path             String             @default("")
+  type             String             @default("folder") //文件类型:folder、document、image
+  text             String?            @db.LongText
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+  collaborators    String?            @db.Text //协作者id，逗号隔开
+  User             User?              @relation(fields: [userId], references: [id])
+  userId          String?
+}
+
+model SharedCloudFile {
+  id               String             @id @default(uuid())
+  parentId         String             @default("0")
   isshared         Int                @default(0) //0表示已共享，1表示未共享
   title            String
   description      String             @db.Text
@@ -91,9 +107,9 @@ model CloudFile {
 
 //在线编辑的用户
 model OnlineEditPerson {
-  id        String     @id
-  CloudFile CloudFile? @relation(fields: [id], references: [id])
-  onlineIds String     @db.Text
+  id                String           @id
+  SharedCloudFile   SharedCloudFile? @relation(fields: [sharedCloudFileId], references: [id])
+  sharedCloudFileId String?
 }
 
 model Approval {

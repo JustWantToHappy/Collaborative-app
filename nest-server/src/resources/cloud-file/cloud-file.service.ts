@@ -22,7 +22,7 @@ export class CloudFileService {
     return this.prisma.cloudFile.create({ data: createCloudFileDto });
   }
 
-  //以树的形式返回文件
+  //以树的形式返回文件结构
   buildFilesTree(
     files: CloudFile[],
     ans: CloudFileTreeDto[],
@@ -39,7 +39,7 @@ export class CloudFileService {
         };
         ans.push(file);
         this.buildFilesTree(files, file.children, files[i].id, visited);
-        //叶子结点(不包含文件夹)
+        //叶子结点(也就是有文件后缀名的形式)
         if (file.children.length === 0 && files[i].type !== FileType.Folder) {
           file.isLeaf = true;
         }
@@ -47,32 +47,47 @@ export class CloudFileService {
     }
   }
 
-  //以列表的形式返回文件
-  buildFilesList() {
-    //
+  //以列表的形式返回文件结构
+  buildFilesList(
+    files: CloudFile[],
+    ans: CloudFile[],
+    parentId = '0',
+    visited = new Set(),
+  ) {
+    for (let i = 0; i < files.length; i++) {
+      if (!visited.has(files[i].id) && files[i].parentId === parentId) {
+        visited.add(files[i].id);
+        ans.push(files[i]);
+      }
+    }
   }
 
   //所有文件夹以及子目录文件
-  async getAllFiles(userId: string) {
+  getUserFiles(userId: string) {
     return this.prisma.cloudFile.findMany({
-      where: { ownerId: userId, isshared: 0 },
+      where: { userId },
     });
   }
 
   //返回文件树结构
   async findAll(userId: string) {
     const ans: CloudFileTreeDto[] = [];
-    const files = await this.getAllFiles(userId);
+    const files = await this.getUserFiles(userId);
     this.buildFilesTree(files, ans);
     return ans;
   }
 
-  //返回当前文件夹下的内容或者当前文件内容
+  //返回当前文件夹下的第一级内容或者当前文件内容
   async findOne(id: string, userId: string) {
-    //const file=await this.prisma.cloudFile
-    //const files = await this.getAllFiles(userId);
-    this.buildFilesList();
-    return [];
+    const ans = [];
+    const root = await this.prisma.cloudFile.findUnique({ where: { id } });
+    if (root.type === FileType.Image) {
+      ans.push(root);
+    } else {
+      const files = await this.getUserFiles(userId);
+      this.buildFilesList(files, ans, id);
+    }
+    return ans;
   }
 
   update(id: string, updateCloudFileDto: UpdateCloudFileDto) {
@@ -82,7 +97,8 @@ export class CloudFileService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cloudFile`;
+  //删除文件夹以及文件夹下的所有文件
+  remove(id: string) {
+    //const files=await this.findAll()
   }
 }

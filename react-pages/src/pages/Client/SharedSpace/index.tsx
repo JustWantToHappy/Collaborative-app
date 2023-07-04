@@ -21,15 +21,6 @@ export default function Index() {
       <aside >
         <div className='cloud_add'>
           <h4>目录</h4>
-          <Popover
-            arrow={false}
-            placement='bottom'
-            content={<div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Button type='link'>新建子文件夹&emsp;</Button>
-              <Button type='link'>新建子文件&emsp;&emsp;</Button>
-            </div>}>
-            <Button size='small'>+</Button>
-          </Popover>
         </div>
       </aside>
       <main>

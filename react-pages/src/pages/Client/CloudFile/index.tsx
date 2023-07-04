@@ -1,20 +1,20 @@
 import React from 'react';
+import { FileType } from '@/enum';
 import { StyleDiv } from '@/common';
 import { useDebouce } from '@/hooks';
-import { getFilesTree, getFolderContents } from '@/api';
 import Badges from '@/components/Badges';
 import { Button, Tree, Popover, message } from 'antd';
 import AddFileModal from '@/components/AddFileModal';
-import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
+import { getFilesTree, getFolderContents } from '@/api';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
-import { FileType } from '@/enum';
+import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
 
 const { DirectoryTree } = Tree;
 
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { cloudFileId = '0' } = useParams();
+  const { cloudFileId } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [open, setOpen] = React.useState(false);
   const [tree, setTree] = React.useState<DataNode[]>([]);
@@ -51,25 +51,17 @@ export default function Index() {
   };
 
   const shareFile = useDebouce(async () => {
-    if (pathname === '/cloud') {
-      messageApi.warning('你还没有选择任何文件或文件夹');
-    } else {
-      //
-    }
+    //
   }, 300);
-
+  
+  
+  const deleteFile = useDebouce(async () => {
+    //
+  }, 300);
+  
   const updateFileTree = () => {
     getData();
   };
-
-  const deleteFile = useDebouce(async () => {
-    if (pathname === '/cloud') {
-      messageApi.warning('你还没有选择任何文件或文件夹');
-    } else {
-      //
-    }
-  }, 300);
-
   const getData = React.useCallback(async () => {
     const { statusCode, data } = await getFilesTree();
     if (statusCode === 200) {
@@ -128,8 +120,19 @@ export default function Index() {
         <div className='header cloud_header'>
           <Badges />
           <div className='cloud_share'>
-            <Button type='primary' onClick={shareFile} >共享</Button>
-            <Button type='primary' danger onClick={deleteFile}>删除</Button>
+            <Button
+              type='primary'
+              disabled={pathname === '/cloud'}
+              onClick={shareFile} >
+              共享
+            </Button>
+            <Button
+              danger
+              disabled={pathname === '/cloud'}
+              type='primary'
+              onClick={deleteFile}>
+              删除
+            </Button>
           </div>
         </div>
         <div className='container cloud_container'>
