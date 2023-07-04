@@ -1,59 +1,67 @@
+import dayjs from 'dayjs';
 import React from 'react';
 import { Table } from 'antd';
 import StyleDiv from './style';
-import { DeleteOutlined } from '@ant-design/icons';
-
-interface DataType {
-  key: React.Key;
-  firstName: string;
-  lastName: string;
-  age: number;
-  address: string;
-  tags: string[];
-}
-
-const data: DataType[] = [
-  {
-    key: '1',
-    firstName: 'John',
-    lastName: 'Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    firstName: 'Jim',
-    lastName: 'Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    firstName: 'Joe',
-    lastName: 'Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
+import { getFolderContents } from '@/api';
+import { useParams } from 'react-router-dom';
+import { DeleteOutlined, FileImageOutlined, FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import type { CloudFile } from '@/types';
+import { FileType } from '@/enum';
 
 const { Column } = Table;
 
-const Index = () => {
+type Props = {
+  show?: boolean;
+}
+
+const Index: React.FC<Props> = (props) => {
+  const [data, setData] = React.useState<CloudFile[]>([]);
+  const { cloudFileId = '0' } = useParams();
+
+  React.useEffect(() => {
+    getFolderContents(cloudFileId).then(res => {
+      const { data, statusCode } = res;
+      if (statusCode === 200) {
+        setData(data?.map(cloudFile => {
+          cloudFile.createdAt = dayjs(cloudFile.createdAt).format('YYYY-MM-DD HH:mm:ss');
+          cloudFile.updatedAt = dayjs(cloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+          cloudFile.description = cloudFile.description === '' ? '无' : cloudFile.description;
+          return cloudFile;
+        }) || []);
+      }
+    }).catch(err => {
+      console.info(err);
+    });
+  }, [cloudFileId]);
+
   return (
-    <StyleDiv>
-      <Table dataSource={data} style={{ width: '100%', minWidth: '400px' }}>
-        <Column title="名称" dataIndex="age" key="age" />
-        <Column title="创建时间" dataIndex="address" key="address" />
-        <Column title="修改时间" dataIndex="address" key="address" />
-        <Column title="简介" dataIndex="address" key="address" />
+    <StyleDiv show={props.show}>
+      <Table
+        rowKey='id'
+        dataSource={data}
+        pagination={{ pageSize: 6 }}
+        style={{ width: '100%', minWidth: '400px' }} >
+        <Column title="名称" dataIndex="title" key="title" />
+        <Column title="创建时间" dataIndex="createdAt" key="createdAt" />
+        <Column title="修改时间" dataIndex="updatedAt" key="updatedAt" />
+        <Column title="简介" dataIndex="description" key="description" />
+        <Column
+          title="类型"
+          dataIndex="type"
+          key="type"
+          align='center'
+          render={(_, record: CloudFile) => (<div className='file_type'>
+            {record.type === FileType.Image ?
+              <FileImageOutlined /> :
+              record.type === FileType.Text ?
+                <FileTextOutlined /> :
+                <FolderOpenOutlined />}
+          </div>)}
+        />
         <Column
           title="操作"
-          key="action"
           align='center'
-          render={(_: any, record: DataType) => (
+          render={(_: any, record: CloudFile) => (
             <DeleteOutlined className='cloud_delete' />
           )}
         />

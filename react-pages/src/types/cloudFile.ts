@@ -1,3 +1,4 @@
+import { FileType } from '@/enum';
 import type { UploadFile } from 'antd/es/upload/interface';
 
 export type CloudFile = {
@@ -9,5 +10,6 @@ export type CloudFile = {
   updatedAt: string;
   description: string;
   userId: string;
+  type: FileType;
   file: UploadFile;
 }

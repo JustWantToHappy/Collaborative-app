@@ -4,8 +4,9 @@ import { StyleDiv } from '@/common';
 import { useDebouce } from '@/hooks';
 import Badges from '@/components/Badges';
 import { Button, Tree, Popover, message } from 'antd';
+import { getFilesTree, deleteFolder } from '@/api';
 import AddFileModal from '@/components/AddFileModal';
-import { getFilesTree, getFolderContents, deleteFolder } from '@/api';
+import CloudFileContent from '@/components/CloudFileContent';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
 
@@ -24,12 +25,7 @@ export default function Index() {
 
   const onSelect: DirectoryTreeProps['onSelect'] = async (_, info) => {
     info.node.isLeaf ? setDisabled(true) : setDisabled(false);
-    const { statusCode, data } = await getFolderContents(info.node.key + '');
-    if (statusCode === 200) {
-      navigate(`/cloud/file/${info.node.key}`);
-    } else {
-      navigate('/cloud');
-    }
+    navigate(`/cloud/file/${info.node.key}`);
   };
 
   const close = () => setOpen(false);
@@ -59,6 +55,8 @@ export default function Index() {
     if (statusCode === 200) {
       getData();
       navigate('/cloud');
+      setDisabled(false);
+      messageApi.success('删除成功');
     } else {
       messageApi.error(`${statusCode} ${msg}`);
     }
@@ -66,6 +64,8 @@ export default function Index() {
 
   const updateFileTree = () => {
     getData();
+    navigate('/cloud');
+    setDisabled(false);
   };
   const getData = React.useCallback(async () => {
     const { statusCode, data } = await getFilesTree();
@@ -116,6 +116,7 @@ export default function Index() {
           </Popover>
         </div>
         <DirectoryTree
+          defaultSelectedKeys={['0']}
           multiple
           onSelect={onSelect}
           treeData={tree}
@@ -141,6 +142,7 @@ export default function Index() {
           </div>
         </div>
         <div className='container cloud_container'>
+          <CloudFileContent show={pathname === '/cloud'} />
           <Outlet />
         </div>
       </main>

@@ -5,6 +5,7 @@ import { UpdateCloudFileDto } from './dto/update-cloud-file.dto';
 import { CloudFileTreeDto } from './dto/cloud-file-tree.dto';
 import { CloudFile } from '@prisma/client';
 import { FileType } from 'src/common/enum';
+import { deleteFile } from '../../common/utils';
 
 /*type FoldeType = Prisma.CloudFileGetPayload<{
   include: {
@@ -64,11 +65,7 @@ export class CloudFileService {
   }
 
   async findOne(id: string) {
-    const file = await this.prisma.cloudFile.findUnique({ where: { id } });
-    if (!file) {
-      throw new HttpException('文件不存在', HttpStatus.NOT_FOUND);
-    }
-    return file;
+    return this.prisma.cloudFile.findUnique({ where: { id } });
   }
 
   //所有文件夹以及子目录文件
@@ -90,7 +87,7 @@ export class CloudFileService {
   async findFolderAndFirstLevelFiles(id: string, userId: string) {
     const ans = [];
     const root = await this.findOne(id);
-    if (root.type === FileType.Image) {
+    if (root?.type === FileType.Image) {
       ans.push(root);
     } else {
       const files = await this.findUserFiles(userId);
@@ -117,6 +114,11 @@ export class CloudFileService {
     ans.push(root);
     const files = await this.findUserFiles(userId);
     this.buildFilesList(files, ans, id);
+    ans.forEach((cloudFile) => {
+      if (cloudFile.path !== '') {
+        deleteFile(cloudFile.path);
+      }
+    });
     this.prisma.$transaction(
       ans.map((cloudFile) =>
         this.prisma.cloudFile.delete({ where: { id: cloudFile.id } }),
