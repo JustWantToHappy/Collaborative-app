@@ -7,7 +7,11 @@ import {
   Param,
   Delete,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/config/upload-img.config';
 import { CloudFileService } from './cloud-file.service';
 import { CreateCloudFileDto } from './dto/create-cloud-file.dto';
 import { UpdateCloudFileDto } from './dto/update-cloud-file.dto';
@@ -16,9 +20,16 @@ import { UpdateCloudFileDto } from './dto/update-cloud-file.dto';
 export class CloudFileController {
   constructor(private readonly cloudFileService: CloudFileService) {}
 
+  @UseInterceptors(FileInterceptor('file', multerOptions))
   @Post()
-  create(@Body() createCloudFileDto: CreateCloudFileDto, @Request() request) {
-    createCloudFileDto.userId = request.user.id;
+  create(
+    @Body() createCloudFileDto: CreateCloudFileDto,
+    @Request() request,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    createCloudFileDto.path = file?.path ?? '';
+    createCloudFileDto.ownerId = request.user.id;
+    delete createCloudFileDto.file;
     return this.cloudFileService.create(createCloudFileDto);
   }
 

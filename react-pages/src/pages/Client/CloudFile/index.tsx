@@ -7,8 +7,8 @@ import { Button, Tree, Popover, message } from 'antd';
 import AddFileModal from '@/components/AddFileModal';
 import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
+import { FileType } from '@/enum';
 
-export type TreeNode = DataNode & { type: 'image' | 'cloudDocument' };
 const { DirectoryTree } = Tree;
 
 export default function Index() {
@@ -17,45 +17,36 @@ export default function Index() {
   const { cloudFileId = '0' } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [open, setOpen] = React.useState(false);
-  const [tree, setTree] = React.useState<TreeNode[]>([]);
-  const [type, setType] = React.useState<'file' | 'folder' | 'cloudDocument'>('file');
-  const [isCloudDocument, setIsCloudDocument] = React.useState(false);
+  const [tree, setTree] = React.useState<DataNode[]>([]);
+  const [disabled, setDisabled] = React.useState(false);
+  const [type, setType] = React.useState<FileType>(FileType.Folder);
 
 
-  const onSelect: DirectoryTreeProps['onSelect'] = async (_, info: any) => {
-    if (info.node?.type === 'image') {
-      setIsCloudDocument(false);
-    } else if (info.node?.type === 'cloudDocument') {
-      setIsCloudDocument(true);
+  const onSelect: DirectoryTreeProps['onSelect'] = async (_, info) => {
+    const { statusCode, data } = await getFolderContents(info.node.key + '');
+    console.info(info.node.isLeaf, 'leaf');
+    info.node.isLeaf ? setDisabled(true) : setDisabled(false);
+    if (statusCode === 200) {
+      navigate(`/cloud/file/${info.node.key}`);
     } else {
-      setIsCloudDocument(false);
-      const { statusCode, data } = await getFolderContents(info.node.key + '');
-      if (statusCode === 200) {
-        navigate(`/cloud/file/${info.node.key}`);
-      } else {
-        navigate('/cloud');
-      }
+      navigate('/cloud');
     }
   };
-
-  /*  const onExpand: DirectoryTreeProps['onExpand'] = (keys, info) => {
-      console.info(info.node);
-    };*/
 
   const close = () => setOpen(false);
 
   const buildFile = () => {
-    setType('file');
+    setType(FileType.Image);
     setOpen(true);
   };
 
   const buildFolder = () => {
-    setType('folder');
+    setType(FileType.Folder);
     setOpen(true);
   };
 
   const buildCloudDocument = () => {
-    setType('cloudDocument');
+    setType(FileType.Text);
     setOpen(true);
   };
 
@@ -105,18 +96,31 @@ export default function Index() {
             arrow={false}
             placement='bottom'
             content={<div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Button type='link' onClick={buildFolder}>新建文件夹&emsp;</Button>
-              <Button type='link' onClick={buildFile}>上传文件&emsp;&emsp;</Button>
-              <Button type='link' onClick={buildCloudDocument}>新建文档&emsp;&emsp;</Button>
+              <Button
+                type='link'
+                disabled={disabled}
+                onClick={buildFolder}>
+                新建文件夹&emsp;
+              </Button>
+              <Button
+                type='link'
+                disabled={disabled}
+                onClick={buildFile}>
+                上传文件&emsp;&emsp;
+              </Button>
+              <Button
+                type='link'
+                disabled={disabled}
+                onClick={buildCloudDocument}>
+                新建文档&emsp;&emsp;
+              </Button>
             </div>}>
             <Button size='small'>+</Button>
           </Popover>
         </div>
         <DirectoryTree
           multiple
-
           onSelect={onSelect}
-          //onExpand={onExpand}
           treeData={tree}
         />
       </aside>
@@ -124,8 +128,7 @@ export default function Index() {
         <div className='header cloud_header'>
           <Badges />
           <div className='cloud_share'>
-            {/* 只有文档才可以共享 */}
-            <Button type='primary' onClick={shareFile} disabled={!isCloudDocument}>共享</Button>
+            <Button type='primary' onClick={shareFile} >共享</Button>
             <Button type='primary' danger onClick={deleteFile}>删除</Button>
           </div>
         </div>

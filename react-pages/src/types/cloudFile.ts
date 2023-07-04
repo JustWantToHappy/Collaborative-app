@@ -1,3 +1,5 @@
+import type { UploadFile } from 'antd/es/upload/interface';
+
 export type CloudFile = {
   id: string;
   parentId: string;
@@ -7,4 +9,5 @@ export type CloudFile = {
   updatedAt: string;
   description: string;
   userId: string;
+  file: UploadFile;
 }

@@ -85,7 +85,7 @@ model CloudFile {
   updatedAt        DateTime           @default(now())
   collaborators    String?            @db.Text //协作者id，逗号隔开
   User             User?              @relation(fields: [ownerId], references: [id])
-  ownerId          String?            @unique
+  ownerId          String?
   OnlineEditPerson OnlineEditPerson[]
 }
 

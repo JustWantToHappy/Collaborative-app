@@ -4,6 +4,7 @@ import { CreateCloudFileDto } from './dto/create-cloud-file.dto';
 import { UpdateCloudFileDto } from './dto/update-cloud-file.dto';
 import { CloudFileTreeDto } from './dto/cloud-file-tree.dto';
 import { CloudFile } from '@prisma/client';
+import { FileType } from 'src/common/enum';
 
 /*type FoldeType = Prisma.CloudFileGetPayload<{
   include: {
@@ -38,8 +39,9 @@ export class CloudFileService {
         };
         ans.push(file);
         this.buildFilesTree(files, file.children, files[i].id, visited);
-        if (file.children.length === 0) {
-          //
+        //叶子结点(不包含文件夹)
+        if (file.children.length === 0 && files[i].type !== FileType.Folder) {
+          file.isLeaf = true;
         }
       }
     }
@@ -51,33 +53,21 @@ export class CloudFileService {
   }
 
   //所有文件夹以及子目录文件
-  async getAllFiles(ownerId: string) {
+  async getAllFiles(userId: string) {
     return this.prisma.cloudFile.findMany({
-      where: { ownerId, isshared: 0 },
+      where: { ownerId: userId, isshared: 0 },
     });
   }
 
   //返回文件树结构
   async findAll(userId: string) {
     const ans: CloudFileTreeDto[] = [];
-    const root = await this.prisma.cloudFile.findUnique({ where: { id: '0' } });
-    //技巧:在遍历文件时候，先创建一个根节点
-    if (!root) {
-      await this.create({
-        id: '0',
-        title: '根节点',
-        description: '这是根节点',
-        userId,
-        parentId: 'root',
-      });
-    } else {
-      await this.update('0', { userId });
-    }
     const files = await this.getAllFiles(userId);
     this.buildFilesTree(files, ans);
     return ans;
   }
 
+  //返回当前文件夹下的内容或者当前文件内容
   async findOne(id: string, userId: string) {
     //const file=await this.prisma.cloudFile
     //const files = await this.getAllFiles(userId);

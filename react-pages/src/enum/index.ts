@@ -35,8 +35,9 @@ export enum State {
   Reject = 'reject',
 }
 
-//聊天类型
+//文件类型
 export enum FileType {
-  Text = 'text',
+  Folder = 'folder', //文件夹
+  Text = 'text', //聊天文本或者文档
   Image = 'image',
 }

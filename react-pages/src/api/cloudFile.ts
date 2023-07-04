@@ -1,15 +1,14 @@
 import { request } from '@/utils';
-import type { CloudFile } from '@/types';
-import type {TreeNode } from '../pages/Client/CloudFile';
+import { DataNode } from 'antd/es/tree';
 
 //新建文件夹
-export function addFolder(data:Partial<CloudFile>) {
-  return request.post('/cloudFile',data);
+export function addFolder(data:FormData) {
+  return request.post('/cloudFile',data, { headers: { 'Content-Type': 'multipart/formdata' } });
 }
 
 //获取文件树结构
 export function getFilesTree() {
-  return request.get<TreeNode[]>('/cloudFile');
+  return request.get<DataNode[]>('/cloudFile');
 }
 
 //获取单个文件夹下的内容

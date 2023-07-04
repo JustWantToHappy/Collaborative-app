@@ -9,12 +9,23 @@ export class CreateCloudFileDto {
 
   @IsString()
   @IsOptional()
-  userId: string;
+  ownerId: string;
 
   @IsString()
   @IsOptional()
   parentId: string;
 
+  @IsOptional()
+  @IsString()
+  type: string;
+
+  @IsOptional()
+  @IsString()
+  path: string;
+
   @IsString()
   description: string;
+
+  @IsOptional()
+  file: string; //文件
 }
