@@ -6,20 +6,36 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { SharedCloudFileService } from './shared-cloud-file.service';
 import { CreateSharedCloudFileDto } from './dto/create-shared-cloud-file.dto';
 import { UpdateSharedCloudFileDto } from './dto/update-shared-cloud-file.dto';
+import { MoveToSharedCloudFileDto } from './dto/moveTo-shared-cloud-file.dto';
 
-@Controller('shared-cloud-file')
+@Controller('sharedCloudFile')
 export class SharedCloudFileController {
   constructor(
     private readonly sharedCloudFileService: SharedCloudFileService,
   ) {}
 
   @Post()
-  create(@Body() createSharedCloudFileDto: CreateSharedCloudFileDto) {
+  create(
+    @Request() requeset,
+    @Body() createSharedCloudFileDto: CreateSharedCloudFileDto,
+  ) {
     return this.sharedCloudFileService.create(createSharedCloudFileDto);
+  }
+
+  @Post('move')
+  moveToSharedCloudFile(
+    @Request() request,
+    @Body() moveToSharedCloudFileDto: MoveToSharedCloudFileDto,
+  ) {
+    return this.sharedCloudFileService.moveToSharedCloudFile(
+      request.user.id,
+      moveToSharedCloudFileDto,
+    );
   }
 
   @Get()

@@ -4,3 +4,4 @@ export * from './friend';
 export * from './message';
 export * from './chatroom';
 export * from './cloudFile';
+export * from './sharedCloudFile';

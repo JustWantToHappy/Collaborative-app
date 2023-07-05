@@ -1,7 +1,9 @@
 import React from 'react';
-import { getAllContacts } from '@/api';
+import PubSub from 'pubsub-js';
 import type { TreeNode } from '@/types';
-import { Form, Modal, TreeSelect } from 'antd';
+import { useParams } from 'react-router-dom';
+import { Form, Modal, TreeSelect, message } from 'antd';
+import { getAllContacts, moveToSharedCloudFile } from '@/api';
 const { SHOW_PARENT } = TreeSelect;
 
 interface Props {
@@ -49,6 +51,8 @@ const treeData = [
 const Index: React.FC<Props> = (props) => {
   const { open, close } = props;
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
+  const { cloudFileId = '0' } = useParams();
   const [treeData, setTreeData] = React.useState<TreeNode[]>([]);
 
   const tProps = {
@@ -63,8 +67,26 @@ const Index: React.FC<Props> = (props) => {
   };
 
   const onOk = () => {
-    form.validateFields().then(res => {
+    form.validateFields().then(async (res) => {
       //发送请求
+      const userIds: string[] = [];
+      res.ids.forEach((id: string) => {
+        const treeNode = treeData.find(treeNode => treeNode.key === id);
+        if (treeNode && treeNode.children) {
+          userIds.push(...treeNode.children.map(treeNode => treeNode.key));
+        } else if (treeNode) {
+          userIds.push(treeNode.key);
+        }
+      });
+      return moveToSharedCloudFile(cloudFileId,userIds);
+    }).then(res => {
+      const { statusCode } = res;
+      if (statusCode === 200) {
+        messageApi.success('共享成功');
+        PubSub.publish('updateFilesTree');
+      } else {
+        messageApi.error('共享失败');
+      }
       close();
     });
   };
@@ -73,13 +95,14 @@ const Index: React.FC<Props> = (props) => {
     (async function () {
       const { statusCode, data } = await getAllContacts();
       if (statusCode === 200) {
-        setTreeData(data);
+        setTreeData(data || []);
       }
     })();
   }, []);
 
   return (
     <Modal title='填写共享信息' open={open} onCancel={close} onOk={onOk}>
+      {contextHolder}
       <Form
         form={form}
         labelCol={{ span: 7 }}

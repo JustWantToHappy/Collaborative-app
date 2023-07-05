@@ -1,1 +1,3 @@
-export class CreateSharedCloudFileDto {}
+export class CreateSharedCloudFileDto {
+  //
+}
