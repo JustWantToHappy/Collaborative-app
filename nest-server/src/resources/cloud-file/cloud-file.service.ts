@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCloudFileDto } from './dto/create-cloud-file.dto';
 import { UpdateCloudFileDto } from './dto/update-cloud-file.dto';
@@ -87,8 +87,8 @@ export class CloudFileService {
   async findFolderAndFirstLevelFiles(id: string, userId: string) {
     const ans = [];
     const root = await this.findOne(id);
-    if (root?.type === FileType.Image) {
-      ans.push(root);
+    if (root && root.type !== FileType.Folder) {
+      return root;
     } else {
       const files = await this.findUserFiles(userId);
       for (let i = 0; i < files.length; i++) {

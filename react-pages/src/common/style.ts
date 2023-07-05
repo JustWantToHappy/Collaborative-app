@@ -10,6 +10,7 @@ export const StyleDiv = styled('div') <Props>`
   --aside-width:${props => props.asideWidth};
   --main-width:calc(100% - var(--aside-width));
   
+  min-width:500px;
 
   aside{
     width:var(--aside-width);
@@ -35,8 +36,8 @@ export const StyleDiv = styled('div') <Props>`
     border-bottom:${props=>props.showHeaderBorder?'1px solid var(--ab-grey-200)':'0'};
   }
   .container{
-    width:var(--main-width);
     padding:0 2rem;
+    width:var(--main-width);
     margin-top:var(--ab-main-header-height);
     display: flex;
   }
@@ -59,11 +60,10 @@ export const StyleDiv = styled('div') <Props>`
   }
   
   .cloud_container{
-    margin-top:calc(var(--ab-main-header-height) + 1rem);
+    padding:0;
   }
-
-
-  .cloud_add{
+  
+  .cloud_tool{
     display: flex;
     align-items: center;
     justify-content: space-between;

@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-const StyleDiv = styled('div')`
+type Props = {
+  showToolBar: boolean;
+}
+
+const StyleDiv = styled('div')<Props>`
   display: block;
   width:100%;
 
@@ -14,33 +18,31 @@ const StyleDiv = styled('div')`
     letter-spacing: 1px;
   }
 
+  --quill-toolbar-height:3rem;
+
   .quill{
     position: relative;
+    margin-top:1rem;
+    overflow: auto;
   }
   .ql-toolbar{
     border:none;
-    background-color: #fff;
-    z-index:1;
     position: fixed;
-    width:100%;
-    margin-top:.5rem;
-    height:3rem;
+    z-index:1;
+    width:calc(100% - 15rem);
+    height:var(--quill-toolbar-height);
+    display: ${props => props.showToolBar ? 'flex' : 'none'};
+    align-items: center;
   }
 
-  /*.ql-snow.ql-toolbar button:hover,.ql-snow .ql-toolbar button:hover,.ql-snow.ql-toolbar button:focus,.ql-snow .ql-toolbar button:focus, .ql-snow.ql-toolbar button.ql-active, .ql-snow .ql-toolbar button.ql-active, .ql-snow.ql-toolbar .ql-picker-label:hover, .ql-snow .ql-toolbar .ql-picker-label:hover, .ql-snow.ql-toolbar .ql-picker-label.ql-active, .ql-snow .ql-toolbar .ql-picker-label.ql-active, .ql-snow.ql-toolbar .ql-picker-item:hover, .ql-snow .ql-toolbar .ql-picker-item:hover, .ql-snow.ql-toolbar .ql-picker-item.ql-selected, .ql-snow .ql-toolbar .ql-picker-item.ql-selected{
-    color:var(--ab-green-600);
-  }*/
   .ql-container{
-    border:none;
+    border: none;
+    margin-top:${props=>props.showToolBar?'var(--quill-toolbar-height)':'0'};
     img{
       height:50vh;
     }
   }
   
-  .ql-editor{
-    margin-top:3.5rem;
-    margin-bottom:1rem;
-  }
 `;
 
 export default StyleDiv;

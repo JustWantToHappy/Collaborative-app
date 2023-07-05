@@ -14,7 +14,7 @@ export function getFilesTree() {
 
 //获取单个文件夹下的内容
 export function getFolderContents(id: string) {
-  return request.get<CloudFile[]>(`/cloudFile/${id}`);
+  return request.get<CloudFile[]|CloudFile>(`/cloudFile/${id}`);
 }
 
 //删除当前文件夹

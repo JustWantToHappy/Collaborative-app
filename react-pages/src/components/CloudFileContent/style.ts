@@ -15,6 +15,11 @@ const StyleDiv = styled('div')<Props>`
       color:var(--ab-green-600);
     }
   }
+
+  .file_image{
+    padding:1rem;
+    text-align: center;
+  }
 `;
 
 export default StyleDiv;

@@ -1,13 +1,16 @@
 import React from 'react';
 import { FileType } from '@/enum';
 import { StyleDiv } from '@/common';
+import PubSub from 'pubsub-js';
 import { useDebouce } from '@/hooks';
 import Badges from '@/components/Badges';
-import { Button, Tree, Popover, message } from 'antd';
 import { getFilesTree, deleteFolder } from '@/api';
 import AddFileModal from '@/components/AddFileModal';
+import ShareFileModal from '@/components/ShareFileModal';
 import CloudFileContent from '@/components/CloudFileContent';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
+import { DeleteOutlined, EditOutlined, ShareAltOutlined, WarningOutlined } from '@ant-design/icons';
+import { Button, Tree, Popover, message, Popconfirm } from 'antd';
 import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
 
 const { DirectoryTree } = Tree;
@@ -15,59 +18,56 @@ const { DirectoryTree } = Tree;
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { cloudFileId } = useParams();
-  const [messageApi, contextHolder] = message.useMessage();
-  const [open, setOpen] = React.useState(false);
-  const [tree, setTree] = React.useState<DataNode[]>([]);
+  const { cloudFileId = '0' } = useParams();
+  const [editable, setEditable] = React.useState(false);
+  const [edit, setEdit] = React.useState(true);
   const [disabled, setDisabled] = React.useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [tree, setTree] = React.useState<DataNode[]>([]);
+  const [openAddFileModal, setOpenAddFileModal] = React.useState(false);
+  const [openShareFileModal, setOpenShareFileModal] = React.useState(false);
+  const [selectedKey, setSelectedKey] = React.useState(cloudFileId);
   const [type, setType] = React.useState<FileType>(FileType.Folder);
-
 
   const onSelect: DirectoryTreeProps['onSelect'] = async (_, info) => {
     info.node.isLeaf ? setDisabled(true) : setDisabled(false);
     navigate(`/cloud/file/${info.node.key}`);
+    setSelectedKey(info.node.key + '');
   };
-
-  const close = () => setOpen(false);
 
   const buildFile = () => {
     setType(FileType.Image);
-    setOpen(true);
+    setOpenAddFileModal(true);
   };
 
   const buildFolder = () => {
     setType(FileType.Folder);
-    setOpen(true);
+    setOpenAddFileModal(true);
   };
 
   const buildCloudDocument = () => {
     setType(FileType.Text);
-    setOpen(true);
+    setOpenAddFileModal(true);
   };
 
-  const shareFile = useDebouce(async () => {
-    //
-  }, 300);
+  const shareFile = () => setOpenShareFileModal(true);
+  const closeAddFileModal = () => setOpenAddFileModal(false);
+  const closeShareFileModal = () => setOpenShareFileModal(false);
+
 
 
   const deleteFile = useDebouce(async () => {
     const { statusCode, msg } = await deleteFolder(cloudFileId ?? '');
     if (statusCode === 200) {
-      getData();
-      navigate('/cloud');
-      setDisabled(false);
+      updateFileTree();
       messageApi.success('删除成功');
+      navigate('/cloud');
     } else {
       messageApi.error(`${statusCode} ${msg}`);
     }
   }, 300);
 
-  const updateFileTree = () => {
-    getData();
-    navigate('/cloud');
-    setDisabled(false);
-  };
-  const getData = React.useCallback(async () => {
+  const updateFileTree = React.useCallback(async () => {
     const { statusCode, data } = await getFilesTree();
     if (statusCode === 200) {
       setTree(data || []);
@@ -75,19 +75,38 @@ export default function Index() {
   }, []);
 
   React.useEffect(() => {
-    getData();
-  }, [getData]);
+    PubSub.publish('changeEditable', edit);
+  }, [edit]);
+
+  React.useEffect(() => {
+    if (pathname === '/cloud') {
+      setDisabled(false);
+      setSelectedKey('0');
+    }
+  }, [pathname]);
+
+  React.useEffect(() => {
+    updateFileTree();
+    const updateFilesTreeToken = PubSub.subscribe('updateFilesTree', () => updateFileTree());
+    const setEditableToken = PubSub.subscribe('setEditable', (_, editable: boolean) => setEditable(editable));
+    return function () {
+      PubSub.unsubscribe(updateFilesTreeToken);
+      PubSub.unsubscribe(setEditableToken);
+    };
+  }, [updateFileTree]);
+
 
   return (
     <StyleDiv asideWidth={'15rem'}>
       {contextHolder}
       <AddFileModal
-        open={open}
+        open={openAddFileModal}
         type={type}
-        close={close}
+        close={closeAddFileModal}
         updateFileTree={updateFileTree} />
+      <ShareFileModal open={openShareFileModal} close={closeShareFileModal} />
       <aside>
-        <div className='cloud_add'>
+        <div className='cloud_tool'>
           <h4>目录</h4>
           <Popover
             arrow={false}
@@ -116,8 +135,8 @@ export default function Index() {
           </Popover>
         </div>
         <DirectoryTree
-          defaultSelectedKeys={['0']}
           multiple
+          selectedKeys={[selectedKey]}
           onSelect={onSelect}
           treeData={tree}
         />
@@ -126,19 +145,41 @@ export default function Index() {
         <div className='header cloud_header'>
           <Badges />
           <div className='cloud_share'>
-            <Button
-              type='primary'
-              disabled={pathname === '/cloud'}
-              onClick={shareFile} >
-              共享
-            </Button>
-            <Button
-              danger
-              disabled={pathname === '/cloud'}
-              type='primary'
-              onClick={deleteFile}>
-              删除
-            </Button>
+            <Button type='primary' onClick={() => navigate('/cloud')}>顶层目录</Button>
+            <Popover
+              arrow={false}
+              content={<div style={{ display: 'flex', flexDirection: 'column' }}>
+                <Button
+                  type='link'
+                  disabled={pathname === '/cloud'}
+                  onClick={shareFile} >
+                  <ShareAltOutlined />共享
+                </Button>
+                <Button
+                  onClick={() => setEdit(edit => !edit)}
+                  disabled={!editable}
+                  type='link'>
+                  <EditOutlined />
+                  {edit ? '编辑' : '更新'}
+                </Button>
+                {pathname !== '/cloud' && <Popconfirm
+                  title="删除文件"
+                  description="你确定删除这个文件?"
+                  onConfirm={deleteFile}
+                  icon={<WarningOutlined />}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <Button
+                    danger
+                    type='link'>
+                    <DeleteOutlined />
+                    删除
+                  </Button>
+                </Popconfirm>}
+              </div>}>
+              <Button>更多操作</Button>
+            </Popover>
           </div>
         </div>
         <div className='container cloud_container'>

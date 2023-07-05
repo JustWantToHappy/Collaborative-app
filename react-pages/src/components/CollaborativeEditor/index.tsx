@@ -26,11 +26,11 @@ const delta = (new Delta([]) as unknown) as TypeDelta;
 
 
 interface Props {
-  isEditor: boolean;
+  editable: boolean;
 }
 
 const Index: React.FC<Props> = (props) => {
-  const { isEditor } = props;
+  const { editable } = props;
   const [value, setValue] = React.useState(delta);
   const editorRef = React.useRef<ReactQuill | null>(null);
 
@@ -52,13 +52,13 @@ const Index: React.FC<Props> = (props) => {
   }, []);
 
   return (
-    <StyleDiv>
+    <StyleDiv showToolBar={editable}>
       <ReactQuill
         ref={editorRef}
         value={value}
         modules={modules}
         onChange={onEditorChange}
-        readOnly={!isEditor}
+        readOnly={!editable}
         placeholder='请输入文字...' />
     </StyleDiv>
   );

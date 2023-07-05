@@ -1,7 +1,7 @@
-import axios, { InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { User } from '@/types';
 import { LocalStorageKey} from '@/enum';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse,AxiosError } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse,AxiosError,InternalAxiosRequestConfig } from 'axios';
 
 export interface ResponseData<T> {
     statusCode: number;
@@ -34,6 +34,7 @@ class Request{
             return config;
         }, (err: AxiosError) => {
             if (err.response?.status === 401) {
+                console.info(401);
                 //window.localStorage.removeItem(LocalStorageKey.User_Info);
                 //history.replaceState('','','/');
             }
