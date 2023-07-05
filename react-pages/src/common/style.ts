@@ -72,14 +72,6 @@ export const StyleDiv = styled('div') <Props>`
       margin:0;
     }
   }
-
-  .cloud_delete{
-    color:red;
-    &:hover{
-      cursor: pointer;
-      color:red;
-    }
-  }
   
   .cloud_share{
     display: flex;

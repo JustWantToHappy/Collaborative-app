@@ -1,7 +1,6 @@
 import React from 'react';
 import UploadImg from '../UploadImg';
 import { addFolder } from '@/api';
-import { useParams } from 'react-router-dom';
 import { Form, Input, Modal, message } from 'antd';
 import type { RcFile, UploadFile } from 'antd/es/upload/interface';
 import { FileType } from '@/enum';
@@ -11,11 +10,11 @@ interface Props {
   open: boolean;
   close: () => void;
   updateFileTree: () => void;
+  cloudFileId: string;
 }
 
 const Index: React.FC<Props> = (props) => {
-  const { type, open, close, updateFileTree } = props;
-  const { cloudFileId = '0' } = useParams();
+  const { type, open, close, updateFileTree, cloudFileId } = props;
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [file, setFile] = React.useState<UploadFile>();
@@ -64,7 +63,7 @@ const Index: React.FC<Props> = (props) => {
         form={form}
         labelCol={{ span: 5 }}
         autoComplete="off"
-        initialValues={{ parentName: cloudFileId, description: '', title: '' }}
+        initialValues={{ description: '', title: '' }}
       >
         <Form.Item
           label={`${title}名称`}
@@ -74,9 +73,8 @@ const Index: React.FC<Props> = (props) => {
         </Form.Item>
 
         <Form.Item
-          label={`父文件夹`}
-          name="parentName">
-          <Input disabled />
+          label={`父文件夹`}>
+          <Input disabled value={cloudFileId} />
         </Form.Item>
 
         <Form.Item

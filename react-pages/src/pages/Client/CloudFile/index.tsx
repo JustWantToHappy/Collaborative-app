@@ -103,6 +103,7 @@ export default function Index() {
         open={openAddFileModal}
         type={type}
         close={closeAddFileModal}
+        cloudFileId={cloudFileId}
         updateFileTree={updateFileTree} />
       <ShareFileModal open={openShareFileModal} close={closeShareFileModal} />
       <aside>
@@ -178,7 +179,7 @@ export default function Index() {
                   </Button>
                 </Popconfirm>}
               </div>}>
-              <Button>更多操作</Button>
+              <Button >更多操作</Button>
             </Popover>
           </div>
         </div>
