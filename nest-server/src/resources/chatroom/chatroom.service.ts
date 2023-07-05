@@ -77,7 +77,7 @@ export class ChatroomService {
 
   findAllChatRoomId(userId: string) {
     return this.prisma.chatRoom.findMany({
-      select: { id: true },
+      select: { id: true, userIds: true, type: true, name: true },
       where: { userIds: { contains: userId } },
     });
   }

@@ -51,7 +51,4 @@ export class GroupController {
   applyJoin(@Request() request, @Body() body: { name: string }) {
     return this.groupService.applyJoin(request.user.id, body.name);
   }
-
-  @Get('apply')
-  groupApply(@Request() request) {}
 }

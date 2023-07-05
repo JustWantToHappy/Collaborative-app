@@ -1,6 +1,6 @@
 import { State } from '@/enum';
-import type { Friend,Contact } from '@/types';
 import {request} from '@/utils/request';
+import type { Friend,Contact,TreeNode } from '@/types';
 
 export function invitedInfo() {
   return request.get<Friend[]>('/friend/invited');
@@ -21,4 +21,8 @@ export function handleInvite(email:string,state:State) {
 
 export function deleteFriend(id:number) {
   return request.delete(`/friend/${id}`);
+}
+
+export function getAllContacts() {
+  return request.get<TreeNode[]>('/friend/contact');
 }

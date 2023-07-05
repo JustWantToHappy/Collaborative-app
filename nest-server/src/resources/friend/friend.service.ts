@@ -1,4 +1,3 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MessageType, State } from 'src/common/enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatroomService } from '../chatroom/chatroom.service';
@@ -6,6 +5,8 @@ import { GroupService } from '../group/group.service';
 import { MessageService } from '../message/message.service';
 import { UserService } from '../user/user.service';
 import { UpdateFriendDto } from './dto/update-friend.dto';
+import { ContactTreeNode } from './dto/contact-tree-node.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class FriendService {
@@ -163,5 +164,68 @@ export class FriendService {
     } else {
       throw new HttpException('删除失败', HttpStatus.UNPROCESSABLE_ENTITY);
     }
+  }
+
+  async findAllContacts(id: string) {
+    const userIds = [];
+    const chatrooms = await this.chatRoomService.findAllChatRoomId(id);
+    //让群组排在前面
+    chatrooms.sort((a, b) => {
+      if (a.type === 'public' && b.type === 'private') {
+        return -1;
+      } else if (a.type === 'private' && b.type === 'public') {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    const ans: ContactTreeNode[] = [];
+    chatrooms.forEach((chatroom) => {
+      const chatroomUserIds = chatroom.userIds
+        .split(',')
+        .filter((userId) => userId !== id);
+      chatroomUserIds.forEach((userId) => {
+        if (!userIds.includes(userId)) {
+          userIds.push(userId);
+        }
+      });
+    });
+    const users = await Promise.all(
+      userIds.map((userId) => this.userService.findOne(userId)),
+    );
+    const set = new Set();
+    chatrooms.forEach((chatroom) => {
+      const chatroomUserIds = chatroom.userIds
+        .split(',')
+        .filter((userId) => userId !== id);
+      if (chatroom.type === 'public') {
+        ans.push({
+          key: chatroom.id,
+          value: chatroom.id,
+          title: chatroom.name,
+          children: [
+            ...chatroomUserIds.map((chatroomUserId) => {
+              set.add(chatroomUserId);
+              return {
+                key: chatroomUserId,
+                value: chatroomUserId,
+                title: users.find((user) => user.id === chatroomUserId).name,
+              };
+            }),
+          ],
+        });
+      } else {
+        chatroomUserIds.forEach((chatroomUserId) => {
+          if (!set.has(chatroomUserId)) {
+            ans.push({
+              key: chatroomUserId,
+              value: chatroomUserId,
+              title: users.find((user) => user.id === chatroomUserId).name,
+            });
+          }
+        });
+      }
+    });
+    return ans;
   }
 }

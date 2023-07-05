@@ -13,4 +13,9 @@ export class FriendController {
   deleteUserFriend(@Param('id') id: string, @Request() request) {
     return this.friendService.deleteUserFriend(request.user.id, id);
   }
+
+  @Get('contact')
+  findAllContact(@Request() request) {
+    return this.friendService.findAllContacts(request.user.id);
+  }
 }

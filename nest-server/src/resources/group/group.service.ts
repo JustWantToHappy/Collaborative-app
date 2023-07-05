@@ -29,6 +29,7 @@ export class GroupService {
           create: {
             userIds: createGroupDto.leaderId + '',
             type: 'public',
+            name: createGroupDto.name,
           },
         },
       },
