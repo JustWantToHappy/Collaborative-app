@@ -72,6 +72,7 @@ export class SharedCloudFileService {
           ans.push(file);
           this.buildFilesTree(files, file.children, file.key, set);
         } else {
+          ans.push(file);
           file.isLeaf = true;
         }
       }
@@ -94,7 +95,9 @@ export class SharedCloudFileService {
   }
 
   findUserFiles(userId: string) {
-    return this.prisma.sharedCloudFile.findMany({ where: { ownerId: userId } });
+    return this.prisma.sharedCloudFile.findMany({
+      where: { collaborators: { contains: userId } },
+    });
   }
 
   findOne(id: string) {
@@ -105,6 +108,18 @@ export class SharedCloudFileService {
     const ans: SharedCloudFileTreeDto[] = [];
     const files = await this.findUserFiles(userId);
     this.buildFilesTree(files, ans);
+    ans.sort((a, b) => {
+      if (a.children.length > b.children.length) {
+        return -1;
+      } else if (!a.isLeaf && b.isLeaf) {
+        return -1;
+      } else if (a.children.length < b.children.length) {
+        return 1;
+      } else if (a.isLeaf && !b.isLeaf) {
+        return 1;
+      }
+      return 0;
+    });
     return ans;
   }
 

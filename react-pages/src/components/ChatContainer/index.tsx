@@ -165,7 +165,7 @@ export default function Index() {
             value={text}
             autoFocus
             autoSize={{ minRows: 1, maxRows: 4 }}
-            placeholder='现在你想要说些什么，表达你的看法、分享你的观点...'
+            placeholder='现在你想要说些什么，发表你的看法...'
             onChange={e => setText(e.target.value)}
             allowClear >
           </Input.TextArea>

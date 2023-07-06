@@ -19,8 +19,8 @@ export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { cloudFileId = '0' } = useParams();
-  const [editable, setEditable] = React.useState(false);
-  const [edit, setEdit] = React.useState(true);
+  const [isDocument, setIsDocument] = React.useState(false);
+  const [edit, setEdit] = React.useState(false);//false表示只读模式，true表示编辑模式
   const [disabled, setDisabled] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [tree, setTree] = React.useState<DataNode[]>([]);
@@ -33,6 +33,8 @@ export default function Index() {
     info.node.isLeaf ? setDisabled(true) : setDisabled(false);
     navigate(`/cloud/file/${info.node.key}`);
     setSelectedKey(info.node.key + '');
+    setIsDocument(false);
+    setEdit(false);
   };
 
   const buildFile = () => {
@@ -88,7 +90,7 @@ export default function Index() {
   React.useEffect(() => {
     updateFileTree();
     const updateFilesTreeToken = PubSub.subscribe('updateFilesTree', () => updateFileTree());
-    const setEditableToken = PubSub.subscribe('setEditable', (_, editable: boolean) => setEditable(editable));
+    const setEditableToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setIsDocument(isDocument));
     return function () {
       PubSub.unsubscribe(updateFilesTreeToken);
       PubSub.unsubscribe(setEditableToken);
@@ -158,10 +160,10 @@ export default function Index() {
                 </Button>
                 <Button
                   onClick={() => setEdit(edit => !edit)}
-                  disabled={!editable}
+                  disabled={!isDocument}
                   type='link'>
                   <EditOutlined />
-                  {edit ? '编辑' : '更新'}
+                  {!edit ? '编辑' : '更新'}
                 </Button>
                 {pathname !== '/cloud' && <Popconfirm
                   title="删除文件"

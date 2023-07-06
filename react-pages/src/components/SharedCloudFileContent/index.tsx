@@ -3,8 +3,9 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
 import type { SharedCloudFile } from '@/types';
-import { Config, FileType } from '@/enum';
+import { Config, FileType, LocalStorageKey } from '@/enum';
 import { useParams } from 'react-router-dom';
+import { useLocalStorage } from '@/hooks';
 import { Table, Image, Popconfirm, message, Tooltip } from 'antd';
 import CollaborativeEditor from '@/components/CollaborativeEditor';
 import { getSharedCloudFolderContents, deleteSharedCloudFloder } from '@/api';
@@ -20,6 +21,7 @@ const Index: React.FC<Props> = (props) => {
   const { sharedCloudFileId = '0' } = useParams();
   const [editable, setEditable] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const [data, setData] = React.useState<SharedCloudFile[] | SharedCloudFile>([]);
   const showTable = Array.isArray(data);
 
@@ -52,9 +54,9 @@ const Index: React.FC<Props> = (props) => {
           }
         }
         if (isDocument) {
-          PubSub.publish('setEditable', true);
+          PubSub.publish('isDocument', true);
         } else {
-          PubSub.publish('setEditable', false);
+          PubSub.publish('isDocument', false);
         }
       }
     }).catch(err => {
@@ -102,7 +104,7 @@ const Index: React.FC<Props> = (props) => {
           title="操作"
           align='center'
           render={(_: any, record: SharedCloudFile) => (
-            <Popconfirm
+            record.ownerId === userInfo.id ? <Popconfirm
               title="删除文件"
               description="你确定删除这个文件?"
               onConfirm={() => deleteFile(record.id)}
@@ -111,7 +113,7 @@ const Index: React.FC<Props> = (props) => {
               cancelText="取消"
             >
               <DeleteOutlined className='cloud_delete' />
-            </Popconfirm>
+            </Popconfirm> : <span>无权限</span>
           )}
         />
       </Table>}

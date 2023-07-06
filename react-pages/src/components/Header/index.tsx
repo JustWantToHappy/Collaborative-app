@@ -9,24 +9,25 @@ import { defaultCssStyles } from '@/utils';
 import LogoSvg from '@/assets/logo/logo.svg';
 import SunSvg from '@/assets/logo/sun.svg';
 import MoonSvg from '@/assets/logo/moon.svg';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import type { Router, ChatRecord } from '@/types';
 import { Avatar, Button, Popover, Switch } from 'antd';
 import { Chat, LocalStorageKey } from '@/enum';
 
 export default function Index() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [dark, setDark] = React.useState(false);
   const [show, setShow] = React.useState(false);
   const lists = routes[0].children as Array<Router>;
-  const [active, setActive] = React.useState('/chat');
+  const [active, setActive] = React.useState(pathname);
   const avatarStyle: React.CSSProperties = { marginLeft: '2rem', cursor: 'pointer' };
   const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const loginOut = () => {
     removeUserInfo();
     navigate('/');
-    chatRoomSocket.emit(Chat.Leave,userInfo.id);
+    chatRoomSocket.emit(Chat.Leave, userInfo.id);
   };
 
   const showUserInfoModal = () => setShow(true);
@@ -71,7 +72,7 @@ export default function Index() {
             <NavLink to={route.path}>
               <Button type='link'
                 onClick={() => setActive(route.path)}
-                style={{ color: route.path.includes(active) ? defaultCssStyles.colorPrimary : '' }}>
+                style={{ color: active.includes(route.path) ? defaultCssStyles.colorPrimary : '' }}>
                 {route.name}
               </Button>
             </NavLink>
