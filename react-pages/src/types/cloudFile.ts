@@ -5,6 +5,7 @@ export type CloudFile = {
   id: string;
   parentId: string;
   path: string;
+  text: string;
   isshared: number;
   title: string;
   createdAt: string;

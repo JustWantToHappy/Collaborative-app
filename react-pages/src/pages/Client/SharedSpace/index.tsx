@@ -30,12 +30,14 @@ export default function Index() {
     setLoading(true);
     if (!edit) {
       setTimeout(() => {
-        setEdit(edit => !edit);
+        setEdit(true);
         setLoading(false);
+        PubSub.publish('changeEdit', true);
       }, 1000);
     } else {
-      setEdit(edit => !edit);
-      setLoading(false);
+      setEdit(false);
+      setLoading(true);
+      PubSub.publish('changeEdit', false);
     }
   }, 300);
 
@@ -63,7 +65,18 @@ export default function Index() {
     return function () {
       PubSub.unsubscribe(isDocumentToken);
     };
-  }, []);
+  }, [messageApi]);
+
+  React.useEffect(() => {
+    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
+      setLoading(false);
+      messageApi.success('内容发布成功');
+    });
+
+    return function () {
+      PubSub.unsubscribe(stopLoadingToken);
+    };
+  }, [messageApi]);
 
   return (
     <StyleDiv asideWidth={'15rem'}>

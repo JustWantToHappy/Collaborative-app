@@ -1,12 +1,12 @@
 import React from 'react';
+import PubSub from 'pubsub-js';
 import { FileType } from '@/enum';
 import { StyleDiv } from '@/common';
-import PubSub from 'pubsub-js';
 import { useDebouce } from '@/hooks';
 import Badges from '@/components/Badges';
-import { getCloudFilesTree, deleteCloudFolder } from '@/api';
 import AddFileModal from '@/components/AddFileModal';
 import ShareFileModal from '@/components/ShareFileModal';
+import { getCloudFilesTree, deleteCloudFolder } from '@/api';
 import CloudFileContent from '@/components/CloudFileContent';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import { DeleteOutlined, EditOutlined, ShareAltOutlined, WarningOutlined } from '@ant-design/icons';
@@ -19,10 +19,11 @@ export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { cloudFileId = '0' } = useParams();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [loading, setLoading] = React.useState(false);
   const [isDocument, setIsDocument] = React.useState(false);
   const [edit, setEdit] = React.useState(false);//false表示只读模式，true表示编辑模式
   const [disabled, setDisabled] = React.useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
   const [tree, setTree] = React.useState<DataNode[]>([]);
   const [openAddFileModal, setOpenAddFileModal] = React.useState(false);
   const [openShareFileModal, setOpenShareFileModal] = React.useState(false);
@@ -57,7 +58,6 @@ export default function Index() {
   const closeShareFileModal = () => setOpenShareFileModal(false);
 
 
-
   const deleteFile = useDebouce(async () => {
     const { statusCode, msg } = await deleteCloudFolder(cloudFileId ?? '');
     if (statusCode === 200) {
@@ -69,6 +69,13 @@ export default function Index() {
     }
   }, 300);
 
+  const editUpdateClick = useDebouce(async () => {
+    setEdit(preEdit => {
+      PubSub.publish('changeEdit', !preEdit);
+      return !preEdit;
+    });
+  }, 300);
+
   const updateFileTree = React.useCallback(async () => {
     const { statusCode, data } = await getCloudFilesTree();
     if (statusCode === 200) {
@@ -77,15 +84,18 @@ export default function Index() {
   }, []);
 
   React.useEffect(() => {
-    PubSub.publish('changeEditable', edit);
-  }, [edit]);
-
-  React.useEffect(() => {
     if (pathname === '/cloud') {
       setDisabled(false);
       setSelectedKey('0');
     }
-  }, [pathname]);
+    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
+      setLoading(false);
+      messageApi.success('内容发布成功');
+    });
+    return function () {
+      PubSub.unsubscribe(stopLoadingToken);
+    };
+  }, [pathname, messageApi]);
 
   React.useEffect(() => {
     updateFileTree();
@@ -159,7 +169,7 @@ export default function Index() {
                   <ShareAltOutlined />共享
                 </Button>
                 <Button
-                  onClick={() => setEdit(edit => !edit)}
+                  onClick={editUpdateClick}
                   disabled={!isDocument}
                   type='link'>
                   <EditOutlined />
@@ -181,7 +191,7 @@ export default function Index() {
                   </Button>
                 </Popconfirm>}
               </div>}>
-              <Button >更多操作</Button>
+              <Button loading={loading}>更多操作</Button>
             </Popover>
           </div>
         </div>

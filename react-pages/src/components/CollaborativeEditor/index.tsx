@@ -27,16 +27,18 @@ const delta = (new Delta([]) as unknown) as TypeDelta;
 
 interface Props {
   editable: boolean;
+  deltaStr: string;
+  getDeltaStr: (deltaStr: string) => void;
 }
 
 const Index: React.FC<Props> = (props) => {
-  const { editable } = props;
+  const { editable, deltaStr, getDeltaStr } = props;
   const [value, setValue] = React.useState(delta);
   const editorRef = React.useRef<ReactQuill | null>(null);
 
   const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
     setValue(editor.getContents());
-    console.info(editor.getContents(), 'hhh');
+    getDeltaStr(JSON.stringify(editor.getContents()));
   };
 
   React.useEffect(() => {
@@ -50,6 +52,14 @@ const Index: React.FC<Props> = (props) => {
     
         const binding = new QuillBinding(ytext, editorRef.current, provider.awareness);*/
   }, []);
+
+  React.useEffect(() => {
+    try {
+      setValue(JSON.parse(deltaStr));
+    } catch (err) {
+      console.info(err);
+    }
+  }, [deltaStr]);
 
   return (
     <StyleDiv showToolBar={editable}>

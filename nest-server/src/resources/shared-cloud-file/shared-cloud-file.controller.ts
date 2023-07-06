@@ -56,7 +56,7 @@ export class SharedCloudFileController {
     @Param('id') id: string,
     @Body() updateSharedCloudFileDto: UpdateSharedCloudFileDto,
   ) {
-    return this.sharedCloudFileService.update(+id, updateSharedCloudFileDto);
+    return this.sharedCloudFileService.update(id, updateSharedCloudFileDto);
   }
 
   @Delete(':id')

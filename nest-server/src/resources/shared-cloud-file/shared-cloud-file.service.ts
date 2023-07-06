@@ -139,8 +139,11 @@ export class SharedCloudFileService {
     return ans;
   }
 
-  update(id: number, updateSharedCloudFileDto: UpdateSharedCloudFileDto) {
-    return `This action updates a #${id} sharedCloudFile`;
+  update(id: string, updateSharedCloudFileDto: UpdateSharedCloudFileDto) {
+    return this.prisma.sharedCloudFile.update({
+      where: { id },
+      data: updateSharedCloudFileDto,
+    });
   }
 
   //删除文件夹下所有内容(只有文件拥有者才可以删除)

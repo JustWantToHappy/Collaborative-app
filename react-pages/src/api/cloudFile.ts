@@ -17,6 +17,9 @@ export function addFolder(data:FormData) {
   return request.post('/cloudFile',data, { headers: { 'Content-Type': 'multipart/formdata' } });
 }
 
+export function updateCloudFile(id: string, data: Partial<CloudFile>) {
+  return request.patch(`/cloudFile/${id}`,data);
+}
 
 //删除当前文件夹
 export function deleteCloudFolder(id: string) {
