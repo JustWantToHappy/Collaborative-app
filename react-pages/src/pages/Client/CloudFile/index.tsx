@@ -4,7 +4,7 @@ import { StyleDiv } from '@/common';
 import PubSub from 'pubsub-js';
 import { useDebouce } from '@/hooks';
 import Badges from '@/components/Badges';
-import { getFilesTree, deleteFolder } from '@/api';
+import { getCloudFilesTree, deleteCloudFolder } from '@/api';
 import AddFileModal from '@/components/AddFileModal';
 import ShareFileModal from '@/components/ShareFileModal';
 import CloudFileContent from '@/components/CloudFileContent';
@@ -57,7 +57,7 @@ export default function Index() {
 
 
   const deleteFile = useDebouce(async () => {
-    const { statusCode, msg } = await deleteFolder(cloudFileId ?? '');
+    const { statusCode, msg } = await deleteCloudFolder(cloudFileId ?? '');
     if (statusCode === 200) {
       updateFileTree();
       messageApi.success('删除成功');
@@ -68,7 +68,7 @@ export default function Index() {
   }, 300);
 
   const updateFileTree = React.useCallback(async () => {
-    const { statusCode, data } = await getFilesTree();
+    const { statusCode, data } = await getCloudFilesTree();
     if (statusCode === 200) {
       setTree(data || []);
     }

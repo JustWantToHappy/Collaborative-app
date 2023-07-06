@@ -3,34 +3,22 @@ import { StyleDiv } from '@/common';
 import { useDebouce } from '@/hooks';
 import Badges from '@/components/Badges';
 import AddUserSvg from '@/assets/logo/addUser.svg';
-import CollaborativeEditor from '@/components/CollaborativeEditor';
-import { AntDesignOutlined, UserOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
+import { useParams, useNavigate, Outlet } from 'react-router-dom';
+import SharedCloudFileContent from '@/components/SharedCloudFileContent';
+import { getSharedCloudFilesTree } from '@/api';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import { Button, Popover, message, Avatar, Tooltip, Tree } from 'antd';
 
 const { DirectoryTree } = Tree;
 
-const treeData: DataNode[] = [
-  {
-    title: 'parent 0',
-    key: '0-0',
-    children: [
-      { title: 'leaf 0-0', key: '0-0-0', isLeaf: true },
-      { title: 'leaf 0-1', key: '0-0-1', isLeaf: true },
-    ],
-  },
-  {
-    title: 'parent 1',
-    key: '0-1',
-    children: [
-      { title: 'leaf 1-0', key: '0-1-0', isLeaf: true },
-      { title: 'leaf 1-1', key: '0-1-1', isLeaf: true },
-    ],
-  },
-];
 export default function Index() {
+  const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
+  const { sharedCloudFileId = '0' } = useParams();
   const [maxCount, setMaxCount] = React.useState(2);
+  const [selectedKey, setSelectedKey] = React.useState(sharedCloudFileId);
+  const [treeData, setTreeData] = React.useState<DataNode[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [editor, setEditor] = React.useState(false);//默认是只读模式
 
@@ -46,13 +34,19 @@ export default function Index() {
       setLoading(false);
     }
   }, 300);
-  const onSelect: DirectoryTreeProps['onSelect'] = (keys, info) => {
-    console.log('Trigger Select', keys, info);
+  const onSelect: DirectoryTreeProps['onSelect'] = (_, info) => {
+    navigate(`/shared/file/${info.node.key}`);
+    setSelectedKey(info.node.key + '');
   };
 
-  const onExpand: DirectoryTreeProps['onExpand'] = (keys, info) => {
-    console.log('Trigger Expand', keys, info);
-  };
+  React.useEffect(() => {
+    (async function () {
+      const { statusCode, data } = await getSharedCloudFilesTree();
+      if (statusCode === 200) {
+        setTreeData(data || []);
+      }
+    })();
+  }, []);
 
   return (
     <StyleDiv asideWidth={'15rem'}>
@@ -64,8 +58,8 @@ export default function Index() {
         <DirectoryTree
           multiple
           defaultExpandAll
+          selectedKeys={[selectedKey]}
           onSelect={onSelect}
-          onExpand={onExpand}
           treeData={treeData}
         />
       </aside>
@@ -96,10 +90,12 @@ export default function Index() {
             <Button type={editor ? 'default' : 'primary'} onClick={throttledClick} loading={loading}>
               {editor ? '更新' : '编辑'}
             </Button>
+
           </div>
         </div>
         <div className='container' style={{ padding: 0 }}>
-          <CollaborativeEditor editable={editor} />
+          {sharedCloudFileId === '0' && <SharedCloudFileContent />}
+          <Outlet />
         </div>
       </main>
     </StyleDiv >

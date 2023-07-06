@@ -11,6 +11,7 @@ import Notify from '@/pages/Client/Notify';
 import CloudFile from '../pages/Client/CloudFile';
 import CloudFileContent from '@/components/CloudFileContent';
 import SharedSpace from '../pages/Client/SharedSpace';
+import SharedCloudFileContent from '@/components/SharedCloudFileContent';
 
 //后台路由
 import Test from '../pages/Admin/Test';
@@ -45,28 +46,22 @@ export const routes: Array<Router> = [
           {
             name: '最新通知',
             path: 'notify',
-            element: <AuthRoute redirect='/'>
-              <Notify />
-            </AuthRoute>
+            element: <Notify />
           }
         ]
       },
       {
         name: '工作台',
         path: '/work',
-        element: <AuthRoute redirect='/'>
-          <WorkSpace />
-        </AuthRoute>
+        element: <WorkSpace />
       },
       {
         name: '云文档',
         path: '/cloud',
-        element: <AuthRoute redirect='/'>
-          <CloudFile />
-        </AuthRoute>,
+        element: <CloudFile />,
         children: [
           {
-            name: '文件',
+            name: '云文件',
             path: 'file/:cloudFileId',
             element: <CloudFileContent />
           }]
@@ -74,9 +69,14 @@ export const routes: Array<Router> = [
       {
         name: '共享空间',
         path: '/shared',
-        element: <AuthRoute redirect='/'>
-          <SharedSpace />
-        </AuthRoute>
+        element: <SharedSpace />,
+        children: [
+          {
+            name: '云文件',
+            path: 'file/:sharedCloudFileId',
+            element: <SharedCloudFileContent />
+          }
+        ]
       },
     ]
   },

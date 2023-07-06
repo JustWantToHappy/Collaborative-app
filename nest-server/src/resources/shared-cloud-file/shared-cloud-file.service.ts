@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { SharedCloudFileTreeDto } from './dto/shared-cloud-file-tree.dto';
 import { CreateSharedCloudFileDto } from './dto/create-shared-cloud-file.dto';
 import { UpdateSharedCloudFileDto } from './dto/update-shared-cloud-file.dto';
 import { MoveToSharedCloudFileDto } from './dto/moveTo-shared-cloud-file.dto';
 import { CloudFileService } from '../cloud-file/cloud-file.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudFile, SharedCloudFile } from '@prisma/client';
+import { deleteFile } from '../../common/utils';
+import { FileType } from 'src/common/enum';
 
 @Injectable()
 export class SharedCloudFileService {
@@ -51,19 +54,105 @@ export class SharedCloudFileService {
     ]);
   }
 
-  findAll() {
-    return `This action returns all sharedCloudFile`;
+  buildFilesTree(
+    files: SharedCloudFile[],
+    ans: SharedCloudFileTreeDto[],
+    parentId = '0',
+    set = new Set(),
+  ) {
+    for (let i = 0; i < files.length; i++) {
+      if (!set.has(files[i].id) && files[i].parentId === parentId) {
+        set.add(files[i].id);
+        const file: SharedCloudFileTreeDto = {
+          key: files[i].id,
+          title: files[i].title,
+        };
+        if (files[i].type === FileType.Folder) {
+          file.children = [];
+          ans.push(file);
+          this.buildFilesTree(files, file.children, file.key, set);
+        } else {
+          file.isLeaf = true;
+        }
+      }
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} sharedCloudFile`;
+  buildFilesList(
+    files: SharedCloudFile[],
+    ans: SharedCloudFile[],
+    parentId = '0',
+    visited = new Set(),
+  ) {
+    for (let i = 0; i < files.length; i++) {
+      if (!visited.has(files[i].id) && files[i].parentId === parentId) {
+        visited.add(files[i].id);
+        ans.push(files[i]);
+        this.buildFilesList(files, ans, files[i].id, visited);
+      }
+    }
+  }
+
+  findUserFiles(userId: string) {
+    return this.prisma.sharedCloudFile.findMany({ where: { ownerId: userId } });
+  }
+
+  findOne(id: string) {
+    return this.prisma.sharedCloudFile.findUnique({ where: { id } });
+  }
+
+  async findAll(userId: string) {
+    const ans: SharedCloudFileTreeDto[] = [];
+    const files = await this.findUserFiles(userId);
+    this.buildFilesTree(files, ans);
+    return ans;
+  }
+
+  async findFolderAndFirstLevelFiles(id: string, userId: string) {
+    const ans = [];
+    const root = await this.findOne(id);
+    if (root && root.type !== FileType.Folder) {
+      return root;
+    } else {
+      const files = await this.findUserFiles(userId);
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].parentId === id) {
+          ans.push(files[i]);
+        }
+      }
+    }
+    return ans;
   }
 
   update(id: number, updateSharedCloudFileDto: UpdateSharedCloudFileDto) {
     return `This action updates a #${id} sharedCloudFile`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sharedCloudFile`;
+  //删除文件夹下所有内容(只有文件拥有者才可以删除)
+  async remove(id: string, userId: string) {
+    const file = await this.findOne(id);
+    if (file.ownerId !== userId) {
+      throw new HttpException('权限不够', HttpStatus.FORBIDDEN);
+    }
+    const ans: SharedCloudFile[] = [];
+    const root = await this.findOne(id);
+    ans.push(root);
+    const files = await this.findUserFiles(userId);
+    this.buildFilesList(files, ans, id);
+    ans.forEach((sharedCloudFile) => {
+      if (
+        sharedCloudFile.path !== '' &&
+        sharedCloudFile.type === FileType.Image
+      ) {
+        deleteFile(sharedCloudFile.path);
+      }
+    });
+    this.prisma.$transaction(
+      ans.map((sharedCloudFile) =>
+        this.prisma.sharedCloudFile.delete({
+          where: { id: sharedCloudFile.id },
+        }),
+      ),
+    );
   }
 }

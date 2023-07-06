@@ -71,9 +71,9 @@ const StyleDiv = styled('div') <Props>`
         height:250px;
         max-width: 100%;
         object-fit: cover;
-        background-color: var(--ab-grey-100);
         border-radius: 5px;
-        padding:2rem 1rem;
+        margin-top:1rem;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
       }
       &>span{
         display: inline-block;
@@ -92,9 +92,6 @@ const StyleDiv = styled('div') <Props>`
       align-items: center;
     }
     .highlight{
-      &>img{
-        background:var(--ab-green-200);
-      }
       &>span{
         background:var(--ab-green-200);
       }

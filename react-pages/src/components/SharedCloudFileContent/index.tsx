@@ -2,12 +2,12 @@ import dayjs from 'dayjs';
 import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
-import type { CloudFile } from '@/types';
+import type { SharedCloudFile } from '@/types';
 import { Config, FileType } from '@/enum';
-import { getCloudFolderContents, deleteCloudFolder } from '@/api';
 import { useParams } from 'react-router-dom';
 import { Table, Image, Popconfirm, message, Tooltip } from 'antd';
 import CollaborativeEditor from '@/components/CollaborativeEditor';
+import { getSharedCloudFolderContents, deleteSharedCloudFloder } from '@/api';
 import { DeleteOutlined, FileImageOutlined, FileTextOutlined, FolderOpenOutlined, WarningOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
@@ -17,14 +17,14 @@ type Props = {
 }
 
 const Index: React.FC<Props> = (props) => {
-  const { cloudFileId = '0' } = useParams();
+  const { sharedCloudFileId = '0' } = useParams();
   const [editable, setEditable] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [data, setData] = React.useState<CloudFile[] | CloudFile>([]);
+  const [data, setData] = React.useState<SharedCloudFile[] | SharedCloudFile>([]);
   const showTable = Array.isArray(data);
 
   const deleteFile = async (id: string) => {
-    const { statusCode, msg } = await deleteCloudFolder(id);
+    const { statusCode, msg } = await deleteSharedCloudFloder(id);
     if (statusCode === 200) {
       PubSub.publish('updateFilesTree');
       messageApi.success('删除成功');
@@ -34,7 +34,7 @@ const Index: React.FC<Props> = (props) => {
   };
 
   React.useEffect(() => {
-    getCloudFolderContents(cloudFileId).then(res => {
+    getSharedCloudFolderContents(sharedCloudFileId).then(res => {
       let isDocument = false;
       const { data, statusCode } = res;
       if (statusCode === 200) {
@@ -46,7 +46,7 @@ const Index: React.FC<Props> = (props) => {
             return cloudFile;
           }) || []);
         } else {
-          setData(data as CloudFile);
+          setData(data as SharedCloudFile);
           if (data?.type === FileType.Text) {
             isDocument = true;
           }
@@ -60,7 +60,7 @@ const Index: React.FC<Props> = (props) => {
     }).catch(err => {
       console.info(err);
     });
-  }, [cloudFileId]);
+  }, [sharedCloudFileId]);
 
   React.useEffect(() => {
     const changeEditableToken = PubSub.subscribe('changeEditable', (_, editable) => setEditable(!editable));
@@ -86,7 +86,7 @@ const Index: React.FC<Props> = (props) => {
           dataIndex="type"
           key="type"
           align='center'
-          render={(_, record: CloudFile) => (<div className='file_type'>
+          render={(_, record: SharedCloudFile) => (<div className='file_type'>
             <Tooltip placement='top' title={<div>
               {record.type === FileType.Image ? '图片' : record.type === FileType.Text ? '文档' : '文件夹'}
             </div>}>
@@ -101,7 +101,7 @@ const Index: React.FC<Props> = (props) => {
         <Column
           title="操作"
           align='center'
-          render={(_: any, record: CloudFile) => (
+          render={(_: any, record: SharedCloudFile) => (
             <Popconfirm
               title="删除文件"
               description="你确定删除这个文件?"

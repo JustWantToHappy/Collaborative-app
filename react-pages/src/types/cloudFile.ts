@@ -14,10 +14,3 @@ export type CloudFile = {
   type: FileType;
   file: UploadFile;
 }
-
-export type TreeNode = {
-  key: string;
-  title: string;
-  value: string;
-  children?:TreeNode[]
-}

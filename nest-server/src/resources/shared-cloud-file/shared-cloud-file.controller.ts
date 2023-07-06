@@ -39,13 +39,16 @@ export class SharedCloudFileController {
   }
 
   @Get()
-  findAll() {
-    return this.sharedCloudFileService.findAll();
+  findAll(@Request() request) {
+    return this.sharedCloudFileService.findAll(request.user.id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sharedCloudFileService.findOne(+id);
+  findFolderAndFirstLevelFiles(@Param('id') id: string, @Request() request) {
+    return this.sharedCloudFileService.findFolderAndFirstLevelFiles(
+      id,
+      request.user.id,
+    );
   }
 
   @Patch(':id')
@@ -57,7 +60,7 @@ export class SharedCloudFileController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sharedCloudFileService.remove(+id);
+  remove(@Param('id') id: string, @Request() request) {
+    return this.sharedCloudFileService.remove(id, request.user.id);
   }
 }
