@@ -1,56 +1,61 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
 import { StyleDiv } from '@/common';
-import { useDebouce } from '@/hooks';
 import Badges from '@/components/Badges';
-import { defaultCssStyles } from '@/utils';
+import TopSvg from '@/assets/logo/top.svg';
 import AddUserSvg from '@/assets/logo/addUser.svg';
-import { useParams, useNavigate, Outlet } from 'react-router-dom';
-import SharedCloudFileContent from '@/components/SharedCloudFileContent';
+import { useDebouce, useThrottle } from '@/hooks';
+import { UserOutlined } from '@ant-design/icons';
 import { getSharedCloudFilesTree } from '@/api';
+import CollaboratorPopoverContent from '@/components/CollaboratorPopoverContent';
+import { useParams, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
-import { Button, Popover, message, Avatar, Tooltip, Tree } from 'antd';
-import { EyeInvisibleOutlined, EyeOutlined, UserOutlined } from '@ant-design/icons';
+import SharedCloudFileContent from '@/components/SharedCloudFileContent';
+import { Button, message, Avatar, Tooltip, Tree, FloatButton, Popover } from 'antd';
 
 const { DirectoryTree } = Tree;
 
 export default function Index() {
   const navigate = useNavigate();
-  const [loading, setLoading] = React.useState(false);
+  const { pathname } = useLocation();
   const { sharedCloudFileId = '0' } = useParams();
-  const [maxCount, setMaxCount] = React.useState(2);
-  const [selectedKey, setSelectedKey] = React.useState(sharedCloudFileId);
-  const [treeData, setTreeData] = React.useState<DataNode[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
-  const [showEye, setShowEye] = React.useState(false);
-  const [isDocument, setIsDocument] = React.useState(false);
-  const [edit, setEdit] = React.useState(false);//false表示只读模式，true表示编辑模式
+  const [treeData, setTreeData] = React.useState<DataNode[]>([]);
+  const [state, setState] = React.useState({
+    loading: false,
+    maxCount: 2,
+    selectedKey: sharedCloudFileId,
+    showEye: false,
+    isDocument: false,
+    edit: false,//false表示只读模式，true表示编辑模式
+    ownerId: ''//文档拥有者Id
+  });
 
   const editUpdateClick = useDebouce(() => {
-    setLoading(true);
-    if (!edit) {
+    setState({ ...state, loading: true });
+    if (!state.edit) {
       setTimeout(() => {
-        setEdit(true);
-        setLoading(false);
+        setState({ ...state, edit: true, loading: false });
         PubSub.publish('changeEdit', true);
       }, 1000);
     } else {
-      setEdit(false);
-      setLoading(true);
+      setState({ ...state, edit: false, loading: true });
       PubSub.publish('changeEdit', false);
     }
   }, 300);
 
-  const showCollaborators = useDebouce(() => {
-    setShowEye(preShow => !preShow);
-  }, 300);
-
   const onSelect: DirectoryTreeProps['onSelect'] = (_, info) => {
     navigate(`/shared/file/${info.node.key}`);
-    setSelectedKey(info.node.key + '');
-    setShowEye(false);
-    setEdit(false);
+    setState({ ...state, selectedKey: info.node.key + '', showEye: false, edit: false });
   };
+
+  const handleMouseOver = useThrottle(() => {
+    setState({ ...state, maxCount: 0 });
+  }, 50);
+
+  const handleMouseLeave = useThrottle(() => {
+    setState({ ...state, maxCount: 2 });
+  }, 50);
 
   React.useEffect(() => {
     (async function () {
@@ -60,21 +65,17 @@ export default function Index() {
       }
     })();
 
-    const isDocumentToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setIsDocument(isDocument));
+    const isDocumentToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setState(state => ({ ...state, isDocument })));
+    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
+      setState(state => ({ ...state, loading: false }));
+      messageApi.success('内容发布成功');
+    });
+    const ownerIdToken = PubSub.subscribe('ownerId', (_, ownerId: string) => setState(state => ({ ...state, ownerId })));
 
     return function () {
       PubSub.unsubscribe(isDocumentToken);
-    };
-  }, [messageApi]);
-
-  React.useEffect(() => {
-    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
-      setLoading(false);
-      messageApi.success('内容发布成功');
-    });
-
-    return function () {
       PubSub.unsubscribe(stopLoadingToken);
+      PubSub.unsubscribe(ownerIdToken);
     };
   }, [messageApi]);
 
@@ -88,7 +89,7 @@ export default function Index() {
         <DirectoryTree
           multiple
           defaultExpandAll
-          selectedKeys={[selectedKey]}
+          selectedKeys={[state.selectedKey]}
           onSelect={onSelect}
           treeData={treeData}
         />
@@ -97,11 +98,11 @@ export default function Index() {
         <div className='header shared_header'>
           <Badges />
           <div className='shared_editor'>
-            <div onMouseOver={() => setMaxCount(0)} onMouseLeave={() => setMaxCount(2)}>
+            <div onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
               <Avatar.Group
-                maxCount={maxCount}
+                maxCount={state.maxCount}
                 size="large"
-                style={{ display: showEye || (isDocument && edit) ? 'block' : 'none', cursor: 'pointer' }}
+                style={{ display: (state.isDocument && state.edit) ? 'block' : 'none', cursor: 'pointer' }}
                 maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
               >
                 <Tooltip title='sb' placement='top'>
@@ -112,26 +113,31 @@ export default function Index() {
                 </Tooltip>
               </Avatar.Group>
             </div>
-            <Button
-              style={{ display: isDocument ? 'none' : 'block' }}
-              onClick={showCollaborators}
-              type='text'>
-              {showEye ? <EyeOutlined
-                style={{ fontSize: '1.5rem', color: defaultCssStyles.colorLinkActive }} /> :
-                <EyeInvisibleOutlined
-                  style={{ fontSize: '1.5rem', color: defaultCssStyles.colorLinkActive }} />}
-            </Button>
-            <Popover content={<span>协作</span>} placement='bottom' arrow={false}>
-              <Button type='text'>
+            <Popover content={<CollaboratorPopoverContent sharedCloudFileId={sharedCloudFileId} />}
+              title="文档协作者"
+              trigger="click"
+              overlayStyle={{ position: 'fixed' }}
+              placement='leftTop'
+              arrow={false}>
+              <Button
+                type='text'
+                style={{ display: pathname === '/shared' ? 'none' : 'flex' }}
+                onClick={(event) => event.stopPropagation()}
+              >
                 <img src={AddUserSvg} style={{ width: '1.5rem' }} />
               </Button>
             </Popover>
+            <Tooltip title='顶层目录' placement='bottom' arrow={false}>
+              <Button type='text' onClick={() => navigate('/shared')}>
+                <img src={TopSvg} style={{ width: '1.5rem' }} />
+              </Button>
+            </Tooltip>
             <Button
-              style={{ display: isDocument ? 'block' : 'none' }}
-              type={edit ? 'default' : 'primary'}
+              style={{ display: state.isDocument ? 'block' : 'none' }}
+              type={state.edit ? 'default' : 'primary'}
               onClick={editUpdateClick}
-              loading={loading}>
-              {edit ? '更新' : '编辑'}
+              loading={state.loading}>
+              {state.edit ? '更新' : '编辑'}
             </Button>
           </div>
         </div>
@@ -140,6 +146,7 @@ export default function Index() {
           <Outlet />
         </div>
       </main>
+      <FloatButton.BackTop duration={300} />
     </StyleDiv >
   );
 }

@@ -20,42 +20,34 @@ export default function Index() {
   const { pathname } = useLocation();
   const { cloudFileId = '0' } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
-  const [loading, setLoading] = React.useState(false);
-  const [isDocument, setIsDocument] = React.useState(false);
-  const [edit, setEdit] = React.useState(false);//false表示只读模式，true表示编辑模式
-  const [disabled, setDisabled] = React.useState(false);
   const [tree, setTree] = React.useState<DataNode[]>([]);
-  const [openAddFileModal, setOpenAddFileModal] = React.useState(false);
-  const [openShareFileModal, setOpenShareFileModal] = React.useState(false);
-  const [selectedKey, setSelectedKey] = React.useState(cloudFileId);
-  const [type, setType] = React.useState<FileType>(FileType.Folder);
+  const [state, setState] = React.useState({
+    loading: false,
+    isDocument: false,
+    edit: false,
+    disabled: false,
+    openAddFileModal: false,
+    openShareFileModal: false,
+    selectedKey: cloudFileId,
+    type: FileType.Folder
+  });
 
   const onSelect: DirectoryTreeProps['onSelect'] = async (_, info) => {
-    info.node.isLeaf ? setDisabled(true) : setDisabled(false);
     navigate(`/cloud/file/${info.node.key}`);
-    setSelectedKey(info.node.key + '');
-    setIsDocument(false);
-    setEdit(false);
+    setState({
+      ...state,
+      disabled: info.node.isLeaf ?? false,
+      selectedKey: info.node.key + '',
+      isDocument: false, edit: false
+    });
   };
 
-  const buildFile = () => {
-    setType(FileType.Image);
-    setOpenAddFileModal(true);
-  };
-
-  const buildFolder = () => {
-    setType(FileType.Folder);
-    setOpenAddFileModal(true);
-  };
-
-  const buildCloudDocument = () => {
-    setType(FileType.Text);
-    setOpenAddFileModal(true);
-  };
-
-  const shareFile = () => setOpenShareFileModal(true);
-  const closeAddFileModal = () => setOpenAddFileModal(false);
-  const closeShareFileModal = () => setOpenShareFileModal(false);
+  const buildFile = () => setState({ ...state, type: FileType.Image, openAddFileModal: true });
+  const buildFolder = () => setState({ ...state, type: FileType.Folder, openAddFileModal: true });
+  const buildCloudDocument = () => setState({ ...state, type: FileType.Text, openAddFileModal: true });
+  const shareFile = () => setState({ ...state, openShareFileModal: true });
+  const closeAddFileModal = () => setState({ ...state, openAddFileModal: false });
+  const closeShareFileModal = () => setState({ ...state, openShareFileModal: false });
 
 
   const deleteFile = useDebouce(async () => {
@@ -69,11 +61,17 @@ export default function Index() {
     }
   }, 300);
 
-  const editUpdateClick = useDebouce(async () => {
-    setEdit(preEdit => {
-      PubSub.publish('changeEdit', !preEdit);
-      return !preEdit;
-    });
+  const editUpdateClick = useDebouce(() => {
+    setState({ ...state, loading: true });
+    if (!state.edit) {
+      setTimeout(() => {
+        PubSub.publish('changeEdit', true);
+        setState({ ...state, edit: true, loading: false });
+      }, 1000);
+    } else {
+      PubSub.publish('changeEdit', false);
+      setState({ ...state, edit: false, loading: true });
+    }
   }, 300);
 
   const updateFileTree = React.useCallback(async () => {
@@ -85,39 +83,41 @@ export default function Index() {
 
   React.useEffect(() => {
     if (pathname === '/cloud') {
-      setDisabled(false);
-      setSelectedKey('0');
+      setState(state => ({ ...state, disabled: false, selectedKey: '0' }));
     }
-    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
-      setLoading(false);
-      messageApi.success('内容发布成功');
-    });
-    return function () {
-      PubSub.unsubscribe(stopLoadingToken);
-    };
-  }, [pathname, messageApi]);
+  }, [pathname]);
 
   React.useEffect(() => {
     updateFileTree();
     const updateFilesTreeToken = PubSub.subscribe('updateFilesTree', () => updateFileTree());
-    const setEditableToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setIsDocument(isDocument));
+    const setEditableToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setState(state => ({ ...state, isDocument })));
     return function () {
       PubSub.unsubscribe(updateFilesTreeToken);
       PubSub.unsubscribe(setEditableToken);
     };
   }, [updateFileTree]);
 
+  React.useEffect(() => {
+    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
+      setState(state => ({ ...state, loading: false }));
+      messageApi.success('内容发布成功');
+    });
+    return function () {
+      PubSub.unsubscribe(stopLoadingToken);
+    };
+  }, [messageApi]);
+
 
   return (
     <StyleDiv asideWidth={'15rem'}>
       {contextHolder}
       <AddFileModal
-        open={openAddFileModal}
-        type={type}
+        open={state.openAddFileModal}
+        type={state.type}
         close={closeAddFileModal}
         cloudFileId={cloudFileId}
         updateFileTree={updateFileTree} />
-      <ShareFileModal open={openShareFileModal} close={closeShareFileModal} />
+      <ShareFileModal open={state.openShareFileModal} close={closeShareFileModal} />
       <aside>
         <div className='cloud_tool'>
           <h4>目录</h4>
@@ -127,19 +127,19 @@ export default function Index() {
             content={<div style={{ display: 'flex', flexDirection: 'column' }}>
               <Button
                 type='link'
-                disabled={disabled}
+                disabled={state.disabled}
                 onClick={buildFolder}>
                 新建文件夹&emsp;
               </Button>
               <Button
                 type='link'
-                disabled={disabled}
+                disabled={state.disabled}
                 onClick={buildFile}>
                 上传文件&emsp;&emsp;
               </Button>
               <Button
                 type='link'
-                disabled={disabled}
+                disabled={state.disabled}
                 onClick={buildCloudDocument}>
                 新建文档&emsp;&emsp;
               </Button>
@@ -149,7 +149,7 @@ export default function Index() {
         </div>
         <DirectoryTree
           multiple
-          selectedKeys={[selectedKey]}
+          selectedKeys={[state.selectedKey]}
           onSelect={onSelect}
           treeData={tree}
         />
@@ -170,10 +170,10 @@ export default function Index() {
                 </Button>
                 <Button
                   onClick={editUpdateClick}
-                  disabled={!isDocument}
+                  disabled={!state.isDocument}
                   type='link'>
                   <EditOutlined />
-                  {!edit ? '编辑' : '更新'}
+                  {!state.edit ? '编辑' : '更新'}
                 </Button>
                 {pathname !== '/cloud' && <Popconfirm
                   title="删除文件"
@@ -191,7 +191,7 @@ export default function Index() {
                   </Button>
                 </Popconfirm>}
               </div>}>
-              <Button loading={loading}>更多操作</Button>
+              <Button loading={state.loading}>更多操作</Button>
             </Popover>
           </div>
         </div>

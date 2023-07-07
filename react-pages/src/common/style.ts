@@ -98,6 +98,7 @@ export const StyleDiv = styled('div') <Props>`
   .shared_editor{
     display: flex;
     align-items: center;
-    column-gap: 1rem;
+    column-gap: .5rem;
   }
+
 `;

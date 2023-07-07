@@ -101,6 +101,7 @@ export class CloudFileService {
   }
 
   update(id: string, updateCloudFileDto: UpdateCloudFileDto) {
+    updateCloudFileDto.updatedAt = new Date();
     return this.prisma.cloudFile.update({
       data: updateCloudFileDto,
       where: { id },

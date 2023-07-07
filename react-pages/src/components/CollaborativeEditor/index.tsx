@@ -1,18 +1,18 @@
 import React from 'react';
 import StyleDiv from './style';
-import ReactQuill from 'react-quill';
-import * as Y from 'yjs';
 import Quill from 'quill';
 import Delta from 'quill-delta';
-import { QuillBinding } from 'y-quill';
+import ReactQuill from 'react-quill';
 import QuillCursors from 'quill-cursors';
-import { WebrtcProvider } from 'y-webrtc';
+import { QuillBinding } from 'y-quill';
 import 'react-quill/dist/quill.snow.css';
+import { useParams } from 'react-router-dom';
+import { singleWebrtcProvider } from '@/utils';
 import { Delta as TypeDelta, Sources } from 'quill';
 
 Quill.register('modules/cursors', QuillCursors);
-
 const modules = {
+  cursors: true,
   toolbar: [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
     ['bold', 'italic', 'underline'],
@@ -24,40 +24,44 @@ const modules = {
 
 const delta = (new Delta([]) as unknown) as TypeDelta;
 
-
 interface Props {
   editable: boolean;
   deltaStr: string;
   getDeltaStr: (deltaStr: string) => void;
+  shared?: boolean;
 }
 
 const Index: React.FC<Props> = (props) => {
-  const { editable, deltaStr, getDeltaStr } = props;
-  const [value, setValue] = React.useState(delta);
+  const { sharedCloudFileId } = useParams();
+  const { editable, deltaStr, getDeltaStr, shared } = props;
   const editorRef = React.useRef<ReactQuill | null>(null);
 
   const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
-    setValue(editor.getContents());
     getDeltaStr(JSON.stringify(editor.getContents()));
   };
 
   React.useEffect(() => {
-    editorRef.current?.focus();
-    /*    const ydoc = new Y.Doc();
-    
-        const provider = new WebrtcProvider('quill-demo-room', ydoc);
-    
-        // Define a shared text type on the document
-        const ytext = ydoc.getText('quill');
-    
-        const binding = new QuillBinding(ytext, editorRef.current, provider.awareness);*/
-  }, []);
+    if (shared && editable) {
+      editorRef.current?.focus();
+      const ydoc = singleWebrtcProvider.getYDoc();
+      const ytext = ydoc.getText('quill');
+      const provider = singleWebrtcProvider.joinWebRtcRoom(sharedCloudFileId!);
+      new QuillBinding(ytext, editorRef.current?.editor, provider?.awareness);
+    } else {
+      //
+    }
+    return function () {
+      if (shared && editable) {
+        //
+      }
+    };
+  }, [shared, editable, sharedCloudFileId, deltaStr]);
 
   React.useEffect(() => {
     try {
-      setValue(JSON.parse(deltaStr));
+      editorRef.current?.editor?.setContents(JSON.parse(deltaStr));
     } catch (err) {
-      console.info(err);
+      editorRef.current?.editor?.setContents(delta);
     }
   }, [deltaStr]);
 
@@ -65,7 +69,6 @@ const Index: React.FC<Props> = (props) => {
     <StyleDiv showToolBar={editable}>
       <ReactQuill
         ref={editorRef}
-        value={value}
         modules={modules}
         onChange={onEditorChange}
         readOnly={!editable}

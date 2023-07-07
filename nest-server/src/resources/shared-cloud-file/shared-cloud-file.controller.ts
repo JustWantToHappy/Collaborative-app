@@ -12,6 +12,7 @@ import { SharedCloudFileService } from './shared-cloud-file.service';
 import { CreateSharedCloudFileDto } from './dto/create-shared-cloud-file.dto';
 import { UpdateSharedCloudFileDto } from './dto/update-shared-cloud-file.dto';
 import { MoveToSharedCloudFileDto } from './dto/moveTo-shared-cloud-file.dto';
+import { request } from 'http';
 
 @Controller('sharedCloudFile')
 export class SharedCloudFileController {
@@ -49,6 +50,11 @@ export class SharedCloudFileController {
       id,
       request.user.id,
     );
+  }
+
+  @Get('collaborators/:id')
+  findAllCollaboratorsById(@Param('id') id: string) {
+    return this.sharedCloudFileService.findAllCollaboratorsById(id);
   }
 
   @Patch(':id')

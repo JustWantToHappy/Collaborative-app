@@ -19,13 +19,15 @@ type Props = {
 
 const Index: React.FC<Props> = (props) => {
   const { sharedCloudFileId = '0' } = useParams();
-  const [text, setText] = React.useState('');
-  const [edit, setEdit] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [tableLoading, setTableLoading] = React.useState(true);
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const [data, setData] = React.useState<SharedCloudFile[] | SharedCloudFile>([]);
+  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const showTable = Array.isArray(data);
+  const [state, setState] = React.useState({
+    text: '',
+    edit: false,
+    tableLoading: true
+  });
 
   const deleteFile = async (id: string) => {
     const { statusCode, msg } = await deleteSharedCloudFloder(id);
@@ -39,28 +41,31 @@ const Index: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     getSharedCloudFolderContents(sharedCloudFileId).then(res => {
-      let isDocument = false;
+      let isDocument = false, ownerId = '';
       const { data, statusCode } = res;
       if (statusCode === 200) {
         if (Array.isArray(data)) {
-          setData(data?.map(cloudFile => {
-            cloudFile.createdAt = dayjs(cloudFile.createdAt).format('YYYY-MM-DD HH:mm:ss');
-            cloudFile.updatedAt = dayjs(cloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
-            cloudFile.description = cloudFile.description === '' ? '无' : cloudFile.description;
-            return cloudFile;
+          setData(data?.map(sharedCloudFile => {
+            ownerId = sharedCloudFile.ownerId;
+            sharedCloudFile.createdAt = dayjs(sharedCloudFile.createdAt).format('YYYY-MM-DD HH:mm:ss');
+            sharedCloudFile.updatedAt = dayjs(sharedCloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+            sharedCloudFile.description = sharedCloudFile.description === '' ? '无' : sharedCloudFile.description;
+            return sharedCloudFile;
           }) || []);
         } else {
           setData(data as SharedCloudFile);
           if (data?.type === FileType.Text) {
             isDocument = true;
           }
+          ownerId = data?.ownerId ?? '';
         }
         if (isDocument) {
           PubSub.publish('isDocument', true);
         } else {
           PubSub.publish('isDocument', false);
         }
-        setTableLoading(false);
+        PubSub.publish('ownerId', ownerId);
+        setState(state => ({ ...state, tableLoading: false }));
       }
     }).catch(err => {
       console.info(err);
@@ -69,18 +74,20 @@ const Index: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     const changeEditableToken = PubSub.subscribe('changeEdit', async (_, edit) => {
-      setEdit(edit);
+      setState(state => ({ ...state, edit }));
       if (!edit) {
-        const { statusCode } = await updateSharedCloudFile(sharedCloudFileId, { text });
+        const { statusCode } = await updateSharedCloudFile(sharedCloudFileId, { text: state.text });
         if (statusCode === 200) {
           PubSub.publish('stopLoading');
+        } else {
+          messageApi.error('发布失败');
         }
       }
     });
     return function () {
       PubSub.unsubscribe(changeEditableToken);
     };
-  }, [sharedCloudFileId, text]);
+  }, [sharedCloudFileId, state.text, messageApi]);
 
   return (
     <StyleDiv show={props.show}>
@@ -88,7 +95,7 @@ const Index: React.FC<Props> = (props) => {
       {showTable && <Table
         rowKey='id'
         dataSource={data}
-        loading={tableLoading}
+        loading={state.tableLoading}
         pagination={{ pageSize: 6 }}
         style={{ width: '100%', minWidth: '400px', marginTop: '1rem' }} >
         <Column title="名称" dataIndex="title" key="title" />
@@ -138,8 +145,9 @@ const Index: React.FC<Props> = (props) => {
       </div>}
       {!showTable && data.type === FileType.Text &&
         <CollaborativeEditor
-          editable={edit}
-          getDeltaStr={(text: string) => setText(text)}
+          shared
+          editable={state.edit}
+          getDeltaStr={(text: string) => setState({ ...state, text })}
           deltaStr={data.text} />}
     </StyleDiv>
   );

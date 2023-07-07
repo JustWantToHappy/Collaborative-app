@@ -51,7 +51,10 @@ export default function Index(props: Props) {
         <p>
           <span>我的好友</span>
         </p>
-        {contacts.friends.map(friend => <div key={friend.email} className='panel_info'>
+        {contacts.friends.map(friend => <div
+          key={friend.email}
+          style={{ gridTemplateColumns: 'repeat(3,1fr)' }}
+          className='panel_info'>
           <MyAvatar size='large' />
           <h5>{friend.name}</h5>
           <span>邮箱地址：{friend.email}</span>
@@ -68,10 +71,8 @@ export default function Index(props: Props) {
           key={group.id}
           style={{ gridTemplateColumns: 'repeat(2,1fr)' }}
           className='panel_info'>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <MyAvatar size='large' src={group.avatar}>{group.name}</MyAvatar>
-            <h5>{group.name}</h5>
-          </div>
+          <MyAvatar size='large' src={group.avatar}>{group.name}</MyAvatar>
+          <h5>{group.name}</h5>
           <small>
             <Button type='link' danger>
               {userInfo.id === group.leaderId ? '解散此群' : '退出此群'}

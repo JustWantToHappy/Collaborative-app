@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { json } from 'body-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -15,7 +16,8 @@ async function bootstrap() {
     origin: ['http://localhost:5000'],
     credentials: true,
   });*/
-
+  //设置最大请求负载
+  app.use(json({ limit: '10mb' }));
   //使用全局管道
   app.useGlobalPipes(
     new ValidationPipe({

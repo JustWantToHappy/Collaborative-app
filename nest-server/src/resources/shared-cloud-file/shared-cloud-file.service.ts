@@ -8,12 +8,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudFile, SharedCloudFile } from '@prisma/client';
 import { deleteFile } from '../../common/utils';
 import { FileType } from 'src/common/enum';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class SharedCloudFileService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cloudFileService: CloudFileService,
+    private readonly userService: UserService,
   ) {}
   create(createSharedCloudFileDto: CreateSharedCloudFileDto) {
     return 'This action adds a new sharedCloudFile';
@@ -139,7 +141,28 @@ export class SharedCloudFileService {
     return ans;
   }
 
+  //文档中的所有协同者
+  async findAllCollaboratorsById(id: string) {
+    const sharedCloudFile = await this.findOne(id);
+    const collaborators = sharedCloudFile.collaborators
+      .split(',')
+      .filter((userId) => userId !== sharedCloudFile.ownerId);
+    collaborators.unshift(sharedCloudFile.ownerId);
+    return Promise.all(
+      collaborators.map(async (collaborator) => {
+        const user = await this.userService.findOne(collaborator);
+        return {
+          id: user.id,
+          email: user.email,
+          avatar: user.avatar,
+          name: user.name,
+        };
+      }),
+    );
+  }
+
   update(id: string, updateSharedCloudFileDto: UpdateSharedCloudFileDto) {
+    updateSharedCloudFileDto.updatedAt = new Date();
     return this.prisma.sharedCloudFile.update({
       where: { id },
       data: updateSharedCloudFileDto,

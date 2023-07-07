@@ -18,11 +18,13 @@ type Props = {
 
 const Index: React.FC<Props> = (props) => {
   const { cloudFileId = '0' } = useParams();
-  const [edit, setEdit] = React.useState(false);
-  const [text, setText] = React.useState('');
-  const [tableLoading, setTableLoading] = React.useState(true);
   const [messageApi, contextHolder] = message.useMessage();
   const [data, setData] = React.useState<CloudFile[] | CloudFile>([]);
+  const [state, setState] = React.useState({
+    edit: false,
+    text: '',
+    tableLoading: true,
+  });
   const showTable = Array.isArray(data);
 
   const deleteFile = async (id: string) => {
@@ -58,7 +60,7 @@ const Index: React.FC<Props> = (props) => {
         } else {
           PubSub.publish('isDocument', false);
         }
-        setTableLoading(false);
+        setState(state => ({ ...state, tableLoading: false }));
       }
     }).catch(err => {
       console.info(err);
@@ -66,18 +68,28 @@ const Index: React.FC<Props> = (props) => {
   }, [cloudFileId]);
 
   React.useEffect(() => {
-    const changeEditableToken = PubSub.subscribe('changeEdit', (_, edit) => setEdit(edit));
+    const changeEditableToken = PubSub.subscribe('changeEdit', async (_, edit) => {
+      if (!edit) {
+        const { statusCode } = await updateCloudFile(cloudFileId, { text: state.text });
+        if (statusCode === 200) {
+          PubSub.publish('stopLoading');
+        } else {
+          messageApi.error('发布失败');
+        }
+      }
+      setState(state => ({ ...state, edit }));
+    });
     return function () {
       PubSub.unsubscribe(changeEditableToken);
     };
-  }, []);
+  }, [cloudFileId, state.text, messageApi]);
 
   return (
     <StyleDiv show={props.show}>
       {contextHolder}
       {showTable && <Table
         rowKey='id'
-        loading={tableLoading}
+        loading={state.tableLoading}
         dataSource={data}
         pagination={{ pageSize: 6 }}
         style={{ width: '100%', minWidth: '400px', marginTop: '1rem' }} >
@@ -127,8 +139,8 @@ const Index: React.FC<Props> = (props) => {
         />
       </div>}
       {!showTable && data.type === FileType.Text && <CollaborativeEditor
-        editable={edit}
-        getDeltaStr={text => setText(text)}
+        editable={state.edit}
+        getDeltaStr={text => setState({ ...state, text })}
         deltaStr={data.text} />}
     </StyleDiv>
   );

@@ -82,7 +82,7 @@ export default function Index(props: IProps) {
           to={`/chat/room/${chatroom.id}`}
           state={
             {
-              friendId:chatroom.User?.id,
+              friendId: chatroom.User?.id,
               title: chatroom.Group?.name || chatroom.User?.name,
               type: chatroom.type,
             }}
@@ -106,6 +106,7 @@ export default function Index(props: IProps) {
             </small>
             <span>
               <Popover
+                overlayStyle={{ position: 'fixed' }}
                 placement="top"
                 content={
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
