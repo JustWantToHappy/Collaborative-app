@@ -148,7 +148,8 @@ const Index: React.FC<Props> = (props) => {
           shared
           editable={state.edit}
           getDeltaStr={(text: string) => setState({ ...state, text })}
-          deltaStr={data.text} />}
+          deltaStr={data.text} />
+      }
     </StyleDiv>
   );
 };

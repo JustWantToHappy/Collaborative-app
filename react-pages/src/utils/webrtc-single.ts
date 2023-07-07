@@ -9,13 +9,14 @@ class SingleWebrtcProvider{
   private readonly ydoc: Y.Doc = new Y.Doc();
   
   //进入webrtc对应的房间
-  public joinWebRtcRoom(room: string) {
-    if (this.map.has(room)) {
-      return this.map.get(room);
+  public joinWebRtcRoom(roomId: string) {
+    if (this.map.has(roomId)) {
+      return this.map.get(roomId);
     } else {
-      const newRoom=new WebrtcProvider(room,this.ydoc);
-      this.map.set(room,newRoom);
-      return newRoom;
+      console.info(roomId);
+      const provider=new WebrtcProvider(roomId,this.ydoc);
+      this.map.set(roomId, provider);
+      return provider;
     }
   }
 
@@ -23,6 +24,14 @@ class SingleWebrtcProvider{
     return this.ydoc;
   }
 
+  /**
+   * @desc 当没有用户编辑文档的时候才可调用
+   */
+  public clear(roomId:string) {
+    const provider=this.map.get(roomId);
+    provider?.disconnect();
+    provider?.destroy();
+  }
 }
 
 
