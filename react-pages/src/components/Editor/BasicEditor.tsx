@@ -4,15 +4,11 @@ import Quill from 'quill';
 import Delta from 'quill-delta';
 import ReactQuill from 'react-quill';
 import QuillCursors from 'quill-cursors';
-import { QuillBinding } from 'y-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useParams } from 'react-router-dom';
-import { singleWebrtcProvider } from '@/utils';
 import { Delta as TypeDelta, Sources } from 'quill';
-import { useWebRtcProvider, useLocalStorage } from '@/hooks';
-import { LocalStorageKey } from '@/enum';
 
 Quill.register('modules/cursors', QuillCursors);
+
 const modules = {
   cursors: true,
   toolbar: [
@@ -29,40 +25,22 @@ const modules = {
 
 const delta = (new Delta([]) as unknown) as TypeDelta;
 
-interface Props {
+export interface Props {
   editable: boolean;
   deltaStr: string;
   getDeltaStr: (deltaStr: string) => void;
-  shared?: boolean;
 }
 
-const Index: React.FC<Props> = (props) => {
-  const { sharedCloudFileId = '0' } = useParams();
-  const { editable, deltaStr, getDeltaStr, shared } = props;
+export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQuill | null>) => {
+  const { editable, deltaStr, getDeltaStr } = props;
   const editorRef = React.useRef<ReactQuill | null>(null);
-  const quillBindingRef = React.useRef<QuillBinding>();
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
-  //const provider = useWebRtcProvider({ name: userInfo.name, id: userInfo.id }, sharedCloudFileId);
 
   const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
     getDeltaStr(JSON.stringify(editor.getContents()));
   };
 
-  React.useEffect(() => {
-    if (shared && editable) {
-      const ydoc = singleWebrtcProvider.getYDoc();
-      const ytext = ydoc.getText('quill');
-      const provider = singleWebrtcProvider.joinWebRtcRoom(sharedCloudFileId);
-      const quillBinding = new QuillBinding(ytext, editorRef.current?.editor, provider?.awareness);
-      quillBindingRef.current = quillBinding;
-      editorRef.current?.focus();
-    }
-    return function () {
-      if (shared && editable) {
-        quillBindingRef.current?.destroy();
-      }
-    };
-  }, [shared, editable, sharedCloudFileId]);
+  //提供属性给外部组件
+  React.useImperativeHandle(ref, () => editorRef.current);
 
   React.useEffect(() => {
     try {
@@ -82,6 +60,4 @@ const Index: React.FC<Props> = (props) => {
         placeholder='请输入文字...' />
     </StyleDiv>
   );
-};
-
-export default Index;
+});

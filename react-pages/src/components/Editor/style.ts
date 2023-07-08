@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 type Props = {
-  showToolBar: boolean;
+  showToolBar?: boolean;
 }
 
 const StyleDiv = styled('div')<Props>`
