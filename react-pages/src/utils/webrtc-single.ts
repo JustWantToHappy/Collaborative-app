@@ -8,13 +8,18 @@ class SingleWebrtcProvider{
   //当前客服端对应的文档实例
   private readonly ydoc: Y.Doc = new Y.Doc();
   
+  constructor() {
+    this.ydoc.on('update', () => {
+      //console.info('Document updated',this.ydoc.toJSON());
+    });
+  }
+
   //进入webrtc对应的房间
   public joinWebRtcRoom(roomId: string) {
     if (this.map.has(roomId)) {
       return this.map.get(roomId);
     } else {
-      console.info(roomId);
-      const provider=new WebrtcProvider(roomId,this.ydoc);
+      const provider = new WebrtcProvider(roomId, this.ydoc, { signaling: [ 'ws://localhost:4444'] });
       this.map.set(roomId, provider);
       return provider;
     }
@@ -24,14 +29,6 @@ class SingleWebrtcProvider{
     return this.ydoc;
   }
 
-  /**
-   * @desc 当没有用户编辑文档的时候才可调用
-   */
-  public clear(roomId:string) {
-    const provider=this.map.get(roomId);
-    provider?.disconnect();
-    provider?.destroy();
-  }
 }
 
 

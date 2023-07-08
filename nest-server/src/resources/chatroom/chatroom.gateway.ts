@@ -25,11 +25,11 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 @WebSocketGateway({
   cors: { origin: /.*/, credentials: true },
   port: 8080,
-  namespace: '/chatroom',
+  path: '/chat',
   /**
    * 可以指定path:""属性创建更加复杂的应用，同时客服端需要设置path
    * 注意点:
-   * 1. 如果使用了path，那么就会涉及到跨域问题，需要设置cors以及身份验证的请求头
+   * 1. 如果使用了path，那么就会涉及到跨域问题，需要设置cors
    * 2. 如果只是使用namespace，啥都不需要干
    */
 })

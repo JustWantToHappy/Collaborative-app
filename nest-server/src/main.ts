@@ -13,9 +13,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   //使用cors
   /*  app.enableCors({
-    origin: ['http://localhost:5000'],
+    origin: ['http://127.0.0.1:5000'],
     credentials: true,
   });*/
+
   //设置最大请求负载
   app.use(json({ limit: '10mb' }));
   //使用全局管道

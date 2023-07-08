@@ -42,19 +42,15 @@ export default function Index() {
     }
 
     chatRoomSocket.on('connect', () => {
-      if (chatRoomSocket.connected) {
-        chatRoomSocket.emit(Chat.Join, userInfo.id);//用户加入房间
-      } else {
-        chatRoomSocket.connect();
-      }
+      chatRoomSocket.emit(Chat.Join, userInfo.id);//用户加入房间
     });
 
     chatRoomSocket.on(Chat.Message, (body: ChatRecord) => {
       PubSub.publish('fetchChatRecord', body);
     });
     return function () {
-      chatRoomSocket.off(Chat.Message);
       chatRoomSocket.off('connect');
+      chatRoomSocket.off(Chat.Message);
       if (chatRoomSocket.connected) chatRoomSocket.disconnect();
     };
   }, [userInfo.id]);

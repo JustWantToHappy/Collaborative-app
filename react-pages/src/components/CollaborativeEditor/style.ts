@@ -21,7 +21,6 @@ const StyleDiv = styled('div')<Props>`
   --quill-toolbar-height:3rem;
 
   .quill{
-    position: relative;
     margin-top:1rem;
     overflow: auto;
   }
@@ -43,7 +42,6 @@ const StyleDiv = styled('div')<Props>`
       height:50vh;
     }
   }
-  
 `;
 
 export default StyleDiv;
