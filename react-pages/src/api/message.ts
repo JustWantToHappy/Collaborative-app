@@ -1,8 +1,9 @@
 import {request} from '@/utils/request';
 import type { Message } from '@/types';
+import { State } from '@/enum';
 
-export function getAllPendingMessages() {
-  return request.get<Message[]>('/message');
+export function getAllMessagesByState(state:State=State.Pending) {
+  return request.get<Message[]>(`/message/${state}`);
 }
 
 export function updateMessage(id:string,data:Partial<Message>) {

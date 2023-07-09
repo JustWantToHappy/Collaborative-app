@@ -6,6 +6,7 @@ import ReactQuill from 'react-quill';
 import QuillCursors from 'quill-cursors';
 import 'react-quill/dist/quill.snow.css';
 import { Delta as TypeDelta, Sources } from 'quill';
+import { updateSharedCloudFile, updateCloudFile } from '@/api';
 
 Quill.register('modules/cursors', QuillCursors);
 
@@ -28,19 +29,29 @@ const delta = (new Delta([]) as unknown) as TypeDelta;
 export interface Props {
   editable: boolean;
   deltaStr: string;
-  getDeltaStr: (deltaStr: string) => void;
+  sharedCloudFileId?: string;
+  cloudFileId?: string;
 }
 
 export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQuill | null>) => {
-  const { editable, deltaStr, getDeltaStr } = props;
+  const { editable, deltaStr, sharedCloudFileId, cloudFileId } = props;
   const editorRef = React.useRef<ReactQuill | null>(null);
 
-  const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
-    getDeltaStr(JSON.stringify(editor.getContents()));
-  };
+  //const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
+  //  console.info(JSON.stringify(editor.getContents()));
+  //};
 
   //提供属性给外部组件
   React.useImperativeHandle(ref, () => editorRef.current);
+
+  const handleSave = React.useCallback(async () => {
+    if (sharedCloudFileId) {
+      //
+    } else if (cloudFileId) {
+      updateCloudFile(cloudFileId, { text: JSON.stringify(editorRef.current?.editor?.getContents()) })
+        .then(() => PubSub.publish('setLoading', false));
+    }
+  }, [sharedCloudFileId, cloudFileId]);
 
   React.useEffect(() => {
     try {
@@ -50,12 +61,23 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
     }
   }, [deltaStr]);
 
+  React.useEffect(() => {
+    const changeEditToken = PubSub.subscribe('changeEdit', async (_, edit: boolean) => {
+      if (!edit) {
+        handleSave();
+      }
+    });
+    return function () {
+      PubSub.unsubscribe(changeEditToken);
+    };
+  }, [handleSave]);
+
   return (
     <StyleDiv showToolBar={editable}>
       <ReactQuill
         ref={editorRef}
         modules={modules}
-        onChange={onEditorChange}
+        //onChange={onEditorChange}
         readOnly={!editable}
         placeholder='请输入文字...' />
     </StyleDiv>

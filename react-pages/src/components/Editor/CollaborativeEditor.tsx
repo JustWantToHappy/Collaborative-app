@@ -5,17 +5,16 @@ import { singleWebrtcProvider } from '@/utils';
 import { BasicEditor } from './BasicEditor';
 import { useWebRtcProvider, useLocalStorage } from '@/hooks';
 import { LocalStorageKey } from '@/enum';
-import type { Props as BasicProps } from './BasicEditor';
 
-interface Props extends BasicProps {
+type Props = {
+  deltaStr: string;
   sharedCloudFileId: string;
 }
-
-export const CollaborativeEditor: React.FC<Props> = ({ sharedCloudFileId, ...props }) => {
+export const CollaborativeEditor: React.FC<Props> = (props) => {
   const editorRef = React.useRef<ReactQuill | null>(null);
   const quillBindingRef = React.useRef<QuillBinding>();
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
-  const provider = useWebRtcProvider({ name: userInfo.name, id: userInfo.id }, sharedCloudFileId);
+  const provider = useWebRtcProvider({ name: userInfo.name, id: userInfo.id }, props.sharedCloudFileId);
 
   React.useEffect(() => {
     const ydoc = singleWebrtcProvider.getYDoc();
@@ -32,5 +31,8 @@ export const CollaborativeEditor: React.FC<Props> = ({ sharedCloudFileId, ...pro
     };
   }, [provider]);
 
-  return <BasicEditor {...props} editable ref={editorRef} />;
+  return <BasicEditor
+    {...props}
+    editable ref={editorRef}
+    sharedCloudFileId={props.sharedCloudFileId} />;
 };
