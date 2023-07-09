@@ -1,6 +1,7 @@
 import React from 'react';
+import { Doc } from 'yjs';
+import { getRandomColor} from '@/utils';
 import * as awarenessProtocol from 'y-protocols/awareness';
-import { Doc} from 'yjs';
 
 
 export interface User{
@@ -13,7 +14,7 @@ export function useYjsAwareness(user: User,doc:Doc) {
     const awareness=new awarenessProtocol.Awareness(doc);
     awareness.setLocalStateField('user', {
       name: user.name,
-      color:'red'
+      color: getRandomColor(user.name),
     });
     return awareness;
   },[user.name,doc]);

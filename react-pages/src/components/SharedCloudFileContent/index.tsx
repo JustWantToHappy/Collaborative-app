@@ -8,7 +8,6 @@ import { useLocalStorage } from '@/hooks';
 import { Config, FileType, LocalStorageKey } from '@/enum';
 import { Table, Image, Popconfirm, message, Tooltip } from 'antd';
 import { BasicEditor, CollaborativeEditor } from '@/components/Editor';
-import type { Props as EditorProps } from '@/components/Editor';
 import { getSharedCloudFolderContents, deleteSharedCloudFloder, updateSharedCloudFile } from '@/api';
 import { DeleteOutlined, FileImageOutlined, FileTextOutlined, FolderOpenOutlined, WarningOutlined } from '@ant-design/icons';
 
@@ -40,14 +39,14 @@ const Index: React.FC<Props> = (props) => {
     }
   };
 
-  const editorProps: EditorProps = {
+  const editorProps = {
     editable: state.edit,
-    deltaStr: state.text,
     getDeltaStr: (text: string) => setState({ ...state, text })
   };
 
-  React.useEffect(() => {
-    getSharedCloudFolderContents(sharedCloudFileId).then(res => {
+
+  const getData = React.useCallback(() => getSharedCloudFolderContents(sharedCloudFileId).
+    then(res => {
       let isDocument = false, ownerId = '';
       const { data, statusCode } = res;
       if (statusCode === 200) {
@@ -66,18 +65,17 @@ const Index: React.FC<Props> = (props) => {
           }
           ownerId = data?.ownerId ?? '';
         }
-        if (isDocument) {
-          PubSub.publish('isDocument', true);
-        } else {
-          PubSub.publish('isDocument', false);
-        }
+        PubSub.publish('isDocument', isDocument);
         PubSub.publish('ownerId', ownerId);
         setState(state => ({ ...state, tableLoading: false }));
       }
     }).catch(err => {
       console.info(err);
-    });
-  }, [sharedCloudFileId]);
+    }), [sharedCloudFileId]);
+
+  React.useEffect(() => {
+    getData();
+  }, [getData]);
 
   React.useEffect(() => {
     const changeEditableToken = PubSub.subscribe('changeEdit', async (_, edit) => {
@@ -85,7 +83,7 @@ const Index: React.FC<Props> = (props) => {
       if (!edit) {
         const { statusCode } = await updateSharedCloudFile(sharedCloudFileId, { text: state.text });
         if (statusCode === 200) {
-          PubSub.publish('stopLoading');
+          getData().then(() => PubSub.publish('stopLoading'));
         } else {
           messageApi.error('发布失败');
         }
@@ -94,7 +92,7 @@ const Index: React.FC<Props> = (props) => {
     return function () {
       PubSub.unsubscribe(changeEditableToken);
     };
-  }, [sharedCloudFileId, state.text, messageApi]);
+  }, [sharedCloudFileId, state.text, messageApi, getData]);
 
   return (
     <StyleDiv show={props.show}>
@@ -151,8 +149,8 @@ const Index: React.FC<Props> = (props) => {
         />
       </div>}
       {!showTable && data.type === FileType.Text && (state.edit ?
-        <CollaborativeEditor {...editorProps} sharedCloudFileId={sharedCloudFileId} /> :
-        <BasicEditor {...editorProps} />)}
+        <CollaborativeEditor {...editorProps} sharedCloudFileId={sharedCloudFileId} deltaStr={data.text} /> :
+        <BasicEditor {...editorProps} deltaStr={data.text} />)}
     </StyleDiv>
   );
 };

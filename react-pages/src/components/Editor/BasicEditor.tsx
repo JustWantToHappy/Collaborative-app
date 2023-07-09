@@ -16,7 +16,7 @@ const modules = {
     ['bold', 'italic', 'underline'],
     [{ 'align': [] }],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    ['code-block', 'image'],
+    ['code-block'],
   ],
   history: {
     userOnly: true//历史记录只跟踪当前用户的操作

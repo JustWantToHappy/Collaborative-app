@@ -1,5 +1,6 @@
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
+import { Awareness } from 'y-protocols/awareness';
 
 
 class SingleWebrtcProvider{
@@ -15,11 +16,11 @@ class SingleWebrtcProvider{
   }
 
   //进入webrtc对应的房间
-  public joinWebRtcRoom(roomId: string) {
+  public joinWebRtcRoom(roomId: string,awareness:Awareness) {
     if (this.map.has(roomId)) {
       return this.map.get(roomId);
     } else {
-      const provider = new WebrtcProvider(roomId, this.ydoc, { signaling: [ 'ws://localhost:4444'] });
+      const provider = new WebrtcProvider(roomId, this.ydoc, { signaling: [ 'ws://localhost:4444'],awareness });
       this.map.set(roomId, provider);
       return provider;
     }
