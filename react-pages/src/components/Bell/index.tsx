@@ -5,8 +5,8 @@ import StyleDiv from './style';
 import { Badge, message } from 'antd';
 import type { Message } from '@/types';
 import { useLocalStorage } from '@/hooks';
-import { getAllMessagesByState } from '@/api';
-import { Config, LocalStorageKey, State } from '@/enum';
+import { getAllPendingMessages } from '@/api';
+import { LocalStorageKey } from '@/enum';
 import { BellFilled } from '@ant-design/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ export default function Index() {
 
   React.useEffect(() => {
     (async () => {
-      const { statusCode, data, msg } = await getAllMessagesByState();
+      const { statusCode, data, msg } = await getAllPendingMessages();
       if (statusCode === 200) {
         setMessages(data as Message[]);
       } else {

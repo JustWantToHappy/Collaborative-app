@@ -3,12 +3,8 @@ import StyleDiv from './style';
 import { messageSocket } from '@/utils';
 import type { Message } from '@/types';
 import { Avatar, Button, message } from 'antd';
-<<<<<<< Updated upstream
 import { MessageType, State } from '@/enum';
 import { getAllPendingMessages, updateMessage } from '@/api';
-=======
-import { getAllMessagesByState, updateMessage } from '@/api';
->>>>>>> Stashed changes
 import { useLocation } from 'react-router-dom';
 
 export default function Index() {
@@ -25,14 +21,8 @@ export default function Index() {
     const { statusCode, msg, data } = await updateMessage(id, { state });
     if (statusCode === 200) {
       setMessages(data as Message[]);
-<<<<<<< Updated upstream
       PubSub.publish('setNotify', data);
       messageSocket.emit('fetchChatRoom', id);
-=======
-      PubSub.publish('notify', data);
-      //更新聊天列表
-
->>>>>>> Stashed changes
     } else {
       messageApi.error({ content: `${statusCode} ${msg}` });
     }
@@ -40,7 +30,7 @@ export default function Index() {
 
   React.useEffect(() => {
     (async () => {
-      const { statusCode, data, msg } = await getAllMessagesByState();
+      const { statusCode, data, msg } = await getAllPendingMessages();
       if (statusCode === 200) {
         setMessages(data as Message[]);
       } else {
