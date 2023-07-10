@@ -68,7 +68,7 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
     } catch (err) {
       editorRef.current?.editor?.setContents(delta);
     }
-  }, [deltaStr]);
+  }, [deltaStr, edit]);
 
   React.useEffect(() => {
     const changeEditToken = PubSub.subscribe('changeEdit', async (_, edit: boolean) => {
