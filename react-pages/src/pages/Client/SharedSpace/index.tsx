@@ -1,15 +1,16 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
+import type { EditPerson } from '@/types';
 import { StyleDiv } from '@/common';
 import Badges from '@/components/Badges';
+import MyAvatar from '@/components/MyAvatar';
 import TopSvg from '@/assets/logo/top.svg';
 import AddUserSvg from '@/assets/logo/addUser.svg';
 import { useDebouce, useThrottle } from '@/hooks';
-import { UserOutlined } from '@ant-design/icons';
 import { getSharedCloudFilesTree } from '@/api';
+import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import CollaboratorPopoverContent from '@/components/CollaboratorPopoverContent';
 import { useParams, useNavigate, Outlet, useLocation } from 'react-router-dom';
-import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import SharedCloudFileContent from '@/components/SharedCloudFileContent';
 import { Button, message, Avatar, Tooltip, Tree, FloatButton, Popover } from 'antd';
 
@@ -19,8 +20,9 @@ export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { sharedCloudFileId = '0' } = useParams();
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi, messageContextHolder] = message.useMessage();
   const [treeData, setTreeData] = React.useState<DataNode[]>([]);
+  const [editPerson, setEditPerson] = React.useState<EditPerson[]>([]);
   const [state, setState] = React.useState({
     loading: false,
     maxCount: 2,
@@ -37,7 +39,7 @@ export default function Index() {
       setTimeout(() => {
         setState({ ...state, edit: true, loading: false });
         PubSub.publish('changeEdit', true);
-      }, 1000);
+      }, 500);
     } else {
       setState({ ...state, edit: false, loading: true });
       PubSub.publish('changeEdit', false);
@@ -65,23 +67,34 @@ export default function Index() {
       }
     })();
 
+    const ownerIdToken = PubSub.subscribe('ownerId', (_, ownerId: string) => setState(state => ({ ...state, ownerId })));
     const isDocumentToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setState(state => ({ ...state, isDocument })));
     const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
       setState(state => ({ ...state, loading: false }));
       messageApi.success('内容发布成功');
     });
-    const ownerIdToken = PubSub.subscribe('ownerId', (_, ownerId: string) => setState(state => ({ ...state, ownerId })));
 
     return function () {
-      PubSub.unsubscribe(isDocumentToken);
       PubSub.unsubscribe(stopLoadingToken);
       PubSub.unsubscribe(ownerIdToken);
+      PubSub.unsubscribe(isDocumentToken);
     };
   }, [messageApi]);
 
+  //展示在线编辑人员信息
+  React.useEffect(() => {
+    const onlineEditToken = PubSub.subscribe('onlineEdit', (_, newEditPerson: EditPerson[]) => {
+      setEditPerson(newEditPerson);
+    });
+
+    return function () {
+      PubSub.unsubscribe(onlineEditToken);
+    };
+  }, [editPerson]);
+
   return (
     <StyleDiv asideWidth={'15rem'}>
-      {contextHolder}
+      {messageContextHolder}
       <aside >
         <div className='cloud_tool'>
           <h4>目录</h4>
@@ -105,12 +118,12 @@ export default function Index() {
                 style={{ display: (state.isDocument && state.edit) ? 'block' : 'none', cursor: 'pointer' }}
                 maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
               >
-                <Tooltip title='sb' placement='top'>
-                  <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=3" />
-                </Tooltip>
-                <Tooltip title="Ant User" placement="top">
-                  <Avatar style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
-                </Tooltip>
+                {editPerson.map(user => <Tooltip
+                  key={user?.email}
+                  title={user?.name}
+                  placement='top'>
+                  <MyAvatar src={user?.avatar} style={{ backgroundColor: user?.color }}>{user?.name}</MyAvatar>
+                </Tooltip>)}
               </Avatar.Group>
             </div>
             <Popover content={<CollaboratorPopoverContent sharedCloudFileId={sharedCloudFileId} />}

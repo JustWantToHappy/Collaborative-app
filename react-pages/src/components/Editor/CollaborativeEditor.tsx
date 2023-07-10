@@ -33,7 +33,9 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
     const handleAwarenessChange = () => {
       //获取在线编辑的用户信息
       if (providerRef.current) {
-        //console.info(Array.from(providerRef.current.awareness.getStates().values()), 'all users');
+        PubSub.publish('onlineEdit', Array.from(providerRef.current.awareness.getStates().values())
+          .map(state => state.user)
+          .filter(state => state !== undefined));
       }
     };
     //进入编辑模式后
@@ -53,7 +55,6 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
         color: getRandomColor(user.name),
         avatar: user.avatar,
         email: user.email,
-        id: user.id,
       });
       providerRef.current = provider;
       quillBindingRef.current = new QuillBinding(ytext, editorRef.current?.editor, provider?.awareness);
@@ -66,9 +67,7 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
       providerRef.current?.awareness.setLocalState(null);
       cursors.style.display = 'none';//隐藏光标
     }
-    if (providerRef.current) {
-      console.info(Array.from(providerRef.current.awareness.getStates().values()), 'all users');
-    }
+    
     return function () {
       if (edit) {
         providerRef.current?.awareness.off('change', handleAwarenessChange);
