@@ -18,7 +18,7 @@ function App() {
           borderRadius: data.borderRadius,
           colorLink: data.colorLink,
           colorLinkActive: data.colorPrimary,
-          colorLinkHover: data.colorPrimary
+          colorLinkHover: data.colorPrimary,
         }
       }}
     >

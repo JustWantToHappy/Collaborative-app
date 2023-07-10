@@ -55,11 +55,6 @@ ul{
   padding:0;
 }
 
-.app{
-  /*background-color:#000;*/
-  /*color:#fff;*/
-}
-
 .ab_container{
   position: absolute;
   top:var(--ab-nav-height);

@@ -97,7 +97,8 @@ export default function Index() {
             </div>} >
             <div>
               <MyAvatar
-                src={''}
+                size='default'
+                src={userInfo.avatar}
                 ref={avatarRef}
                 style={{ cursor: 'pointer' }} >
                 {userInfo.name}

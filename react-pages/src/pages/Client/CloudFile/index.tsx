@@ -9,9 +9,9 @@ import ShareFileModal from '@/components/ShareFileModal';
 import { getCloudFilesTree, deleteCloudFolder } from '@/api';
 import CloudFileContent from '@/components/CloudFileContent';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
-import { DeleteOutlined, EditOutlined, ShareAltOutlined, WarningOutlined } from '@ant-design/icons';
 import { Button, Tree, Popover, message, Popconfirm } from 'antd';
 import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
+import { DeleteOutlined, EditOutlined, ShareAltOutlined, WarningOutlined } from '@ant-design/icons';
 
 const { DirectoryTree } = Tree;
 
@@ -100,7 +100,6 @@ export default function Index() {
   React.useEffect(() => {
     const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
       setState(state => ({ ...state, loading: false }));
-      messageApi.success('内容发布成功');
     });
     return function () {
       PubSub.unsubscribe(stopLoadingToken);
