@@ -20,10 +20,7 @@ const Index: React.FC<Props> = (props) => {
   const { cloudFileId = '0' } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [data, setData] = React.useState<CloudFile[] | CloudFile>([]);
-  const [state, setState] = React.useState({
-    edit: false,
-    tableLoading: true,
-  });
+  const [tableLoading, setTableLoading] = React.useState(true);
   const showTable = Array.isArray(data);
 
   const deleteFile = async (id: string) => {
@@ -58,7 +55,7 @@ const Index: React.FC<Props> = (props) => {
         } else {
           PubSub.publish('isDocument', false);
         }
-        setState(state => ({ ...state, tableLoading: false }));
+        setTableLoading(false);
       }
     }).catch(err => {
       console.info(err);
@@ -70,7 +67,7 @@ const Index: React.FC<Props> = (props) => {
       {contextHolder}
       {showTable && <Table
         rowKey='id'
-        loading={state.tableLoading}
+        loading={tableLoading}
         dataSource={data}
         pagination={{ pageSize: 6 }}
         style={{ width: '100%', minWidth: '400px', marginTop: '1rem' }} >
@@ -120,7 +117,7 @@ const Index: React.FC<Props> = (props) => {
         />
       </div>}
       {!showTable && data.type === FileType.Text &&
-        <BasicEditor editable={state.edit} deltaStr={data.text} cloudFileId={cloudFileId} />}
+        <BasicEditor deltaStr={data.text} cloudFileId={cloudFileId} />}
     </StyleDiv>
   );
 };

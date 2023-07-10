@@ -1,11 +1,12 @@
 import React from 'react';
 import StyleDiv from './style';
+import { message } from 'antd';
 import Quill from 'quill';
 import Delta from 'quill-delta';
 import ReactQuill from 'react-quill';
 import QuillCursors from 'quill-cursors';
 import 'react-quill/dist/quill.snow.css';
-import { Delta as TypeDelta, Sources } from 'quill';
+import { Delta as TypeDelta } from 'quill';
 import { updateSharedCloudFile, updateCloudFile } from '@/api';
 
 Quill.register('modules/cursors', QuillCursors);
@@ -27,31 +28,39 @@ const modules = {
 const delta = (new Delta([]) as unknown) as TypeDelta;
 
 export interface Props {
-  editable: boolean;
   deltaStr: string;
   sharedCloudFileId?: string;
   cloudFileId?: string;
+  changeEdit?: (edit: boolean) => void;
 }
 
 export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQuill | null>) => {
-  const { editable, deltaStr, sharedCloudFileId, cloudFileId } = props;
+  const { changeEdit } = props;
+  const [edit, setEdit] = React.useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const { deltaStr, sharedCloudFileId, cloudFileId } = props;
   const editorRef = React.useRef<ReactQuill | null>(null);
-
-  //const onEditorChange = (value: string, delta: TypeDelta, source: Sources, editor: ReactQuill.UnprivilegedEditor) => {
-  //  console.info(JSON.stringify(editor.getContents()));
-  //};
 
   //提供属性给外部组件
   React.useImperativeHandle(ref, () => editorRef.current);
 
   const handleSave = React.useCallback(async () => {
+    let code = 0;
+    const text = JSON.stringify(editorRef.current?.editor?.getContents());
     if (sharedCloudFileId) {
-      //
+      const { statusCode } = await updateSharedCloudFile(sharedCloudFileId, { text });
+      code = statusCode;
     } else if (cloudFileId) {
-      updateCloudFile(cloudFileId, { text: JSON.stringify(editorRef.current?.editor?.getContents()) })
-        .then(() => PubSub.publish('setLoading', false));
+      const { statusCode } = await updateCloudFile(cloudFileId, { text });
+      code = statusCode;
     }
-  }, [sharedCloudFileId, cloudFileId]);
+    if (code === 200) {
+      messageApi.success('内容发布成功');
+      PubSub.publish('stopLoading');
+    } else {
+      messageApi.error('内容发布失败');
+    }
+  }, [sharedCloudFileId, cloudFileId, messageApi]);
 
   React.useEffect(() => {
     try {
@@ -63,6 +72,10 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
 
   React.useEffect(() => {
     const changeEditToken = PubSub.subscribe('changeEdit', async (_, edit: boolean) => {
+      setEdit(edit);
+      if (typeof changeEdit === 'function') {
+        changeEdit(edit);
+      }
       if (!edit) {
         handleSave();
       }
@@ -70,15 +83,15 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
     return function () {
       PubSub.unsubscribe(changeEditToken);
     };
-  }, [handleSave]);
+  }, [handleSave, changeEdit]);
 
   return (
-    <StyleDiv showToolBar={editable}>
+    <StyleDiv showToolBar={edit}>
+      {contextHolder}
       <ReactQuill
         ref={editorRef}
         modules={modules}
-        //onChange={onEditorChange}
-        readOnly={!editable}
+        readOnly={!edit}
         placeholder='请输入文字...' />
     </StyleDiv>
   );

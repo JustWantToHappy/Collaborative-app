@@ -16,11 +16,11 @@ class SingleWebrtcProvider{
   }
 
   //进入webrtc对应的房间
-  public joinWebRtcRoom(roomId: string,awareness:Awareness) {
+  public joinWebRtcRoom(roomId: string) {
     if (this.map.has(roomId)) {
       return this.map.get(roomId);
     } else {
-      const provider = new WebrtcProvider(roomId, this.ydoc, { signaling: [ 'ws://localhost:4444'],awareness });
+      const provider = new WebrtcProvider(roomId, this.ydoc, { signaling: [ 'ws://localhost:4444'] });
       this.map.set(roomId, provider);
       return provider;
     }

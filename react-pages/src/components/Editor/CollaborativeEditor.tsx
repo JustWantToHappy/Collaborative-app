@@ -1,38 +1,81 @@
 import React from 'react';
 import ReactQuill from 'react-quill';
 import { QuillBinding } from 'y-quill';
-import { singleWebrtcProvider } from '@/utils';
 import { BasicEditor } from './BasicEditor';
-import { useWebRtcProvider, useLocalStorage } from '@/hooks';
+import { useLocalStorage } from '@/hooks';
 import { LocalStorageKey } from '@/enum';
+import { singleWebrtcProvider, getRandomColor } from '@/utils';
+import { WebrtcProvider } from 'y-webrtc';
+import { Awareness } from 'y-protocols/awareness';
 
 type Props = {
   deltaStr: string;
   sharedCloudFileId: string;
 }
+
 export const CollaborativeEditor: React.FC<Props> = (props) => {
+  const ydoc = singleWebrtcProvider.getYDoc();
+  const ytext = ydoc.getText('quill');
+  const [edit, setEdit] = React.useState(false);
+  const [user] = useLocalStorage(LocalStorageKey.User_Info);
   const editorRef = React.useRef<ReactQuill | null>(null);
   const quillBindingRef = React.useRef<QuillBinding>();
-  const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
-  const provider = useWebRtcProvider({ name: userInfo.name, id: userInfo.id }, props.sharedCloudFileId);
+  const providerRef = React.useRef<WebrtcProvider>();
+  const awareness = React.useRef<Awareness>();
+  const preLocalStateRef = React.useRef<{ [x in string]: any } | null | undefined>();
+
+  const changeEdit = (edit: boolean) => setEdit(edit);
+
 
   React.useEffect(() => {
-    const ydoc = singleWebrtcProvider.getYDoc();
-    const ytext = ydoc.getText('quill');
-    const quillBinding = new QuillBinding(ytext, editorRef.current?.editor, provider?.awareness);
-    provider?.awareness.on('change', () => {
-      console.info(Array.from(provider.awareness.getStates().values()), 'all users');
-    });
-    quillBindingRef.current = quillBinding;
-    editorRef.current?.editor?.focus();
-    return function () {
-      quillBindingRef.current?.awareness?.destroy();
-      quillBindingRef.current?.destroy();
-    };
-  }, [provider]);
+    const cursors = document.querySelector('.ql-cursors') as HTMLDivElement;
 
-  return <BasicEditor
-    {...props}
-    editable ref={editorRef}
-    sharedCloudFileId={props.sharedCloudFileId} />;
+    const handleAwarenessChange = () => {
+      //获取在线编辑的用户信息
+      if (providerRef.current) {
+        //console.info(Array.from(providerRef.current.awareness.getStates().values()), 'all users');
+      }
+    };
+    //进入编辑模式后
+    if (edit) {
+      cursors.style.display = 'block';//显示光标
+      editorRef.current?.editor?.focus();
+
+      const provider = singleWebrtcProvider.joinWebRtcRoom(props.sharedCloudFileId);
+
+      //用户重新进入编辑模式
+      if (!provider?.awareness.getLocalState()) {
+        provider?.awareness.setLocalState(preLocalStateRef); //加入用户本地状态
+      }
+
+      provider?.awareness.setLocalStateField('user', {
+        name: user.name,
+        color: getRandomColor(user.name),
+        avatar: user.avatar,
+        email: user.email,
+        id: user.id,
+      });
+      providerRef.current = provider;
+      quillBindingRef.current = new QuillBinding(ytext, editorRef.current?.editor, provider?.awareness);
+      provider?.awareness.on('change', handleAwarenessChange);
+      //保存用户之前的awareness实例的本地状态
+      preLocalStateRef.current = provider?.awareness.getLocalState();
+      awareness.current = provider?.awareness;
+    } else {
+      //将当前用户的本地状态移除
+      providerRef.current?.awareness.setLocalState(null);
+      cursors.style.display = 'none';//隐藏光标
+    }
+    if (providerRef.current) {
+      console.info(Array.from(providerRef.current.awareness.getStates().values()), 'all users');
+    }
+    return function () {
+      if (edit) {
+        providerRef.current?.awareness.off('change', handleAwarenessChange);
+        quillBindingRef.current?.destroy?.();
+      }
+    };
+  }, [edit, props.sharedCloudFileId, user, ytext]);
+
+  return <BasicEditor {...props} ref={editorRef} changeEdit={changeEdit} />;
 };
