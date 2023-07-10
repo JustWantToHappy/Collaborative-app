@@ -83,7 +83,7 @@ export default function Index() {
                 type='link'
                 onClick={showUserInfoModal}
               >
-                个人信息
+                修改信息
               </Button>
               <Button
                 type='link'

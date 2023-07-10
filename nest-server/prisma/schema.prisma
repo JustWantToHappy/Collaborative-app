@@ -74,18 +74,17 @@ model Message {
 }
 
 model CloudFile {
-  id            String   @id @default(uuid())
-  parentId      String   @default("0")
-  title         String
-  description   String   @db.Text
-  path          String   @default("")
-  type          String   @default("folder") //文件类型:folder、document、image
-  text          String?  @db.LongText
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
-  collaborators String?  @db.Text //协作者id，逗号隔开
-  User          User?    @relation(fields: [userId], references: [id])
-  userId        String?
+  id          String   @id @default(uuid())
+  parentId    String   @default("0")
+  title       String
+  description String   @db.Text
+  path        String   @default("")
+  type        String   @default("folder") //文件类型:folder、document、image
+  text        String?  @db.LongText
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      String?
 }
 
 model SharedCloudFile {
@@ -94,6 +93,7 @@ model SharedCloudFile {
   title            String
   description      String             @db.Text
   path             String             @default("")
+  version          Int                @default(1)
   type             String             @default("folder") //文件类型:folder、document、image
   text             String?            @db.LongText
   createdAt        DateTime           @default(now())

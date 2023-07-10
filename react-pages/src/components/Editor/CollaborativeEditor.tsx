@@ -1,4 +1,6 @@
 import React from 'react';
+import { notification } from 'antd';
+import type { User } from '@/types';
 import ReactQuill from 'react-quill';
 import { QuillBinding } from 'y-quill';
 import { useLocalStorage } from '@/hooks';
@@ -6,7 +8,7 @@ import { LocalStorageKey } from '@/enum';
 import { WebrtcProvider } from 'y-webrtc';
 import { BasicEditor } from './BasicEditor';
 import { Awareness } from 'y-protocols/awareness';
-import { singleWebrtcProvider, getRandomColor } from '@/utils';
+import { singleWebrtcProvider, getRandomColor, sharedSocket } from '@/utils';
 
 type Props = {
   deltaStr: string;
@@ -14,6 +16,7 @@ type Props = {
 }
 
 export const CollaborativeEditor: React.FC<Props> = (props) => {
+  const [notify, contextHolder] = notification.useNotification();
   const ydoc = singleWebrtcProvider.getYDoc();
   const ytext = ydoc.getText('quill');
   const [edit, setEdit] = React.useState(false);
@@ -76,5 +79,40 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
     };
   }, [edit, props.sharedCloudFileId, user, ytext]);
 
-  return <BasicEditor {...props} ref={editorRef} changeEdit={changeEdit} />;
+
+  React.useEffect(() => {
+    if (edit) {
+      if (!sharedSocket.connected) sharedSocket.connect();
+      sharedSocket.emit('join', { documentId: props.sharedCloudFileId, userId: user.id });
+      sharedSocket.on('join', (user: User) => {
+        notify.info({
+          message: <p style={{ display: 'flex', alignItems: 'center', columnGap: '2px' }}>
+            <small style={{ fontWeight: 700 }}>{user.name}</small>
+            <small>加入编辑</small>
+          </p>,
+        });
+      });
+      sharedSocket.on('leave', (user: User) => {
+        notify.info({
+          message: <p style={{ display: 'flex', alignItems: 'center', columnGap: '2px' }}>
+            <small style={{ fontWeight: 700 }}>{user.name}</small>
+            <small>离开编辑</small>
+          </p>,
+        });
+      });
+    }
+    return function () {
+      if (edit) {
+        sharedSocket.emit('leave', { documentId: props.sharedCloudFileId, userId: user.id });
+        sharedSocket.off('join');
+        sharedSocket.off('leave');
+        if (sharedSocket.connected) sharedSocket.disconnect();
+      }
+    };
+  }, [edit, props.sharedCloudFileId, user.id, notify]);
+
+  return <>
+    {contextHolder}
+    <BasicEditor {...props} ref={editorRef} changeEdit={changeEdit} />
+  </>;
 };

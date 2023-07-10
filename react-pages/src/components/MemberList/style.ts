@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 const StyleDiv = styled('div')<{show:boolean}>`
   position: absolute;
+  top:0;
   right: 0;
   min-width: 200px;
   transition: all 300ms ease;

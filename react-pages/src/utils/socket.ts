@@ -6,3 +6,5 @@ export const chatRoomSocket=io(Config.Server,{path:'/chat',extraHeaders:{}});
 export const messageSocket=io(Config.Server+'/message');
 
 export const friendSocket = io(Config.Server + '/friend');
+
+export const sharedSocket=io(Config.Server+'/shared');

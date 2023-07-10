@@ -148,6 +148,7 @@ export default function Index() {
         </div>
         <DirectoryTree
           multiple
+          //style={{ color: '#fff',backgroundColor:'#000' }}
           selectedKeys={[state.selectedKey]}
           onSelect={onSelect}
           treeData={tree}

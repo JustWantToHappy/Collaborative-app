@@ -37,7 +37,7 @@ const StyleDiv = styled('div')<Props>`
 
   .ql-container{
     border: none;
-    margin-top:${props=>props.showToolBar?'var(--quill-toolbar-height)':'0'};
+    margin-top:${props=>props.showToolBar?'calc(var(--quill-toolbar-height))':'0'};
     img{
       height:50vh;
     }

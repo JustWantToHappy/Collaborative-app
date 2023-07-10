@@ -20,6 +20,16 @@ const StyleDiv = styled('div')<Props>`
     padding:1rem;
     text-align: center;
   }
+
+  .cloud_delete{
+    cursor: pointer;
+  }
+
+  .rowClassName{
+    background-color: #000;
+    color: #fff;
+  }
+
 `;
 
 export default StyleDiv;

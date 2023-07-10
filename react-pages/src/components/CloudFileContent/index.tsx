@@ -7,8 +7,8 @@ import { Config, FileType } from '@/enum';
 import { useParams } from 'react-router-dom';
 import { BasicEditor } from '@/components/Editor';
 import { getCloudFolderContents, deleteCloudFolder } from '@/api';
-import { Table, Image, Popconfirm, message, Tooltip } from 'antd';
-import { DeleteOutlined, FileImageOutlined, FileTextOutlined, FolderOpenOutlined, WarningOutlined } from '@ant-design/icons';
+import { Table, Image, message, Tooltip } from 'antd';
+import { DeleteOutlined, FileImageOutlined, FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
 
@@ -73,6 +73,7 @@ const Index: React.FC<Props> = (props) => {
         loading={tableLoading}
         dataSource={tableData}
         pagination={{ pageSize: 6 }}
+        rowClassName='rowClassName'
         style={{ width: '100%', minWidth: '400px', marginTop: '1rem' }} >
         <Column title="名称" dataIndex="title" key="title" />
         <Column title="创建时间" dataIndex="createdAt" key="createdAt" />
@@ -84,9 +85,12 @@ const Index: React.FC<Props> = (props) => {
           key="type"
           align='center'
           render={(_, record: CloudFile) => (<div className='file_type'>
-            <Tooltip placement='top' title={<div>
-              {record.type === FileType.Image ? '图片' : record.type === FileType.Text ? '文档' : '文件夹'}
-            </div>}>
+            <Tooltip
+              overlayStyle={{ pointerEvents: 'none' }}
+              placement='top'
+              title={<div>
+                {record.type === FileType.Image ? '图片' : record.type === FileType.Text ? '文档' : '文件夹'}
+              </div>}>
               {record.type === FileType.Image ?
                 <FileImageOutlined /> :
                 record.type === FileType.Text ?
@@ -99,16 +103,13 @@ const Index: React.FC<Props> = (props) => {
           title="操作"
           align='center'
           render={(_: any, record: CloudFile) => (
-            <Popconfirm
-              title="删除文件"
-              description="你确定删除这个文件?"
-              onConfirm={() => deleteFile(record.id)}
-              icon={<WarningOutlined />}
-              okText="确定"
-              cancelText="取消"
+            <Tooltip
+              title='删除'
+              overlayStyle={{ pointerEvents: 'none' }}
+              placement='top'
             >
               <DeleteOutlined className='cloud_delete' />
-            </Popconfirm>
+            </Tooltip>
           )}
         />
       </Table>}

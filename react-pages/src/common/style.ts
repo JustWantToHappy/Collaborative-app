@@ -100,5 +100,4 @@ export const StyleDiv = styled('div') <Props>`
     align-items: center;
     column-gap: .5rem;
   }
-
 `;

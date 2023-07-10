@@ -94,7 +94,7 @@ export class ChatRoomGateway implements OnGatewayConnection {
   //获取房间在线人员
 
   @SubscribeMessage(Chat.Online)
-  onChatOnline(client: Socket, chatRoomId) {
+  onChatOnline(client: Socket, chatRoomId: string) {
     return this.onOffLineService.getChatRoomOnlines(chatRoomId);
   }
 

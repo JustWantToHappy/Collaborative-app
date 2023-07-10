@@ -1,0 +1,11 @@
+/* antd表头 */
+.ant-table-thead > tr >th{
+  color: #fff !important;
+  background: #000 !important;
+}
+
+/* antd hover表格行的样式 */
+.ant-table-tbody> tr:hover:not(.ant-table-expanded-row) > td,.ant-table-row-hover,.ant-table-row-hover>td{
+   background:var(--ab-green-100)!important;
+   color:#000;
+}
