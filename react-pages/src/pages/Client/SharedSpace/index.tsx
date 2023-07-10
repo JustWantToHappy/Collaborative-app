@@ -2,8 +2,8 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import type { EditPerson } from '@/types';
 import { StyleDiv } from '@/common';
-import Badges from '@/components/Badges';
 import MyAvatar from '@/components/MyAvatar';
+import Badges from '@/components/Badges';
 import TopSvg from '@/assets/logo/top.svg';
 import AddUserSvg from '@/assets/logo/addUser.svg';
 import { useDebouce, useThrottle } from '@/hooks';
@@ -12,7 +12,7 @@ import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import CollaboratorPopoverContent from '@/components/CollaboratorPopoverContent';
 import { useParams, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import SharedCloudFileContent from '@/components/SharedCloudFileContent';
-import { Button, message, Avatar, Tooltip, Tree, FloatButton, Popover } from 'antd';
+import { Button, message, Tooltip, Tree, FloatButton, Popover, Avatar } from 'antd';
 
 const { DirectoryTree } = Tree;
 
@@ -122,7 +122,13 @@ export default function Index() {
                   key={user?.email}
                   title={user?.name}
                   placement='top'>
-                  <MyAvatar src={user?.avatar} style={{ backgroundColor: user?.color }}>{user?.name}</MyAvatar>
+                  <>
+                    <MyAvatar
+                      style={{ backgroundColor: user?.color }}
+                      src={user?.avatar} >
+                      {user?.name.slice(0, 1)}
+                    </MyAvatar>
+                  </>
                 </Tooltip>)}
               </Avatar.Group>
             </div>

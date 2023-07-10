@@ -10,7 +10,7 @@ interface Props {
 }
 
 const Index = React.forwardRef<HTMLSpanElement, Props>((props = { length: 2, size: 'default' }, ref) => {
-  const { src, style, size = 'large', length=1 } = props;
+  const { src, style, size = 'large', length = 1 } = props;
   const reactiveSize = { xs: 30, sm: 32, md: 36, lg: 38, xl: 40, xxl: 50 };
 
   if (src) return <Avatar

@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactQuill from 'react-quill';
 import { QuillBinding } from 'y-quill';
-import { BasicEditor } from './BasicEditor';
 import { useLocalStorage } from '@/hooks';
 import { LocalStorageKey } from '@/enum';
-import { singleWebrtcProvider, getRandomColor } from '@/utils';
 import { WebrtcProvider } from 'y-webrtc';
+import { BasicEditor } from './BasicEditor';
 import { Awareness } from 'y-protocols/awareness';
+import { singleWebrtcProvider, getRandomColor } from '@/utils';
 
 type Props = {
   deltaStr: string;
@@ -63,13 +63,13 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
       preLocalStateRef.current = provider?.awareness.getLocalState();
       awareness.current = provider?.awareness;
     } else {
-      //将当前用户的本地状态移除
-      providerRef.current?.awareness.setLocalState(null);
+      providerRef.current?.awareness.setLocalState(null); //将当前用户的本地状态移除
       cursors.style.display = 'none';//隐藏光标
     }
-    
+
     return function () {
       if (edit) {
+        providerRef.current?.awareness.setLocalState(null);
         providerRef.current?.awareness.off('change', handleAwarenessChange);
         quillBindingRef.current?.destroy?.();
       }

@@ -24,6 +24,7 @@ const StyleDiv = styled('div')`
       display: flex;
       align-items: center;
       justify-content: flex-end;
+      column-gap: 3vw;
     }
   }
   img{

@@ -2,6 +2,7 @@ import React from 'react';
 import StyleDiv from './style';
 import { chatRoomSocket } from '@/utils';
 import Bell from '@/components/Bell';
+import MyAvatar from '@/components/MyAvatar';
 import UserInfoModal from '../UserInfoModal';
 import { routes } from '@/layout';
 import { useLocalStorage } from '@/hooks';
@@ -9,19 +10,19 @@ import { defaultCssStyles } from '@/utils';
 import LogoSvg from '@/assets/logo/logo.svg';
 import SunSvg from '@/assets/logo/sun.svg';
 import MoonSvg from '@/assets/logo/moon.svg';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import type { Router, ChatRecord } from '@/types';
-import { Avatar, Button, Popover, Switch } from 'antd';
+import { Button, Popover, Switch } from 'antd';
 import { Chat, LocalStorageKey } from '@/enum';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const avatarRef = React.createRef<HTMLSpanElement>();
   const [dark, setDark] = React.useState(false);
   const [show, setShow] = React.useState(false);
   const lists = routes[0].children as Array<Router>;
   const [active, setActive] = React.useState(pathname);
-  const avatarStyle: React.CSSProperties = { marginLeft: '2rem', cursor: 'pointer' };
   const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
 
   const loginOut = () => {
@@ -77,7 +78,7 @@ export default function Index() {
         <div>
           <Bell />
           <Popover
-            content={<div style={{ display: 'flex', flexDirection: 'column' }}>
+            content={<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Button
                 type='link'
                 onClick={showUserInfoModal}
@@ -89,15 +90,19 @@ export default function Index() {
                 onClick={loginOut}>
                 退出登录
               </Button>
-              <Button type='link' style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Switch onChange={shiftTheme} size='small' />
                 <img src={dark ? MoonSvg : SunSvg} style={{ width: '1.2rem', marginLeft: '.5rem' }} />
-              </Button>
+              </div>
             </div>} >
-            {userInfo.avatar ?
-              <Avatar src={userInfo.avatar} style={avatarStyle} size='large' /> :
-              <Avatar style={avatarStyle} size='large'>{userInfo.name?.slice(0, 2)}</Avatar>
-            }
+            <div>
+              <MyAvatar
+                src={''}
+                ref={avatarRef}
+                style={{ cursor: 'pointer' }} >
+                {userInfo.name}
+              </MyAvatar>
+            </div>
           </Popover>
         </div>
       </header>
