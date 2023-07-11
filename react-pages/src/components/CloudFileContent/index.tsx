@@ -73,7 +73,7 @@ const Index: React.FC<Props> = (props) => {
         loading={tableLoading}
         dataSource={tableData}
         pagination={{ pageSize: 6 }}
-        rowClassName='rowClassName'
+        //rowClassName='rowClassName'
         style={{ width: '100%', minWidth: '400px', marginTop: '1rem' }} >
         <Column title="名称" dataIndex="title" key="title" />
         <Column title="创建时间" dataIndex="createdAt" key="createdAt" />
