@@ -64,7 +64,6 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
 
   React.useEffect(() => {
     try {
-      console.info('hhh');
       editorRef.current?.editor?.setContents(JSON.parse(deltaStr));
     } catch (err) {
       editorRef.current?.editor?.setContents(delta);

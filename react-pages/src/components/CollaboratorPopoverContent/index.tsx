@@ -14,7 +14,7 @@ const Index: React.FC<Props> = (props) => {
     (async () => {
       const { statusCode, data } = await getAllCollaboratorsById(sharedCloudFileId);
       if (statusCode === 200) {
-        console.info(data, 'hhh');
+        //console.info(data, 'hhh');
       }
     })();
   }, [sharedCloudFileId]);

@@ -53,6 +53,9 @@ export default function Index() {
   }, 300);
 
   const onSelect: DirectoryTreeProps['onSelect'] = (_, info) => {
+    if (info.node.key === sharedCloudFileId) {
+      return;
+    }
     navigate(`/shared/file/${info.node.key}`);
     setState({ ...state, selectedKey: info.node.key + '', showEye: false, edit: false });
   };

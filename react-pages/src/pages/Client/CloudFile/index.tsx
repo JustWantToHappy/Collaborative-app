@@ -33,6 +33,9 @@ export default function Index() {
   });
 
   const onSelect: DirectoryTreeProps['onSelect'] = async (_, info) => {
+    if (info.node.key === cloudFileId) {
+      return;
+    }
     navigate(`/cloud/file/${info.node.key}`);
     setState({
       ...state,
