@@ -35,6 +35,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 })
 export class ChatRoomGateway implements OnGatewayConnection {
   @WebSocketServer() private io: Server;
+
   constructor(
     private readonly chatRoomService: ChatroomService,
     private readonly messageService: MessageService,
@@ -48,6 +49,7 @@ export class ChatRoomGateway implements OnGatewayConnection {
     rooms.forEach(async (room) => {
       client.join(room.id);
       const onlines = await this.onOffLineService.getChatRoomOnlines(room.id);
+      //连接断开的时候就不能够使用client.to
       this.io.in(room.id).emit(Chat.Online, onlines);
     });
   }
@@ -92,7 +94,6 @@ export class ChatRoomGateway implements OnGatewayConnection {
   }
 
   //获取房间在线人员
-
   @SubscribeMessage(Chat.Online)
   onChatOnline(client: Socket, chatRoomId: string) {
     return this.onOffLineService.getChatRoomOnlines(chatRoomId);

@@ -1,24 +1,27 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
+import { sharedSocket } from '@/utils';
 import type { EditPerson } from '@/types';
 import { StyleDiv } from '@/common';
 import MyAvatar from '@/components/MyAvatar';
 import Badges from '@/components/Badges';
 import TopSvg from '@/assets/logo/top.svg';
 import AddUserSvg from '@/assets/logo/addUser.svg';
-import { useDebouce, useThrottle } from '@/hooks';
+import { useDebouce, useLocalStorage, useThrottle } from '@/hooks';
 import { getSharedCloudFilesTree } from '@/api';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import CollaboratorPopoverContent from '@/components/CollaboratorPopoverContent';
 import { useParams, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import SharedCloudFileContent from '@/components/SharedCloudFileContent';
 import { Button, message, Tooltip, Tree, FloatButton, Popover, Avatar } from 'antd';
+import { LocalStorageKey } from '@/enum';
 
 const { DirectoryTree } = Tree;
 
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [user] = useLocalStorage(LocalStorageKey.User_Info, {});
   const { sharedCloudFileId = '0' } = useParams();
   const [messageApi, messageContextHolder] = message.useMessage();
   const [treeData, setTreeData] = React.useState<DataNode[]>([]);
@@ -43,6 +46,9 @@ export default function Index() {
     } else {
       setState({ ...state, edit: false, loading: true });
       PubSub.publish('changeEdit', false);
+      if (sharedSocket.connected) {
+        sharedSocket.emit('leave', { documentId: sharedCloudFileId, userId: user.id });
+      }
     }
   }, 300);
 

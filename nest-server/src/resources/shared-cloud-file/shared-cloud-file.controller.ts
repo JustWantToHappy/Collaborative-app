@@ -12,7 +12,6 @@ import { SharedCloudFileService } from './shared-cloud-file.service';
 import { CreateSharedCloudFileDto } from './dto/create-shared-cloud-file.dto';
 import { UpdateSharedCloudFileDto } from './dto/update-shared-cloud-file.dto';
 import { MoveToSharedCloudFileDto } from './dto/moveTo-shared-cloud-file.dto';
-import { request } from 'http';
 
 @Controller('sharedCloudFile')
 export class SharedCloudFileController {

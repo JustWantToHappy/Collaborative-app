@@ -1,11 +1,13 @@
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import {
   ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { UserService } from '../user/user.service';
+import { EditingPeopleService } from './editing-people.service';
 
 @WebSocketGateway({
   port: 8080,
@@ -13,7 +15,25 @@ import { UserService } from '../user/user.service';
   cors: { origin: /.*/ },
 })
 export class SharedCloudFileGateway {
-  constructor(private readonly userService: UserService) {}
+  @WebSocketServer() private io: Server;
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly editingPeopleService: EditingPeopleService,
+  ) {}
+
+  //用户断开连接时
+  async handleDisconnect(client: Socket) {
+    const { documentId, userId } = client.data;
+    const success = this.editingPeopleService.leave(documentId, userId);
+    if (success) {
+      const user = await this.userService.findOne(userId);
+      this.io.in(documentId).emit('leave', {
+        userId,
+        username: user.name,
+      });
+    }
+  }
 
   //加入编辑
   @SubscribeMessage('join')
@@ -23,8 +43,13 @@ export class SharedCloudFileGateway {
   ) {
     const { documentId, userId } = body;
     client.join(documentId);
+    client.data = {
+      documentId,
+      userId,
+    };
     const user = await this.userService.findOne(userId);
     client.in(documentId).emit('join', { userId, name: user.name });
+    return this.editingPeopleService.editingPeopleCount(documentId);
   }
 
   //离开编辑
@@ -33,9 +58,9 @@ export class SharedCloudFileGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() body: { userId: string; documentId: string },
   ) {
-    console.info('leave');
     const { documentId, userId } = body;
     client.leave(documentId);
+    this.editingPeopleService.leave(documentId, userId);
     const user = await this.userService.findOne(userId);
     client.in(documentId).emit('leave', { userId, name: user.name });
   }

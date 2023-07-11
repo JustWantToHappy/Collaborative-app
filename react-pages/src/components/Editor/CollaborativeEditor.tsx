@@ -81,35 +81,42 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
 
 
   React.useEffect(() => {
+    if (!sharedSocket.connected) sharedSocket.connect();
     if (edit) {
-      if (!sharedSocket.connected) sharedSocket.connect();
-      sharedSocket.emit('join', { documentId: props.sharedCloudFileId, userId: user.id });
-      sharedSocket.on('join', (user: User) => {
-        notify.info({
-          message: <p style={{ display: 'flex', alignItems: 'center', columnGap: '2px' }}>
-            <small style={{ fontWeight: 700 }}>{user.name}</small>
-            <small>加入编辑</small>
-          </p>,
-        });
-      });
-      sharedSocket.on('leave', (user: User) => {
-        notify.info({
-          message: <p style={{ display: 'flex', alignItems: 'center', columnGap: '2px' }}>
-            <small style={{ fontWeight: 700 }}>{user.name}</small>
-            <small>离开编辑</small>
-          </p>,
-        });
+      sharedSocket.emit('join', { documentId: props.sharedCloudFileId, userId: user.id }, (usersCount: number) => {
+        //如果当前用户只有一个，则初始化文档
+        if (usersCount === 1) {
+          editorRef.current?.editor?.setContents(JSON.parse(props.deltaStr));
+        }
       });
     }
     return function () {
-      if (edit) {
-        sharedSocket.emit('leave', { documentId: props.sharedCloudFileId, userId: user.id });
-        sharedSocket.off('join');
-        sharedSocket.off('leave');
-        if (sharedSocket.connected) sharedSocket.disconnect();
-      }
+      if (sharedSocket.connected) sharedSocket.disconnect();
     };
-  }, [edit, props.sharedCloudFileId, user.id, notify]);
+  }, [edit, props.sharedCloudFileId, user.id, notify, props.deltaStr]);
+
+  React.useEffect(() => {
+    sharedSocket.on('join', (user: User) => {
+      notify.info({
+        message: <p style={{ display: 'flex', alignItems: 'center', columnGap: '2px' }}>
+          <small style={{ fontWeight: 700 }}>{user.name}</small>
+          <small>加入编辑</small>
+        </p>,
+      });
+    });
+    sharedSocket.on('leave', (user: User) => {
+      notify.info({
+        message: <p style={{ display: 'flex', alignItems: 'center', columnGap: '2px' }}>
+          <small style={{ fontWeight: 700 }}>{user.name}</small>
+          <small>离开编辑</small>
+        </p>,
+      });
+    });
+    return function () {
+      sharedSocket.off('join');
+      sharedSocket.off('leave');
+    };
+  }, [notify]);
 
   return <>
     {contextHolder}

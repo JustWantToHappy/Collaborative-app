@@ -5,6 +5,7 @@ import { CloudFileService } from '../cloud-file/cloud-file.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from '../user/user.service';
 import { SharedCloudFileGateway } from './shared-cloud-file.gateway';
+import { EditingPeopleService } from './editing-people.service';
 
 @Module({
   controllers: [SharedCloudFileController],
@@ -14,6 +15,7 @@ import { SharedCloudFileGateway } from './shared-cloud-file.gateway';
     CloudFileService,
     UserService,
     SharedCloudFileGateway,
+    EditingPeopleService,
   ],
 })
 export class SharedCloudFileModule {}

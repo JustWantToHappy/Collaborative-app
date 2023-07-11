@@ -19,7 +19,7 @@ type Props = {
 
 const Index: React.FC<Props> = (props) => {
   const [showTable, setShowTable] = React.useState(false);
-  const [, setEdit] = React.useState(false);
+  const [edit, setEdit] = React.useState(false);
   const [tableLoading, setTableLoading] = React.useState(false);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const { sharedCloudFileId = '0' } = useParams();
@@ -69,7 +69,7 @@ const Index: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     getData();
-  }, [getData]);
+  }, [getData, edit]);
 
   React.useEffect(() => {
     const changeEditToken = PubSub.subscribe('changeEdit', (_, edit: boolean) => {

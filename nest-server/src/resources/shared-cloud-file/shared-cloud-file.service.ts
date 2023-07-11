@@ -17,6 +17,7 @@ export class SharedCloudFileService {
     private readonly cloudFileService: CloudFileService,
     private readonly userService: UserService,
   ) {}
+
   create(createSharedCloudFileDto: CreateSharedCloudFileDto) {
     return 'This action adds a new sharedCloudFile';
   }
@@ -47,7 +48,7 @@ export class SharedCloudFileService {
       ),
       ...ans.map((cloudFile) => {
         delete cloudFile.userId;
-        const sharedFile: SharedCloudFile = Object.assign(cloudFile, {
+        const sharedFile = Object.assign(cloudFile, {
           ownerId: userId,
           collaborators: moveToSharedCloudFileDto.collaborators.join(','),
         });
