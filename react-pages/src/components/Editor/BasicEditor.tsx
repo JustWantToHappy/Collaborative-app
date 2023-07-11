@@ -61,6 +61,7 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
     const { statusCode } = await updateSharedCloudFile(sharedCloudFileId as string, { text });
     PubSub.publish('loading', { loading: false, edit: false });
     setEdit(false);
+    PubSub.publish('changeEdit', false);
     if (typeof changeEdit === 'function') {
       changeEdit(false);
     }

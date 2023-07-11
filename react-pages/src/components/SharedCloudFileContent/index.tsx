@@ -20,7 +20,7 @@ type Props = {
 const Index: React.FC<Props> = (props) => {
   const [showTable, setShowTable] = React.useState(false);
   const [edit, setEdit] = React.useState(false);
-  const [tableLoading, setTableLoading] = React.useState(false);
+  const [tableLoading, setTableLoading] = React.useState(true);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const { sharedCloudFileId = '0' } = useParams();
   const [messageApi, contextHolder] = message.useMessage();

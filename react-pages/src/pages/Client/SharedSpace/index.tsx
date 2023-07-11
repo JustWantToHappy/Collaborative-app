@@ -26,7 +26,6 @@ export default function Index() {
   const [editPerson, setEditPerson] = React.useState<EditPerson[]>([]);
   const [state, setState] = React.useState({
     loading: false,
-    maxCount: 2,
     selectedKey: sharedCloudFileId,
     showEye: false,
     isDocument: false,
@@ -106,7 +105,7 @@ export default function Index() {
           <Badges />
           <div className='shared_editor'>
             <Avatar.Group
-              maxCount={state.maxCount}
+              maxCount={2}
               size="large"
               style={{ display: (state.isDocument && state.edit) ? 'block' : 'none', cursor: 'pointer' }}
               maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}

@@ -2,8 +2,8 @@ import React from 'react';
 import UploadImg from '../UploadImg';
 import { addFolder } from '@/api';
 import { Form, Input, Modal, message } from 'antd';
-import type { RcFile, UploadFile } from 'antd/es/upload/interface';
 import { FileType } from '@/enum';
+import type { RcFile, UploadFile } from 'antd/es/upload/interface';
 
 interface Props {
   type: FileType;
