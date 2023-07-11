@@ -112,11 +112,11 @@ export class SharedCloudFileService {
     const files = await this.findUserFiles(userId);
     this.buildFilesTree(files, ans);
     ans.sort((a, b) => {
-      if (a.children.length > b.children.length) {
+      if (a.children?.length > b.children?.length) {
         return -1;
       } else if (!a.isLeaf && b.isLeaf) {
         return -1;
-      } else if (a.children.length < b.children.length) {
+      } else if (a.children?.length < b.children?.length) {
         return 1;
       } else if (a.isLeaf && !b.isLeaf) {
         return 1;
