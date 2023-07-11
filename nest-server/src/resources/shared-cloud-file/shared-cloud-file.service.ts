@@ -162,8 +162,13 @@ export class SharedCloudFileService {
     );
   }
 
-  update(id: string, updateSharedCloudFileDto: UpdateSharedCloudFileDto) {
+  async update(id: string, updateSharedCloudFileDto: UpdateSharedCloudFileDto) {
+    const sharedCloudFile = await this.findOne(id);
+    if (!sharedCloudFile) {
+      throw new HttpException('不存在此文档', HttpStatus.NOT_FOUND);
+    }
     updateSharedCloudFileDto.updatedAt = new Date();
+    updateSharedCloudFileDto.version = sharedCloudFile.version + 1;
     return this.prisma.sharedCloudFile.update({
       where: { id },
       data: updateSharedCloudFileDto,

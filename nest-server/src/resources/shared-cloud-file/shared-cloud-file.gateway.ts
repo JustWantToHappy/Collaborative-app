@@ -26,11 +26,15 @@ export class SharedCloudFileGateway {
   async handleDisconnect(client: Socket) {
     const { documentId, userId } = client.data;
     const success = this.editingPeopleService.leave(documentId, userId);
+    console.info(
+      this.editingPeopleService.editingPeopleCount(documentId),
+      'leave',
+    );
     if (success) {
       const user = await this.userService.findOne(userId);
       this.io.in(documentId).emit('leave', {
         userId,
-        username: user.name,
+        name: user.name,
       });
     }
   }
@@ -42,13 +46,15 @@ export class SharedCloudFileGateway {
     @MessageBody() body: { userId: string; documentId: string },
   ) {
     const { documentId, userId } = body;
+    client.data = body;
     client.join(documentId);
-    client.data = {
-      documentId,
-      userId,
-    };
+    this.editingPeopleService.join(documentId, userId);
     const user = await this.userService.findOne(userId);
     client.in(documentId).emit('join', { userId, name: user.name });
+    console.info(
+      this.editingPeopleService.editingPeopleCount(documentId),
+      'join',
+    );
     return this.editingPeopleService.editingPeopleCount(documentId);
   }
 

@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/swagger';
-import { IsOptional, IsString, IsDate } from 'class-validator';
+import { IsOptional, IsString, IsDate, IsNumber } from 'class-validator';
 import { CreateSharedCloudFileDto } from './create-shared-cloud-file.dto';
 
 export class UpdateSharedCloudFileDto extends PartialType(
@@ -12,4 +12,8 @@ export class UpdateSharedCloudFileDto extends PartialType(
   @IsDate()
   @IsOptional()
   updatedAt: Date;
+
+  @IsNumber()
+  @IsOptional()
+  version: number;
 }

@@ -12,7 +12,7 @@ export class EditingPeopleService {
     if (this.isEditing(documentId, userId)) {
       return false;
     }
-    if (Array.isArray(document)) {
+    if (Array.isArray(this.documentRoom[documentId])) {
       this.documentRoom[documentId].push(userId);
     } else {
       this.documentRoom[documentId] = [userId];

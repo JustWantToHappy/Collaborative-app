@@ -48,7 +48,6 @@ const Index: React.FC<Props> = (props) => {
             ownerId = sharedCloudFile.ownerId;
             sharedCloudFile.createdAt = dayjs(sharedCloudFile.createdAt).format('YYYY-MM-DD HH:mm:ss');
             sharedCloudFile.updatedAt = dayjs(sharedCloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
-            sharedCloudFile.description = sharedCloudFile.description === '' ? '无' : sharedCloudFile.description;
             return sharedCloudFile;
           }) || []);
         } else {
@@ -135,7 +134,10 @@ const Index: React.FC<Props> = (props) => {
         />
       </div>}
       {!showTable && data?.type === FileType.Text && (
-        <CollaborativeEditor sharedCloudFileId={sharedCloudFileId} deltaStr={data.text} />)}
+        <CollaborativeEditor
+          version={data.version}
+          sharedCloudFileId={sharedCloudFileId}
+          deltaStr={data.text} />)}
     </StyleDiv>
   );
 };

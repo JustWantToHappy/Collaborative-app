@@ -1,19 +1,18 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
-import { sharedSocket } from '@/utils';
 import type { EditPerson } from '@/types';
 import { StyleDiv } from '@/common';
 import MyAvatar from '@/components/MyAvatar';
 import Badges from '@/components/Badges';
 import TopSvg from '@/assets/logo/top.svg';
 import AddUserSvg from '@/assets/logo/addUser.svg';
-import { useDebouce, useLocalStorage, useThrottle } from '@/hooks';
+import { useDebouce, useLocalStorage } from '@/hooks';
 import { getSharedCloudFilesTree } from '@/api';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import CollaboratorPopoverContent from '@/components/CollaboratorPopoverContent';
 import { useParams, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import SharedCloudFileContent from '@/components/SharedCloudFileContent';
-import { Button, message, Tooltip, Tree, FloatButton, Popover, Avatar } from 'antd';
+import { Button, Tooltip, Tree, FloatButton, Popover, Avatar } from 'antd';
 import { LocalStorageKey } from '@/enum';
 
 const { DirectoryTree } = Tree;
@@ -23,7 +22,6 @@ export default function Index() {
   const { pathname } = useLocation();
   const [user] = useLocalStorage(LocalStorageKey.User_Info, {});
   const { sharedCloudFileId = '0' } = useParams();
-  const [messageApi, messageContextHolder] = message.useMessage();
   const [treeData, setTreeData] = React.useState<DataNode[]>([]);
   const [editPerson, setEditPerson] = React.useState<EditPerson[]>([]);
   const [state, setState] = React.useState({
@@ -37,18 +35,14 @@ export default function Index() {
   });
 
   const editUpdateClick = useDebouce(() => {
-    setState({ ...state, loading: true });
     if (!state.edit) {
+      setState({ ...state, loading: true });
       setTimeout(() => {
         setState({ ...state, edit: true, loading: false });
         PubSub.publish('changeEdit', true);
       }, 500);
     } else {
-      setState({ ...state, edit: false, loading: true });
-      PubSub.publish('changeEdit', false);
-      if (sharedSocket.connected) {
-        sharedSocket.emit('leave', { documentId: sharedCloudFileId, userId: user.id });
-      }
+      PubSub.publish('update');
     }
   }, 300);
 
@@ -60,14 +54,6 @@ export default function Index() {
     setState({ ...state, selectedKey: info.node.key + '', showEye: false, edit: false });
   };
 
-  const handleMouseOver = useThrottle(() => {
-    setState({ ...state, maxCount: 0 });
-  }, 50);
-
-  const handleMouseLeave = useThrottle(() => {
-    setState({ ...state, maxCount: 2 });
-  }, 50);
-
   React.useEffect(() => {
     (async function () {
       const { statusCode, data } = await getSharedCloudFilesTree();
@@ -76,34 +62,33 @@ export default function Index() {
       }
     })();
 
-    const ownerIdToken = PubSub.subscribe('ownerId', (_, ownerId: string) => setState(state => ({ ...state, ownerId })));
-    const isDocumentToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setState(state => ({ ...state, isDocument })));
-    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
-      setState(state => ({ ...state, loading: false }));
-      messageApi.success('内容发布成功');
-    });
-
-    return function () {
-      PubSub.unsubscribe(stopLoadingToken);
-      PubSub.unsubscribe(ownerIdToken);
-      PubSub.unsubscribe(isDocumentToken);
-    };
-  }, [messageApi]);
-
-  //展示在线编辑人员信息
-  React.useEffect(() => {
+    //展示在线编辑人员信息
     const onlineEditToken = PubSub.subscribe('onlineEdit', (_, newEditPerson: EditPerson[]) => {
       setEditPerson(newEditPerson);
     });
+    const ownerIdToken = PubSub.subscribe('ownerId', (_, ownerId: string) => setState(state => ({ ...state, ownerId })));
+    const isDocumentToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setState(state => ({ ...state, isDocument })));
 
     return function () {
+      PubSub.unsubscribe(ownerIdToken);
+      PubSub.unsubscribe(isDocumentToken);
       PubSub.unsubscribe(onlineEditToken);
     };
-  }, [editPerson]);
+  }, []);
+
+  React.useEffect(() => {
+    const loadingToken = PubSub.subscribe('loading',
+      (_, props: { loading: boolean, edit: boolean }) => {
+        setState(state => ({ ...state, ...props }));
+      });
+
+    return function () {
+      PubSub.unsubscribe(loadingToken);
+    };
+  }, [sharedCloudFileId, user.id]);
 
   return (
     <StyleDiv asideWidth={'15rem'}>
-      {messageContextHolder}
       <aside >
         <div className='cloud_tool'>
           <h4>目录</h4>
@@ -120,27 +105,25 @@ export default function Index() {
         <div className='header shared_header'>
           <Badges />
           <div className='shared_editor'>
-            <div onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
-              <Avatar.Group
-                maxCount={state.maxCount}
-                size="large"
-                style={{ display: (state.isDocument && state.edit) ? 'block' : 'none', cursor: 'pointer' }}
-                maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
-              >
-                {editPerson.map(user => <Tooltip
-                  key={user?.email}
-                  title={user?.name}
-                  placement='top'>
-                  <>
-                    <MyAvatar
-                      style={{ backgroundColor: user?.color }}
-                      src={user?.avatar} >
-                      {user?.name.slice(0, 1)}
-                    </MyAvatar>
-                  </>
-                </Tooltip>)}
-              </Avatar.Group>
-            </div>
+            <Avatar.Group
+              maxCount={state.maxCount}
+              size="large"
+              style={{ display: (state.isDocument && state.edit) ? 'block' : 'none', cursor: 'pointer' }}
+              maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
+            >
+              {editPerson.map(user => <Tooltip
+                key={user?.email}
+                title={user?.name}
+                placement='top'>
+                <>
+                  <MyAvatar
+                    style={{ backgroundColor: user?.color }}
+                    src={user?.avatar} >
+                    {user?.name.slice(0, 1)}
+                  </MyAvatar>
+                </>
+              </Tooltip>)}
+            </Avatar.Group>
             <Popover content={<CollaboratorPopoverContent sharedCloudFileId={sharedCloudFileId} />}
               title="文档协作者"
               trigger="click"

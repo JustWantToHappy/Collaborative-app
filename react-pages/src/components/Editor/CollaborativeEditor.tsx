@@ -12,6 +12,7 @@ import { singleWebrtcProvider, getRandomColor, sharedSocket } from '@/utils';
 
 type Props = {
   deltaStr: string;
+  version: number;
   sharedCloudFileId: string;
 }
 
@@ -44,7 +45,6 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
     //进入编辑模式后
     if (edit) {
       cursors.style.display = 'block';//显示光标
-      editorRef.current?.editor?.focus();
 
       const provider = singleWebrtcProvider.joinWebRtcRoom(props.sharedCloudFileId);
 
@@ -52,16 +52,17 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
       if (!provider?.awareness.getLocalState()) {
         provider?.awareness.setLocalState(preLocalStateRef); //加入用户本地状态
       }
-
+      //用户意识相关
       provider?.awareness.setLocalStateField('user', {
         name: user.name,
         color: getRandomColor(user.name),
         avatar: user.avatar,
         email: user.email,
       });
+      provider?.awareness.on('change', handleAwarenessChange);
+
       providerRef.current = provider;
       quillBindingRef.current = new QuillBinding(ytext, editorRef.current?.editor, provider?.awareness);
-      provider?.awareness.on('change', handleAwarenessChange);
       //保存用户之前的awareness实例的本地状态
       preLocalStateRef.current = provider?.awareness.getLocalState();
       awareness.current = provider?.awareness;
@@ -83,12 +84,14 @@ export const CollaborativeEditor: React.FC<Props> = (props) => {
   React.useEffect(() => {
     if (!sharedSocket.connected) sharedSocket.connect();
     if (edit) {
-      sharedSocket.emit('join', { documentId: props.sharedCloudFileId, userId: user.id }, (usersCount: number) => {
-        //如果当前用户只有一个，则初始化文档
-        if (usersCount === 1) {
-          editorRef.current?.editor?.setContents(JSON.parse(props.deltaStr));
-        }
-      });
+      sharedSocket.emit('join',
+        { documentId: props.sharedCloudFileId, userId: user.id },
+        (usersCount: number) => {
+          //如果当前用户只有一个，则初始化文档
+          if (usersCount === 1) {
+            editorRef.current?.editor?.setContents(JSON.parse(props.deltaStr));
+          }
+        });
     }
     return function () {
       if (sharedSocket.connected) sharedSocket.disconnect();

@@ -55,14 +55,14 @@ export class ChatRoomGateway implements OnGatewayConnection {
   }
 
   handleConnection(client: Socket) {
-    console.log(`Client ${client.id} connected`);
+    //console.log(`Client ${client.id} connected`);
     client.on('disconnecting', (reason) => {
       //正在断开连接...
     });
   }
   //当应用程序断开连接时
   handleDisconnect(client: Socket) {
-    console.log(`Client ${client.id} disconnected`);
+    //console.log(`Client ${client.id} disconnected`);
     this.onOffLineService.offline(client.id); //离线
     const userId = this.onOffLineService.getUserId(client.id);
     this.notifyAllUser(client, userId);
@@ -71,7 +71,7 @@ export class ChatRoomGateway implements OnGatewayConnection {
   //将socket加入所有房间...
   @SubscribeMessage(Chat.Join)
   async onJoinAllRooms(client: Socket, userId: string) {
-    console.info(`Client ${client.id} join rooms`);
+    //console.info(`Client ${client.id} join rooms`);
     this.onOffLineService.online(client.id, userId); //上线
     this.notifyAllUser(client, userId);
   }

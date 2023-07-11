@@ -13,6 +13,11 @@ export function getSharedCloudFolderContents(sharedCloudFileId:string) {
 export function getAllCollaboratorsById(id:string) {
   return request.get(`/sharedCloudFile/collaborators/${id}`);
 }
+
+export function getSharedCloudFileVersion(id:string) {
+  return request.get<number>(`/sharedCloudFile/version/${id}`);
+}
+
 export function moveToSharedCloudFile(cloudFileId:string,collaborators:string[]) {
   return request.post('/sharedCloudFile/move',{cloudFileId,collaborators});
 }

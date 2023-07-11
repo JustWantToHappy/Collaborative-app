@@ -66,14 +66,15 @@ export default function Index() {
 
   const editUpdateClick = useDebouce(() => {
     setState({ ...state, loading: true });
+    //进入编辑模式
     if (!state.edit) {
       setTimeout(() => {
         PubSub.publish('changeEdit', true);
         setState({ ...state, edit: true, loading: false });
       }, 1000);
     } else {
+      //进入编辑
       PubSub.publish('changeEdit', false);
-      setState({ ...state, edit: false, loading: true });
     }
   }, 300);
 
@@ -101,14 +102,15 @@ export default function Index() {
   }, [updateFileTree]);
 
   React.useEffect(() => {
-    const stopLoadingToken = PubSub.subscribe('stopLoading', () => {
-      setState(state => ({ ...state, loading: false }));
+    const loadingToken = PubSub.subscribe('loading', (_, props: { loading: boolean, edit: boolean }) => {
+      const { loading, edit } = props;
+      setState(state => ({ ...state, loading, edit }));
     });
-    return function () {
-      PubSub.unsubscribe(stopLoadingToken);
-    };
-  }, [messageApi]);
 
+    return function () {
+      PubSub.unsubscribe(loadingToken);
+    };
+  }, []);
 
   return (
     <StyleDiv asideWidth={'15rem'}>

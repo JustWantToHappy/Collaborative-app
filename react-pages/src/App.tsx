@@ -1,9 +1,12 @@
 import React from 'react';
+import Quill from 'quill';
+import QuillCursors from 'quill-cursors';
 import { routes } from './layout';
 import { useRoutes } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { defaultCssStyles } from './utils';
+Quill.register('modules/cursors', QuillCursors);
 
 function App() {
   const element = useRoutes(routes);

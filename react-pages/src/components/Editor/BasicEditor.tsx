@@ -1,15 +1,12 @@
 import React from 'react';
 import StyleDiv from './style';
-import { message } from 'antd';
-import Quill from 'quill';
+import { Button, message, notification, Space } from 'antd';
 import Delta from 'quill-delta';
 import ReactQuill from 'react-quill';
-import QuillCursors from 'quill-cursors';
 import 'react-quill/dist/quill.snow.css';
 import { Delta as TypeDelta } from 'quill';
-import { updateSharedCloudFile, updateCloudFile } from '@/api';
+import { updateSharedCloudFile, updateCloudFile, getSharedCloudFileVersion } from '@/api';
 
-Quill.register('modules/cursors', QuillCursors);
 
 const modules = {
   cursors: true,
@@ -28,39 +25,90 @@ const modules = {
 const delta = (new Delta([]) as unknown) as TypeDelta;
 
 export interface Props {
-  deltaStr: string;
+  deltaStr: string;//文本内容
+  version?: number;//协同文档版本
   sharedCloudFileId?: string;
   cloudFileId?: string;
   changeEdit?: (edit: boolean) => void;
 }
 
 export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQuill | null>) => {
-  const { changeEdit } = props;
   const [edit, setEdit] = React.useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
-  const { deltaStr, sharedCloudFileId, cloudFileId } = props;
+  const [notifyApi, nofityContextHolder] = notification.useNotification();
+  const [messageApi, messageContextHolder] = message.useMessage();
   const editorRef = React.useRef<ReactQuill | null>(null);
+  const { deltaStr, sharedCloudFileId, cloudFileId, changeEdit, version } = props;
 
-  //提供属性给外部组件
-  React.useImperativeHandle(ref, () => editorRef.current);
-
-  const handleSave = React.useCallback(async () => {
-    let code = 0;
-    const text = JSON.stringify(editorRef.current?.editor?.getContents());
-    if (sharedCloudFileId) {
-      const { statusCode } = await updateSharedCloudFile(sharedCloudFileId, { text });
-      code = statusCode;
-    } else if (cloudFileId) {
-      const { statusCode } = await updateCloudFile(cloudFileId, { text });
-      code = statusCode;
-    }
+  const messageTip = React.useCallback((code: number) => {
     if (code === 200) {
       messageApi.success('内容发布成功');
-      PubSub.publish('stopLoading');
+      PubSub.publish('loading', false);
     } else {
       messageApi.error('内容发布失败');
     }
-  }, [sharedCloudFileId, cloudFileId, messageApi]);
+  }, [messageApi]);
+
+  //个人编辑文档保存
+  const handleCloudFileSave = React.useCallback(async (text: string) => {
+    const { statusCode } = await updateCloudFile(cloudFileId as string, { text });
+    messageTip(statusCode);
+    PubSub.publish('loading', { loading: false, edit: false });
+  }, [cloudFileId, messageTip]);
+
+  //协同编辑文档保存
+  const handleCollaborativeSave = React.useCallback(async (text: string) => {
+    PubSub.publish('loading', { loading: true, edit: true });
+    const { statusCode } = await updateSharedCloudFile(sharedCloudFileId as string, { text });
+    PubSub.publish('loading', { loading: false, edit: false });
+    setEdit(false);
+    if (typeof changeEdit === 'function') {
+      changeEdit(false);
+    }
+    messageTip(statusCode);
+  }, [sharedCloudFileId, messageTip, changeEdit]);
+
+  //解决版本冲突
+  const handleVersionConflict = React.useCallback((text: string) => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Space>
+        <Button type="link" size="small" onClick={() => notifyApi.destroy()}>
+          取消
+        </Button>
+        <Button type="primary" size="small" onClick={() => {
+          handleCollaborativeSave(text);
+          notifyApi.destroy(key);
+        }}>
+          确定
+        </Button>
+      </Space>
+    );
+    notifyApi.error({
+      key,
+      btn,
+      message: '版本更新',
+      description: '检查到版本更新，直接提交会覆盖其他用户保存的内容',
+    });
+  }, [notifyApi, handleCollaborativeSave]);
+
+  //版本检查
+  const checkVersion = React.useCallback(async () => {
+    const { statusCode, data } = await getSharedCloudFileVersion(sharedCloudFileId as string);
+    if (statusCode === 200 && data !== version) {
+      return true;
+    }
+    return false;
+  }, [sharedCloudFileId, version]);
+
+  const handleSharedCloudFileSave = React.useCallback(async (text: string) => {
+    const conflict = await checkVersion();
+    if (conflict) {
+      handleVersionConflict(text);
+    } else {
+      handleCollaborativeSave(text);
+    }
+
+  }, [checkVersion, handleVersionConflict, handleCollaborativeSave]);
 
   React.useEffect(() => {
     try {
@@ -72,22 +120,38 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
 
   React.useEffect(() => {
     const changeEditToken = PubSub.subscribe('changeEdit', async (_, edit: boolean) => {
+      const text = JSON.stringify(editorRef.current?.editor?.getContents());
       setEdit(edit);
       if (typeof changeEdit === 'function') {
         changeEdit(edit);
       }
-      if (!edit) {
-        handleSave();
+      if (!edit && cloudFileId) {
+        handleCloudFileSave(text);
       }
     });
     return function () {
       PubSub.unsubscribe(changeEditToken);
     };
-  }, [handleSave, changeEdit]);
+  }, [handleCloudFileSave, handleSharedCloudFileSave, changeEdit, sharedCloudFileId, cloudFileId]);
+
+  React.useEffect(() => {
+    const updateToken = PubSub.subscribe('update', () => {
+      const text = JSON.stringify(editorRef.current?.editor?.getContents());
+      handleSharedCloudFileSave(text);
+    });
+
+    return function () {
+      PubSub.unsubscribe(updateToken);
+    };
+  }, [handleSharedCloudFileSave]);
+
+  //提供属性给外部组件
+  React.useImperativeHandle(ref, () => editorRef.current);
 
   return (
     <StyleDiv showToolBar={edit}>
-      {contextHolder}
+      {messageContextHolder}
+      {nofityContextHolder}
       <ReactQuill
         ref={editorRef}
         modules={modules}

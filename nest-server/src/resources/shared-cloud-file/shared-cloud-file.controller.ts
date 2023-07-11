@@ -56,6 +56,12 @@ export class SharedCloudFileController {
     return this.sharedCloudFileService.findAllCollaboratorsById(id);
   }
 
+  @Get('version/:id')
+  async findVersion(@Param('id') id: string) {
+    const file = await this.sharedCloudFileService.findOne(id);
+    return file.version;
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
