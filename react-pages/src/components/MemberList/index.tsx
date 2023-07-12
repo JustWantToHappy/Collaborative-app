@@ -1,10 +1,9 @@
 import React from 'react';
 import { chatRoomSocket } from '@/utils';
-import { message } from 'antd';
+import { Avatar, message } from 'antd';
 import StyleDiv from './style';
 import type { User } from '@/types';
 import { useParams } from 'react-router-dom';
-import MyAvatar from '@/components/MyAvatar';
 import { getGroupAllUsers } from '@/api';
 import CloseSvg from '@/assets/logo/close.svg';
 import { Chat } from '@/enum';
@@ -61,11 +60,15 @@ const Index: React.FC<Props> = (props) => {
       </p>
       <ul className='member_container'>
         {members.map(member => <li key={member.id}>
-          <MyAvatar src={member.avatar} >{member.name}</MyAvatar>
           <div className='member_info'>
+            <Avatar
+              style={{ width: '2rem' }}
+              src={`/api/${member.avatar}`}>
+              {member.name}
+            </Avatar>
             <small>{member.name}</small>
-            <small>{leader === member.id ? '群主' : '用户'}</small>
           </div>
+          <small >{leader === member.id ? '群主' : '用户'}</small>
           <small className={onlines.includes(member.id ?? '') ? 'member_state active' : 'member_state'} >
             {onlines.includes(member.id ?? '') ? '在线' : '离线'}
           </small>

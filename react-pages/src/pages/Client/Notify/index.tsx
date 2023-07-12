@@ -59,10 +59,10 @@ export default function Index() {
       <ul>
         {messages?.map(message => <li key={message.id} className='notify_item'>
           <div className='notify_item_avatar'>
-            <Avatar size='large' src={message.avatar} />
+            <Avatar size='large' src={`/api/${message.avatar}`} >{message.name}</Avatar>
           </div>
           <div>
-            <h4>{message.name}</h4>
+            <h5>{message.name}</h5>
             <span >
               <small> {strategy.get(message?.type)}</small>
               <small> {message.groupName}</small>

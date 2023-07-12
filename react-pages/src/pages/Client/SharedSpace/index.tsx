@@ -2,7 +2,6 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import type { EditPerson, SharedCloudFile } from '@/types';
 import { StyleDiv } from '@/common';
-import MyAvatar from '@/components/MyAvatar';
 import Badges from '@/components/Badges';
 import TopSvg from '@/assets/logo/top.svg';
 import AddUserSvg from '@/assets/logo/addUser.svg';
@@ -116,11 +115,11 @@ export default function Index() {
                 title={user?.name}
                 placement='top'>
                 <>
-                  <MyAvatar
+                  <Avatar
                     style={{ backgroundColor: user?.color }}
-                    src={user?.avatar} >
+                    src={`/api/${user?.avatar}`} >
                     {user?.name.slice(0, 1)}
-                  </MyAvatar>
+                  </Avatar>
                 </>
               </Tooltip>)}
             </Avatar.Group>

@@ -39,8 +39,9 @@ const StyleDiv = styled('div')<{show:boolean}>`
       position: relative;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       column-gap:.5rem;
-      padding:.5rem;
+      padding:1rem .5rem;
       border-radius: .5rem;
       transition: background-color 200ms ease;
       &:hover{
@@ -52,7 +53,10 @@ const StyleDiv = styled('div')<{show:boolean}>`
   .member_info{
     display: flex;
     align-items: center;
-    column-gap: 1rem;
+    column-gap: .5rem;
+    &>small{
+      float:right;
+    }
   }
 
   .member_state{

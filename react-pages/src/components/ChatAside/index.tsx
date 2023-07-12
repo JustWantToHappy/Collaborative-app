@@ -6,9 +6,8 @@ import { getAllChatRoom } from '@/api';
 import type { ChatRoom } from '@/types';
 import { defaultCssStyles } from '@/utils';
 import { Chat, LocalStorageKey } from '@/enum';
-import MyAvatar from '@/components/MyAvatar';
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
-import { Badge, Button, Popover, message } from 'antd';
+import { Badge, Button, Popover, message, Avatar } from 'antd';
 import { chatRoomSocket, messageSocket } from '@/utils';
 import { EllipsisOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 
@@ -100,9 +99,9 @@ export default function Index(props: IProps) {
           >
             <div className='chat_item_avatar'>
               <Badge count={0} size='small'>
-                <MyAvatar src={chatroom.Group?.avatar || chatroom.User?.avatar} >
+                <Avatar src={`/api/${chatroom.Group?.avatar || chatroom.User?.avatar}`} size='large'>
                   {chatroom.Group?.name || chatroom.User?.name}
-                </MyAvatar>
+                </Avatar>
               </Badge>
             </div>
             <p style={{ maxWidth: '5rem' }}>{chatroom.Group?.name || chatroom.User?.name}</p>

@@ -30,6 +30,7 @@ const Index = () => {
   };
 
   React.useEffect(() => {
+    setTableLoading(true);
     getCloudFolderContents(cloudFileId).then(res => {
       const { data, statusCode } = res;
       if (statusCode === 200) {
@@ -40,7 +41,7 @@ const Index = () => {
             cloudFile.updatedAt = dayjs(cloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
             return cloudFile;
           }) || []);
-          PubSub.publish('cloudFile',{type:FileType.Folder});
+          PubSub.publish('cloudFile', { type: FileType.Folder });
         } else {
           setShowTable(false);
           setData(data);
@@ -56,13 +57,18 @@ const Index = () => {
   return (
     <StyleDiv>
       {contextHolder}
-      {showTable && <Table
+      <Table
         rowKey='id'
         loading={tableLoading}
         dataSource={tableData}
         pagination={{ pageSize: 6 }}
         //rowClassName='rowClassName'
-        style={{ width: '100%', minWidth: '400px', marginTop: '1rem' }} >
+        style={{
+          width: '100%',
+          minWidth: '400px',
+          marginTop: '1rem',
+          display: showTable ? 'block' : 'none'
+        }} >
         <Column title="名称" dataIndex="title" key="title" />
         <Column title="创建时间" dataIndex="createdAt" key="createdAt" />
         <Column title="修改时间" dataIndex="updatedAt" key="updatedAt" />
@@ -100,7 +106,7 @@ const Index = () => {
             </Tooltip>
           )}
         />
-      </Table>}
+      </Table>
       {!showTable && data?.type === FileType.Image && <div className='file_image'>
         <Image
           width={'100%'}

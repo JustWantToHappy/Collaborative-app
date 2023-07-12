@@ -2,7 +2,6 @@ import React from 'react';
 import StyleDiv from './style';
 import { chatRoomSocket } from '@/utils';
 import Bell from '@/components/Bell';
-import MyAvatar from '@/components/MyAvatar';
 import UserInfoModal from '../UserInfoModal';
 import { routes } from '@/layout';
 import { useLocalStorage } from '@/hooks';
@@ -11,7 +10,7 @@ import LogoSvg from '@/assets/logo/logo.svg';
 import SunSvg from '@/assets/logo/sun.svg';
 import MoonSvg from '@/assets/logo/moon.svg';
 import type { Router, ChatRecord } from '@/types';
-import { Button, Popover, Switch } from 'antd';
+import { Avatar, Button, Popover, Switch } from 'antd';
 import { Chat, LocalStorageKey } from '@/enum';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
@@ -95,15 +94,11 @@ export default function Index() {
                 <img src={dark ? MoonSvg : SunSvg} style={{ width: '1.2rem', marginLeft: '.5rem' }} />
               </div>
             </div>} >
-            <div>
-              <MyAvatar
-                size='default'
-                src={userInfo.avatar}
-                ref={avatarRef}
-                style={{ cursor: 'pointer' }} >
-                {userInfo.name}
-              </MyAvatar>
-            </div>
+            <Avatar
+              src={`/api/${userInfo.avatar}`}
+              style={{ cursor: 'pointer' }} >
+              {userInfo.name}
+            </Avatar>
           </Popover>
         </div>
       </header>

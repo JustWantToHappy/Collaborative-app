@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const StyleDiv = styled('div')`
-  h4{
+  h5{
     margin:2px 0;
   }
   .notify_item{

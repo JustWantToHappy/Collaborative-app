@@ -5,13 +5,12 @@ import * as dayjs from 'dayjs';
 import MembersSvg from '../MembersSvg';
 import { chatRoomSocket } from '@/utils';
 import type { ChatRecord } from '@/types';
-import MyAvatar from '@/components/MyAvatar';
 import UploadImg from '@/components/UploadImg';
 import MemberList from '@/components/MemberList';
 import { useLocalStorage, useDebouce } from '@/hooks';
 import { uploadImg, getChatRecordsByChatRoomId } from '@/api';
 import { Chat, FileType, LocalStorageKey } from '@/enum';
-import { Button, Input, message, FloatButton } from 'antd';
+import { Button, Input, message, FloatButton, Avatar } from 'antd';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
@@ -146,7 +145,9 @@ export default function Index() {
         </div>
         {chatRecords.map((chatRecord) => <ul key={chatRecord.id} className='chat_record_userInfo'>
           <li>
-            <MyAvatar src={chatRecord.avatar}>{chatRecord.name}</MyAvatar>
+            <Avatar src={`/api/${chatRecord.avatar}`} size='large'>
+              {chatRecord.name}
+            </Avatar>
             <div
               className={chatRecord.senderId === userInfo.id ? 'chat_record_content highlight' : 'chat_record_content'}
             >
@@ -185,6 +186,6 @@ export default function Index() {
         </div>
       </div>
       {/*<FloatButton.BackTop className='return_top' />*/}
-    </StyleDiv>
+    </StyleDiv >
   );
 }

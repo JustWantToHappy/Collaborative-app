@@ -36,27 +36,30 @@ const Index: React.FC<Props> = (props) => {
     }
   };
 
-  const getData = React.useCallback(() => getSharedCloudFolderContents(sharedCloudFileId).
-    then(res => {
-      const { data, statusCode } = res;
-      if (statusCode === 200) {
-        if (Array.isArray(data)) {
-          setShowTable(true);
-          setTableData(data?.map(sharedCloudFile => {
-            sharedCloudFile.createdAt = dayjs(sharedCloudFile.createdAt).format('YYYY-MM-DD HH:mm:ss');
-            sharedCloudFile.updatedAt = dayjs(sharedCloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
-            return sharedCloudFile;
-          }) || []);
-        } else {
-          setShowTable(false);
-          setData(data as SharedCloudFile);
-          PubSub.publish('sharedCloudFile', data);
+  const getData = React.useCallback(() => {
+    setTableLoading(true);
+    getSharedCloudFolderContents(sharedCloudFileId).
+      then(res => {
+        const { data, statusCode } = res;
+        if (statusCode === 200) {
+          if (Array.isArray(data)) {
+            setShowTable(true);
+            setTableData(data?.map(sharedCloudFile => {
+              sharedCloudFile.createdAt = dayjs(sharedCloudFile.createdAt).format('YYYY-MM-DD HH:mm:ss');
+              sharedCloudFile.updatedAt = dayjs(sharedCloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+              return sharedCloudFile;
+            }) || []);
+          } else {
+            setShowTable(false);
+            setData(data as SharedCloudFile);
+            PubSub.publish('sharedCloudFile', data);
+          }
+          setTableLoading(false);
         }
-        setTableLoading(false);
-      }
-    }).catch(err => {
-      console.info(err);
-    }), [sharedCloudFileId]);
+      }).catch(err => {
+        console.info(err);
+      });
+  }, [sharedCloudFileId]);
 
   React.useEffect(() => {
     getData();
@@ -69,12 +72,17 @@ const Index: React.FC<Props> = (props) => {
   return (
     <StyleDiv show={props.show}>
       {contextHolder}
-      {showTable && <Table
+      <Table
         rowKey='id'
         dataSource={tableData}
         loading={tableLoading}
         pagination={{ pageSize: 6 }}
-        style={{ width: '100%', minWidth: '400px', marginTop: '1rem' }} >
+        style={{
+          width: '100%',
+          minWidth: '400px',
+          marginTop: '1rem',
+          display: showTable ? 'block' : 'none'
+        }} >
         <Column title="名称" dataIndex="title" key="title" />
         <Column title="创建时间" dataIndex="createdAt" key="createdAt" />
         <Column title="修改时间" dataIndex="updatedAt" key="updatedAt" />
@@ -112,7 +120,7 @@ const Index: React.FC<Props> = (props) => {
             </Popconfirm> : <span>无权限</span>
           )}
         />
-      </Table>}
+      </Table>
       {!showTable && data?.type === FileType.Image && <div className='file_image'>
         <Image
           width={'100%'}

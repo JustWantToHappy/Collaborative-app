@@ -1,9 +1,8 @@
 import React from 'react';
 import StyleDiv from './style';
-import MyAvatar from '@/components/MyAvatar';
 import type { Contact } from '@/types';
 import { myjoins, deleteFriend } from '@/api';
-import { message, Button } from 'antd';
+import { message, Button, Tooltip, Avatar } from 'antd';
 import { useLocalStorage } from '@/hooks';
 import { LocalStorageKey } from '@/enum';
 
@@ -53,11 +52,12 @@ export default function Index(props: Props) {
         </p>
         {contacts.friends.map(friend => <div
           key={friend.email}
-          style={{ gridTemplateColumns: 'repeat(3,1fr)' }}
+          style={{ gridTemplateColumns: 'repeat(2,1fr)' }}
           className='panel_info'>
-          <MyAvatar size='large' />
+          <Tooltip placement='top' title={`邮箱地址:${friend.email}`}>
+            <Avatar src={`/api/${friend.avatar}`} size='large' >{friend.name}</Avatar>
+          </Tooltip>
           <h5>{friend.name}</h5>
-          <span>邮箱地址：{friend.email}</span>
           <small>
             <Button type='link' danger onClick={() => removeFriend(friend.id)}>删除好友</Button>
           </small>
@@ -71,7 +71,7 @@ export default function Index(props: Props) {
           key={group.id}
           style={{ gridTemplateColumns: 'repeat(2,1fr)' }}
           className='panel_info'>
-          <MyAvatar size='large' src={group.avatar}>{group.name}</MyAvatar>
+          <Avatar size='large' src={`/api/${group.avatar}`}>{group.name}</Avatar>
           <h5>{group.name}</h5>
           <small>
             <Button type='link' danger>
