@@ -17,7 +17,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
 
 export default function Index() {
-  const { state } = useLocation();
+  const { state, pathname } = useLocation();
   const navigate = useNavigate();
   const { chatRoomId } = useParams();
   const [text, setText] = React.useState('');
@@ -111,13 +111,16 @@ export default function Index() {
   }, [chatRoomId, chatRecords]);
 
   React.useEffect(() => {
+    if (state?.asideWidth) {
+      setAsideWidth(state?.asideWidth);
+    }
     const onlineToken = PubSub.subscribe('online', (_, onlines: string[]) => {
       setOnline(onlines.includes(state?.friendId));
     });
     return function () {
       PubSub.unsubscribe(onlineToken);
     };
-  }, [state?.friendId]);
+  }, [state]);
 
   return (
     <StyleDiv asideWidth={asideWidth}>

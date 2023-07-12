@@ -45,7 +45,7 @@ export default function Index() {
   return (
     <StyleDiv asideWidth={asideWidth} showHeaderBorder>
       <aside >
-        <ChatAside wide={wide} changeWide={changeWide} />
+        <ChatAside wide={wide} changeWide={changeWide} asideWidth={asideWidth} />
       </aside>
       <main>
         <div className='header'>

@@ -7,20 +7,21 @@ import type { ChatRoom } from '@/types';
 import { defaultCssStyles } from '@/utils';
 import { Chat, LocalStorageKey } from '@/enum';
 import MyAvatar from '@/components/MyAvatar';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { Badge, Button, Popover, message } from 'antd';
 import { chatRoomSocket, messageSocket } from '@/utils';
 import { EllipsisOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 
 type IProps = {
   wide: boolean;
+  asideWidth: string;
   changeWide: () => void;
 }
 
-
 export default function Index(props: IProps) {
+  const navigate = useNavigate();
   const { chatRoomId } = useParams();
-  const { wide, changeWide } = props;
+  const { wide, changeWide, asideWidth } = props;
   const chatContainerRef = React.useRef<HTMLUListElement>(null);
   const [active, setActive] = React.useState(chatRoomId);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
@@ -35,6 +36,18 @@ export default function Index(props: IProps) {
       messageApi.error({ content: `${statusCode} ${msg}` });
     }
   }, [messageApi]);
+
+  const shiftChatRoom = (event: React.MouseEvent, chatroom: ChatRoom) => {
+    event.preventDefault();
+    navigate(`/chat/room/${chatroom.id}`, {
+      state: {
+        friendId: chatroom.User?.id,
+        title: chatroom.Group?.name || chatroom.User?.name,
+        type: chatroom.type,
+        asideWidth
+      }
+    });
+  };
 
   React.useEffect(() => {
     getData();
@@ -61,9 +74,7 @@ export default function Index(props: IProps) {
     };
     chatContainerRef.current?.addEventListener('scroll', handleScrolling);
     return function () {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.removeEventListener('scroll', handleScrolling);
-      }
+      chatContainerRef.current && chatContainerRef.current.removeEventListener('scroll', handleScrolling);
     };
   }, []);
 
@@ -80,12 +91,7 @@ export default function Index(props: IProps) {
         {chatrooms.map(chatroom => <NavLink
           key={chatroom.id}
           to={`/chat/room/${chatroom.id}`}
-          state={
-            {
-              friendId: chatroom.User?.id,
-              title: chatroom.Group?.name || chatroom.User?.name,
-              type: chatroom.type,
-            }}
+          onClick={event => shiftChatRoom(event, chatroom)}
           style={{ color: active === chatroom.id ? '#fff' : '#000', textDecoration: 'none' }}>
           <li
             className='chat_item'
