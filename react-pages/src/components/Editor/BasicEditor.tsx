@@ -42,34 +42,38 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
   const messageTip = React.useCallback((code: number) => {
     if (code === 200) {
       messageApi.success('内容发布成功');
-      PubSub.publish('loading', false);
+      return true;
     } else {
       messageApi.error('内容发布失败');
+      return false;
     }
   }, [messageApi]);
 
   //个人编辑文档保存
   const handleCloudFileSave = React.useCallback(async (text: string) => {
+    PubSub.publish('editorState', { loading: true, edit: true });
     const { statusCode } = await updateCloudFile(cloudFileId as string, { text });
-    messageTip(statusCode);
-    PubSub.publish('loading', { loading: false, edit: false });
+    const success = messageTip(statusCode);
+    if (success) {
+      PubSub.publish('editorState', { loading: false, edit: false });
+    }
   }, [cloudFileId, messageTip]);
 
   //协同编辑文档保存
   const handleCollaborativeSave = React.useCallback(async (text: string) => {
-    PubSub.publish('loading', { loading: true, edit: true });
+    PubSub.publish('editorState', { loading: true, edit: true });
     const { statusCode } = await updateSharedCloudFile(sharedCloudFileId as string, { text });
-    PubSub.publish('loading', { loading: false, edit: false });
-    setEdit(false);
-    PubSub.publish('changeEdit', false);
-    if (typeof changeEdit === 'function') {
-      changeEdit(false);
+    const success = messageTip(statusCode);
+    PubSub.publish('editorState', { loading: false, edit: false });
+    if (success) {
+      setEdit(false);
+      changeEdit && changeEdit(false);
+      PubSub.publish('updateSharedCloudFile');
     }
-    messageTip(statusCode);
   }, [sharedCloudFileId, messageTip, changeEdit]);
 
   //解决版本冲突
-  const handleVersionConflict = React.useCallback((text: string) => {
+  const handleVersionConflictSave = React.useCallback((text: string) => {
     const key = `open${Date.now()}`;
     const btn = (
       <Space>
@@ -103,13 +107,8 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
 
   const handleSharedCloudFileSave = React.useCallback(async (text: string) => {
     const conflict = await checkVersion();
-    if (conflict) {
-      handleVersionConflict(text);
-    } else {
-      handleCollaborativeSave(text);
-    }
-
-  }, [checkVersion, handleVersionConflict, handleCollaborativeSave]);
+    conflict ? handleVersionConflictSave(text) : handleCollaborativeSave(text);
+  }, [checkVersion, handleVersionConflictSave, handleCollaborativeSave]);
 
   React.useEffect(() => {
     try {
@@ -120,20 +119,19 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
   }, [deltaStr]);
 
   React.useEffect(() => {
-    const changeEditToken = PubSub.subscribe('changeEdit', async (_, edit: boolean) => {
+    const changeEditToken = PubSub.subscribe('isEdit', async (_, edit: boolean) => {
       const text = JSON.stringify(editorRef.current?.editor?.getContents());
-      setEdit(edit);
-      if (typeof changeEdit === 'function') {
-        changeEdit(edit);
-      }
       if (!edit && cloudFileId) {
         handleCloudFileSave(text);
+      } else if (edit && sharedCloudFileId) {
+        changeEdit && changeEdit(edit);
       }
+      setEdit(edit);
     });
     return function () {
       PubSub.unsubscribe(changeEditToken);
     };
-  }, [handleCloudFileSave, handleSharedCloudFileSave, changeEdit, sharedCloudFileId, cloudFileId]);
+  }, [handleCloudFileSave, cloudFileId, changeEdit, sharedCloudFileId]);
 
   React.useEffect(() => {
     const updateToken = PubSub.subscribe('update', () => {

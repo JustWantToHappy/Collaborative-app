@@ -3,6 +3,7 @@ import PubSub from 'pubsub-js';
 import { FileType } from '@/enum';
 import { StyleDiv } from '@/common';
 import { useDebouce } from '@/hooks';
+import type { CloudFile } from '@/types';
 import Badges from '@/components/Badges';
 import AddFileModal from '@/components/AddFileModal';
 import ShareFileModal from '@/components/ShareFileModal';
@@ -21,15 +22,14 @@ export default function Index() {
   const { cloudFileId = '0' } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [tree, setTree] = React.useState<DataNode[]>([]);
+  const [cloudFile, setCloudFile] = React.useState<CloudFile>();
   const [state, setState] = React.useState({
     loading: false,
-    isDocument: false,
-    edit: false,
-    disabled: false,
+    edit: false,//默认只读模式
+    addFileType: FileType.Folder,//新建文件类型
     openAddFileModal: false,
     openShareFileModal: false,
     selectedKey: cloudFileId,
-    type: FileType.Folder
   });
 
   const onSelect: DirectoryTreeProps['onSelect'] = async (_, info) => {
@@ -39,15 +39,14 @@ export default function Index() {
     navigate(`/cloud/file/${info.node.key}`);
     setState({
       ...state,
-      disabled: info.node.isLeaf ?? false,
       selectedKey: info.node.key + '',
-      isDocument: false, edit: false
+      edit: false
     });
   };
 
-  const buildFile = () => setState({ ...state, type: FileType.Image, openAddFileModal: true });
-  const buildFolder = () => setState({ ...state, type: FileType.Folder, openAddFileModal: true });
-  const buildCloudDocument = () => setState({ ...state, type: FileType.Text, openAddFileModal: true });
+  const buildFile = () => setState({ ...state, openAddFileModal: true, addFileType: FileType.Image });
+  const buildFolder = () => setState({ ...state, openAddFileModal: true, addFileType: FileType.Folder });
+  const buildCloudDocument = () => setState({ ...state, openAddFileModal: true, addFileType: FileType.Text });
   const shareFile = () => setState({ ...state, openShareFileModal: true });
   const closeAddFileModal = () => setState({ ...state, openAddFileModal: false });
   const closeShareFileModal = () => setState({ ...state, openShareFileModal: false });
@@ -65,16 +64,16 @@ export default function Index() {
   }, 300);
 
   const editUpdateClick = useDebouce(() => {
-    setState({ ...state, loading: true });
-    //进入编辑模式
     if (!state.edit) {
+      setState({ ...state, loading: true });
+      //进入编辑模式
       setTimeout(() => {
-        PubSub.publish('changeEdit', true);
+        PubSub.publish('isEdit', true);
         setState({ ...state, edit: true, loading: false });
-      }, 1000);
+      }, 500);
     } else {
-      //进入编辑
-      PubSub.publish('changeEdit', false);
+      //进入只读模式
+      PubSub.publish('isEdit', false);
     }
   }, 300);
 
@@ -94,21 +93,19 @@ export default function Index() {
   React.useEffect(() => {
     updateFileTree();
     const updateFilesTreeToken = PubSub.subscribe('updateFilesTree', () => updateFileTree());
-    const setEditableToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setState(state => ({ ...state, isDocument })));
     return function () {
       PubSub.unsubscribe(updateFilesTreeToken);
-      PubSub.unsubscribe(setEditableToken);
     };
   }, [updateFileTree]);
 
   React.useEffect(() => {
-    const loadingToken = PubSub.subscribe('loading', (_, props: { loading: boolean, edit: boolean }) => {
-      const { loading, edit } = props;
-      setState(state => ({ ...state, loading, edit }));
+    const editorStateToken = PubSub.subscribe('editorState', (_, props: { loading: boolean, edit: boolean }) => {
+      setState(state => ({ ...state, ...props }));
     });
-
+    const cloudFileToken = PubSub.subscribe('cloudFile', (_, data: CloudFile) => setCloudFile(data));
     return function () {
-      PubSub.unsubscribe(loadingToken);
+      PubSub.unsubscribe(editorStateToken);
+      PubSub.unsubscribe(cloudFileToken);
     };
   }, []);
 
@@ -117,7 +114,7 @@ export default function Index() {
       {contextHolder}
       <AddFileModal
         open={state.openAddFileModal}
-        type={state.type}
+        type={state.addFileType}
         close={closeAddFileModal}
         cloudFileId={cloudFileId}
         updateFileTree={updateFileTree} />
@@ -131,19 +128,19 @@ export default function Index() {
             content={<div style={{ display: 'flex', flexDirection: 'column' }}>
               <Button
                 type='link'
-                disabled={state.disabled}
+                disabled={cloudFile?.type !== FileType.Folder}
                 onClick={buildFolder}>
                 新建文件夹&emsp;
               </Button>
               <Button
                 type='link'
-                disabled={state.disabled}
+                disabled={cloudFile?.type !== FileType.Folder}
                 onClick={buildFile}>
                 上传文件&emsp;&emsp;
               </Button>
               <Button
                 type='link'
-                disabled={state.disabled}
+                disabled={cloudFile?.type !== FileType.Folder}
                 onClick={buildCloudDocument}>
                 新建文档&emsp;&emsp;
               </Button>
@@ -158,7 +155,7 @@ export default function Index() {
           onSelect={onSelect}
           treeData={tree}
         />
-      </aside>
+      </aside >
       <main>
         <div className='header cloud_header'>
           <Badges />
@@ -175,7 +172,7 @@ export default function Index() {
                 </Button>
                 <Button
                   onClick={editUpdateClick}
-                  disabled={!state.isDocument}
+                  disabled={cloudFile?.type !== FileType.Text}
                   type='link'>
                   <EditOutlined />
                   {!state.edit ? '编辑' : '更新'}
@@ -201,7 +198,7 @@ export default function Index() {
           </div>
         </div>
         <div className='container cloud_container'>
-          <CloudFileContent show={pathname === '/cloud'} />
+          {pathname === '/cloud' && <CloudFileContent />}
           <Outlet />
         </div>
       </main>

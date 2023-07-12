@@ -9,14 +9,9 @@ import { BasicEditor } from '@/components/Editor';
 import { getCloudFolderContents, deleteCloudFolder } from '@/api';
 import { Table, Image, message, Tooltip } from 'antd';
 import { DeleteOutlined, FileImageOutlined, FileTextOutlined, FolderOpenOutlined } from '@ant-design/icons';
-
 const { Column } = Table;
 
-type Props = {
-  show?: boolean;
-}
-
-const Index: React.FC<Props> = (props) => {
+const Index = () => {
   const { cloudFileId = '0' } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [tableData, setTableData] = React.useState<CloudFile[]>([]);
@@ -36,7 +31,6 @@ const Index: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     getCloudFolderContents(cloudFileId).then(res => {
-      let isDocument = false;
       const { data, statusCode } = res;
       if (statusCode === 200) {
         if (Array.isArray(data)) {
@@ -46,17 +40,11 @@ const Index: React.FC<Props> = (props) => {
             cloudFile.updatedAt = dayjs(cloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
             return cloudFile;
           }) || []);
+          PubSub.publish('cloudFile',{type:FileType.Folder});
         } else {
           setShowTable(false);
           setData(data);
-          if (data?.type === FileType.Text) {
-            isDocument = true;
-          }
-        }
-        if (isDocument) {
-          PubSub.publish('isDocument', true);
-        } else {
-          PubSub.publish('isDocument', false);
+          PubSub.publish('cloudFile', data);
         }
         setTableLoading(false);
       }
@@ -66,7 +54,7 @@ const Index: React.FC<Props> = (props) => {
   }, [cloudFileId]);
 
   return (
-    <StyleDiv show={props.show}>
+    <StyleDiv>
       {contextHolder}
       {showTable && <Table
         rowKey='id'

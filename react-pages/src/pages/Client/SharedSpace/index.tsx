@@ -1,6 +1,6 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
-import type { EditPerson } from '@/types';
+import type { EditPerson, SharedCloudFile } from '@/types';
 import { StyleDiv } from '@/common';
 import MyAvatar from '@/components/MyAvatar';
 import Badges from '@/components/Badges';
@@ -13,7 +13,7 @@ import CollaboratorPopoverContent from '@/components/CollaboratorPopoverContent'
 import { useParams, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import SharedCloudFileContent from '@/components/SharedCloudFileContent';
 import { Button, Tooltip, Tree, FloatButton, Popover, Avatar } from 'antd';
-import { LocalStorageKey } from '@/enum';
+import { FileType, LocalStorageKey } from '@/enum';
 
 const { DirectoryTree } = Tree;
 
@@ -23,14 +23,12 @@ export default function Index() {
   const [user] = useLocalStorage(LocalStorageKey.User_Info, {});
   const { sharedCloudFileId = '0' } = useParams();
   const [treeData, setTreeData] = React.useState<DataNode[]>([]);
+  const [sharedCloudFile, setSharedCloudFile] = React.useState<SharedCloudFile>();
   const [editPerson, setEditPerson] = React.useState<EditPerson[]>([]);
   const [state, setState] = React.useState({
     loading: false,
     selectedKey: sharedCloudFileId,
-    showEye: false,
-    isDocument: false,
     edit: false,//false表示只读模式，true表示编辑模式
-    ownerId: ''//文档拥有者Id
   });
 
   const editUpdateClick = useDebouce(() => {
@@ -38,7 +36,7 @@ export default function Index() {
       setState({ ...state, loading: true });
       setTimeout(() => {
         setState({ ...state, edit: true, loading: false });
-        PubSub.publish('changeEdit', true);
+        PubSub.publish('isEdit', true);
       }, 500);
     } else {
       PubSub.publish('update');
@@ -50,7 +48,7 @@ export default function Index() {
       return;
     }
     navigate(`/shared/file/${info.node.key}`);
-    setState({ ...state, selectedKey: info.node.key + '', showEye: false, edit: false });
+    setState({ ...state, selectedKey: info.node.key + '', edit: false });
   };
 
   React.useEffect(() => {
@@ -65,24 +63,24 @@ export default function Index() {
     const onlineEditToken = PubSub.subscribe('onlineEdit', (_, newEditPerson: EditPerson[]) => {
       setEditPerson(newEditPerson);
     });
-    const ownerIdToken = PubSub.subscribe('ownerId', (_, ownerId: string) => setState(state => ({ ...state, ownerId })));
-    const isDocumentToken = PubSub.subscribe('isDocument', (_, isDocument: boolean) => setState(state => ({ ...state, isDocument })));
+
+    const sharedCloudFileToken = PubSub.subscribe('sharedCloudFile',
+      (_, sharedCloudFile: SharedCloudFile) => setSharedCloudFile(sharedCloudFile));
 
     return function () {
-      PubSub.unsubscribe(ownerIdToken);
-      PubSub.unsubscribe(isDocumentToken);
       PubSub.unsubscribe(onlineEditToken);
+      PubSub.unsubscribe(sharedCloudFileToken);
     };
   }, []);
 
   React.useEffect(() => {
-    const loadingToken = PubSub.subscribe('loading',
+    const editorStateToken = PubSub.subscribe('editorState',
       (_, props: { loading: boolean, edit: boolean }) => {
         setState(state => ({ ...state, ...props }));
       });
 
     return function () {
-      PubSub.unsubscribe(loadingToken);
+      PubSub.unsubscribe(editorStateToken);
     };
   }, [sharedCloudFileId, user.id]);
 
@@ -107,7 +105,10 @@ export default function Index() {
             <Avatar.Group
               maxCount={2}
               size="large"
-              style={{ display: (state.isDocument && state.edit) ? 'block' : 'none', cursor: 'pointer' }}
+              style={{
+                display: (sharedCloudFile?.type === FileType.Text
+                  && state.edit) ? 'block' : 'none', cursor: 'pointer'
+              }}
               maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
             >
               {editPerson.map(user => <Tooltip
@@ -143,7 +144,7 @@ export default function Index() {
               </Button>
             </Tooltip>
             <Button
-              style={{ display: state.isDocument ? 'block' : 'none' }}
+              style={{ display: sharedCloudFile?.type === FileType.Text ? 'block' : 'none' }}
               type={state.edit ? 'default' : 'primary'}
               onClick={editUpdateClick}
               loading={state.loading}>

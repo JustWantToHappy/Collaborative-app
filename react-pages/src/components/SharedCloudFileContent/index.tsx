@@ -19,7 +19,6 @@ type Props = {
 
 const Index: React.FC<Props> = (props) => {
   const [showTable, setShowTable] = React.useState(false);
-  const [edit, setEdit] = React.useState(false);
   const [tableLoading, setTableLoading] = React.useState(true);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info);
   const { sharedCloudFileId = '0' } = useParams();
@@ -39,13 +38,11 @@ const Index: React.FC<Props> = (props) => {
 
   const getData = React.useCallback(() => getSharedCloudFolderContents(sharedCloudFileId).
     then(res => {
-      let isDocument = false, ownerId = '';
       const { data, statusCode } = res;
       if (statusCode === 200) {
         if (Array.isArray(data)) {
           setShowTable(true);
           setTableData(data?.map(sharedCloudFile => {
-            ownerId = sharedCloudFile.ownerId;
             sharedCloudFile.createdAt = dayjs(sharedCloudFile.createdAt).format('YYYY-MM-DD HH:mm:ss');
             sharedCloudFile.updatedAt = dayjs(sharedCloudFile.updatedAt).format('YYYY-MM-DD HH:mm:ss');
             return sharedCloudFile;
@@ -53,13 +50,8 @@ const Index: React.FC<Props> = (props) => {
         } else {
           setShowTable(false);
           setData(data as SharedCloudFile);
-          if (data?.type === FileType.Text) {
-            isDocument = true;
-          }
-          ownerId = data?.ownerId ?? '';
+          PubSub.publish('sharedCloudFile', data);
         }
-        PubSub.publish('isDocument', isDocument);
-        PubSub.publish('ownerId', ownerId);
         setTableLoading(false);
       }
     }).catch(err => {
@@ -68,16 +60,11 @@ const Index: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     getData();
-  }, [getData, edit]);
-
-  React.useEffect(() => {
-    const changeEditToken = PubSub.subscribe('changeEdit', (_, edit: boolean) => {
-      setEdit(edit);
-    });
+    const updateSharedCloudFileToken = PubSub.subscribe('updateSharedCloudFile', getData);
     return function () {
-      PubSub.unsubscribe(changeEditToken);
+      PubSub.unsubscribe(updateSharedCloudFileToken);
     };
-  }, []);
+  }, [getData]);
 
   return (
     <StyleDiv show={props.show}>
