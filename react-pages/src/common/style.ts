@@ -100,4 +100,43 @@ export const StyleDiv = styled('div') <Props>`
     align-items: center;
     column-gap: .5rem;
   }
+
+  .work_aside{
+    text-align: center;
+    padding:1rem .5rem;
+
+    &>ul{
+      margin:0;
+      display: flex;
+      flex-direction:column;
+      row-gap:.5rem;
+    }
+  }
+
+  .header.workspace{
+    padding:0 1rem;
+  }
+  .work_item{
+    padding: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+
+    &>small{
+      cursor: pointer;
+      transform:translateX(-6px);
+    }
+
+    &:hover{
+      background-color: var(--ab-grey-200);
+      border-radius: 5px;
+      color:var(--ab-green-600);
+    }
+  }
+  
+  .work_item.active{
+    background-color: var(--ab-green-600);
+    border-radius: 5px;
+    color:var(--ab-white-100);
+  }
 `;

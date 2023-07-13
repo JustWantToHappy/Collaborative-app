@@ -9,7 +9,7 @@ export enum Role{
 }
 
 export enum Config{
-  Server='http://localhost:8080',
+  Server='http://127.0.0.1:8080',
 }
 
 //聊天指令

@@ -1,24 +1,22 @@
 import styled from 'styled-components';
 
 const StyleDiv = styled('div')`
-  h3{
-    margin:0;
-    margin-bottom:.5rem;
-  }
-  .apply_friend{
-    display: flex;
+  display: flex;
+  gap: 2rem;
+  @media screen and (max-width:768px){
+    flex-direction: column;
   }
 
+  .apply_friend{
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+  }
+  
   .apply_team{
     display:flex;
-  }
-  .invite_records{
-    display: flex;
-    align-items: center;
-    column-gap:1vw;
-  }
-  &>div{
-    margin-bottom:2rem;
+    flex-direction: column;
+    row-gap: 1rem;
   }
 `;
 

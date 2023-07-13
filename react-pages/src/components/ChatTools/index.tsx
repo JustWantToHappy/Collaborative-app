@@ -51,36 +51,30 @@ export default function Index() {
   return (
     <StyleDiv >
       {contextHolder}
-      <div>
-        <div className='apply_friend'>
-          <Input
-            style={{ width: '30vw' }}
-            placeholder='请输入用户的邮箱地址'
-            onChange={e => setEmail(e.target.value)}
-            value={email}
-          />
-          <Button
-            type='primary'
-            onClick={inviteFriend}
-            style={{ marginLeft: '1vw' }}>
-            申请好友
-          </Button>
-        </div>
+      <div className='apply_friend'>
+        <span>申请好友</span>
+        <Input
+          placeholder='请输入用户的邮箱地址'
+          onChange={e => setEmail(e.target.value)}
+          value={email}
+        />
+        <Button
+          type='primary'
+          onClick={inviteFriend}>
+          申请好友
+        </Button>
       </div>
-      <div >
-        <div className='apply_team'>
-          <Input
-            placeholder='请输入群名称'
-            onChange={e => setGroup(e.target.value)}
-            value={group}
-            style={{ width: '30vw' }} />
-          <Button
-            type='primary'
-            style={{ marginLeft: '1vw' }}
-            onClick={joinGroup}>
-            申请加入
-          </Button>
-        </div>
+      <div className='apply_team'>
+      <span>申请加群</span>
+        <Input
+          placeholder='请输入群组名称'
+          onChange={e => setGroup(e.target.value)}
+          value={group} />
+        <Button
+          type='primary'
+          onClick={joinGroup}>
+          申请加入
+        </Button>
       </div>
     </StyleDiv>
   );

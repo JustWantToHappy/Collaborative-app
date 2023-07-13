@@ -57,10 +57,10 @@ export default function Index() {
             <small>点击左边用户头像框即可开始聊天</small>
           </div>}
           {pathname === '/chat/address' && <Tabs
+            style={{ width: '100%' }}
             defaultActiveKey={key}
             items={items}
             onChange={onChange}
-            size='large'
           />}
           <Outlet />
         </div>

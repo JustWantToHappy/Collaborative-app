@@ -24,14 +24,14 @@ export const routes: Array<Router> = [
   {
     name: '介绍',
     path: '/',
-    element: <About />,
+    element: <AuthRoute redirect='/'>
+      <About />
+    </AuthRoute>,
     children: [
       {
         name: '实时聊天',
         path: '/chat',
-        element: <AuthRoute redirect='/'>
-          <Chat />
-        </AuthRoute>,
+        element: <Chat />,
         children: [
           {
             name: '通讯录',

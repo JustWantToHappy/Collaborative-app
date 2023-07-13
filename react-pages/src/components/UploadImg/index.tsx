@@ -19,8 +19,8 @@ interface Props {
 const Index: React.FC<Props> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = React.useState<UploadFile[]>([]);
-  const { title, action, showUploadList, manualUpload, setFile, showFileList, size, type } = props;
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
+  const { title, action, showUploadList, manualUpload, setFile, showFileList, size, type } = props;
 
   const beforeUpload = (file: UploadFile) => {
     if (!file?.size) return false;
@@ -35,8 +35,8 @@ const Index: React.FC<Props> = (props) => {
       messageApi.error('上传的图片大小必须小于2MB');
       return false;
     }
-    if (manualUpload === true) {
-      setFile!(file);
+    if (manualUpload) {
+      setFile?.(file);
       return false;
     }
 
