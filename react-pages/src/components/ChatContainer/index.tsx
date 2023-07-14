@@ -1,7 +1,7 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
 import StyleDiv from './style';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import MembersSvg from '../MembersSvg';
 import { chatRoomSocket } from '@/utils';
 import type { ChatRecord } from '@/types';

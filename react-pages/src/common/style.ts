@@ -114,7 +114,7 @@ export const StyleDiv = styled('div') <Props>`
   }
 
   .header.workspace{
-    padding:0 1rem;
+    padding-left:1rem;
   }
   .work_item{
     padding: .5rem;

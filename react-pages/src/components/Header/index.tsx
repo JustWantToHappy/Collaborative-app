@@ -17,7 +17,6 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const avatarRef = React.createRef<HTMLSpanElement>();
   const [dark, setDark] = React.useState(false);
   const [show, setShow] = React.useState(false);
   const lists = routes[0].children as Array<Router>;
@@ -68,7 +67,10 @@ export default function Index() {
             <NavLink to={route.path}>
               <Button type='link'
                 onClick={() => setActive(route.path)}
-                style={{ color: active.includes(route.path) ? defaultCssStyles.colorPrimary : '' }}>
+                style={{
+                  color: active.includes(route.path) ? defaultCssStyles.colorPrimary : '',
+                  //fontWeight: 550
+                }}>
                 {route.name}
               </Button>
             </NavLink>

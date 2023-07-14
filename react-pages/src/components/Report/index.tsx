@@ -2,7 +2,7 @@ import React from 'react';
 
 const Index = () => {
   return (
-    <div>Report</div>
+    <div style={{height:'190vh'}}>Report</div>
   );
 };
 

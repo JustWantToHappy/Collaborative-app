@@ -41,7 +41,7 @@ const Index: React.FC<Props> = (props) => {
           userIds.push(treeNode.key);
         }
       });
-      return moveToSharedCloudFile(cloudFileId,userIds);
+      return moveToSharedCloudFile(cloudFileId, userIds);
     }).then(res => {
       const { statusCode } = res;
       if (statusCode === 200) {

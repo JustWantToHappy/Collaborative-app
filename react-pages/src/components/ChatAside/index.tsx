@@ -1,5 +1,5 @@
 import React from 'react';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import StyleDiv from './style';
 import { useLocalStorage } from '@/hooks';
 import { getAllChatRoom } from '@/api';

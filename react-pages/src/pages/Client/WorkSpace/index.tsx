@@ -1,7 +1,9 @@
 import React, { ReactNode } from 'react';
 import { Tabs } from 'antd';
-import ApplicationCenter from '@/components/ApplicationCenter';
 import { StyleDiv } from '@/common';
+import Report from '@/components/Report';
+import ApprovalCenter from '@/components/ApprovalCenter';
+import ApplicationCenter from '@/components/ApplicationCenter';
 import { ApartmentOutlined, SnippetsOutlined } from '@ant-design/icons';
 
 type Item = {
@@ -30,7 +32,7 @@ export default function Index() {
           {
             key: '2',
             label: `审批中心`,
-            children: `Content of Tab Pane 2`,
+            children: <ApprovalCenter />,
           },
         ]} />,
     },
@@ -38,6 +40,7 @@ export default function Index() {
       path: 'report',
       title: '汇报',
       icon: <SnippetsOutlined />,
+      container: <Report />
     }
   ]);
 
@@ -55,7 +58,8 @@ export default function Index() {
         </ul>
       </aside>
       <main>
-        <div className='header workspace'>
+        <div
+          className='header workspace' style={{}}>
           {items.find(item => item.path === active)?.header}
         </div>
         <div className='container'>
