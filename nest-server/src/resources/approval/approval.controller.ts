@@ -30,8 +30,8 @@ export class ApprovalController {
   }
 
   @Get()
-  findAll(@Query() pageQuery: PaginationQueryDto) {
-    return this.approvalService.findAll(pageQuery);
+  findAll(@Query() pageQuery: PaginationQueryDto, @Request() request) {
+    return this.approvalService.findAll(pageQuery, request.user.id);
   }
 
   @Get(':id')

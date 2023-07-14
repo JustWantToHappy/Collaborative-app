@@ -14,8 +14,15 @@ export class ApprovalService {
     return 'create success';
   }
 
-  findAll(query: PaginationQueryDto) {
-    return query;
+  async findAll(query: PaginationQueryDto, userId: string) {
+    const { current, pageSize } = query;
+    const data = await this.prisma.approval.findMany({
+      where: { userId },
+      take: pageSize,
+      skip: Math.min(current - 1, 1) * pageSize,
+    });
+    const total = await this.prisma.approval.count({ where: { userId } });
+    return { total, approvals: data };
   }
 
   findOne(id: number) {

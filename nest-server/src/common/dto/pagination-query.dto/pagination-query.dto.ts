@@ -12,5 +12,5 @@ export class PaginationQueryDto {
 
   @Type(() => Number)
   @IsOptional()
-  pagesize: number;
+  pageSize: number;
 }

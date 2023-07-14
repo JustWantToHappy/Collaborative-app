@@ -1,76 +1,78 @@
 import React from 'react';
-import { Space, Table, Tag } from 'antd';
+import dayjs from 'dayjs';
+import { getAllApprovals } from '@/api';
+import { Table, Tag, message } from 'antd';
+import type { Approval } from '@/types';
+import { State } from '@/enum';
+
 const { Column } = Table;
 
-interface DataType {
-  firstName: string;
-  lastName: string;
-  age: number;
-  address: string;
-  tags: string[];
-}
-
-const data: DataType[] = [
-  {
-    firstName: 'John',
-    lastName: 'Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    firstName: 'Jim',
-    lastName: 'Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    firstName: 'Joe',
-    lastName: 'Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
-
 const Index: React.FC = () => {
-  const [pagination, setPagination] = React.useState({ current: 1, total: 1000, pageSize: 6 });
+  const [total, setTotal] = React.useState(0);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [data, setData] = React.useState<Approval[]>([]);
+  const [tableLoading, setTableLoading] = React.useState(true);
+  const [pagination, setPagination] = React.useState({ current: 1, pageSize: 5 });
+
+  const fetchDate = React.useCallback(async () => {
+    const { current, pageSize } = pagination;
+    setTableLoading(true);
+    const { statusCode, data, msg } = await getAllApprovals({ current, pageSize });
+    if (statusCode === 200) {
+      setData(data?.approvals ?? []);
+      setTableLoading(false);
+      setTotal(data?.total || 0);
+    } else {
+      messageApi.error(`${statusCode} ${msg}`);
+    }
+  }, [pagination, messageApi]);
+
+  const handlePagingChange = async (current: number, pageSize: number) => {
+    setPagination({ ...pagination, current, pageSize });
+  };
+
+  React.useEffect(() => {
+    fetchDate();
+  }, [fetchDate]);
 
   return <Table
-    rowKey='firstName'
+    rowKey='id'
+    loading={tableLoading}
     dataSource={data}
     pagination={{
       ...pagination,
+      total,
       showSizeChanger: false,
-      onChange(page, pageSize) {
-        setPagination({ ...pagination, pageSize, current: page });
-      },
+      onChange: handlePagingChange
     }}>
-    <Column title="Age" dataIndex="age" key="age" />
-    <Column title="Address" dataIndex="address" key="address" />
+    {contextHolder}
+    <Column title="类型" dataIndex="type" key="type" />
+    <Column title="原因" dataIndex="reason" key="reason" />
     <Column
-      title="Tags"
-      dataIndex="tags"
-      key="tags"
-      render={(tags: string[]) => (
-        <>
-          {tags.map((tag) => (
-            <Tag color="blue" key={tag}>
-              {tag}
-            </Tag>
-          ))}
-        </>
+      title="结束时间"
+      key="startTime"
+      render={(_: any, record: Approval) => (
+        <span>{dayjs(record.startTime).format('YYYY年MM月DD日 HH时')}</span>
       )}
     />
     <Column
-      title="Action"
-      key="action"
-      render={(_: any, record: DataType) => (
-        <Space size="middle">
-          <a>Invite {record.lastName}</a>
-          <a>Delete</a>
-        </Space>
+      title="结束时间"
+      key="endTime"
+      render={(_: any, record: Approval) => (
+        <span>{dayjs(record.endTime).format('YYYY年MM月DD日 HH时')}</span>
+      )}
+    />
+    <Column
+      title="状态"
+      key="state"
+      render={(_: any, record: Approval) => (
+        <span>
+          {record.state === State.Pending ?
+            <Tag color='orange'>待处理</Tag> :
+            record.state === State.Agree ?
+              <Tag color='green'>已同意</Tag> :
+              <Tag color='red'>已拒绝</Tag>}
+        </span>
       )}
     />
   </Table>;
