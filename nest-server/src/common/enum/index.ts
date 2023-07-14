@@ -34,3 +34,11 @@ export enum FileType {
   Text = 'text', //聊天文本或者文档
   Image = 'image',
 }
+
+/*export enum ApprovalType {
+  PersonalLeave = 'personalLeave', //事假
+  AnnualLeave = 'annualLeave', //年假
+  SickLeave = 'sickLeave', //病假
+  Evection = 'evection', //出差
+  OverTime = 'overTime', //加班
+}*/

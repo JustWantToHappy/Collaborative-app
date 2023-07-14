@@ -5,5 +5,6 @@ export * from './group';
 export * from './friend';
 export * from './message';
 export * from './chatroom';
+export * from './approval';
 export * from './cloudFile';
 export * from './sharedCloudFile';

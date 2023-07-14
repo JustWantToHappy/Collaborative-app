@@ -118,7 +118,6 @@ model Approval {
   startTime   DateTime @default(now())
   endTime     DateTime @default(now())
   reason      String   @db.Text
-  description String   @db.Text
   User        User?    @relation(fields: [userId], references: [id])
   userId      String?
 }
