@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const StyleDiv = styled('div')`
   .login_btn{
-    float:right;
+    /*float:right;*/
     width:100%;
   }
   @media screen and (min-width:580px){

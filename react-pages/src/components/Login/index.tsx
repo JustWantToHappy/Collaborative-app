@@ -6,7 +6,7 @@ import { useLocalStorage } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorageKey, Role } from '@/enum';
 import type { FormInstance } from 'antd/es/form';
-import { Button, Form, Input, Modal, message } from 'antd';
+import { Button, Form, Input, Modal, message, Row, Col } from 'antd';
 
 type IProps = {
   show: boolean;
@@ -26,7 +26,7 @@ const Index: React.FC<IProps> = (props) => {
       const { statusCode, data, msg } = await login(user);
       if (statusCode === 200) {
         const storeUserInfo = {
-          id:data?.id,
+          id: data?.id,
           avatar: data?.avatar,
           jwt_token: data?.jwt_token,
           email: data?.email,
@@ -73,14 +73,14 @@ const Index: React.FC<IProps> = (props) => {
     footer={null}
     onCancel={handleCancel}
     mask={false}
-    style={{ maxWidth: '380px' }}
+    style={{ maxWidth: '340px' }}
   >
     {contextHolder}
     <StyleDiv>
       <Form
         ref={formRef}
         name="basic"
-        labelCol={{ span: 5 }}
+        labelCol={{ span: 8 }}
         onFinish={onFinish}
         autoComplete="off"
       >
@@ -108,10 +108,14 @@ const Index: React.FC<IProps> = (props) => {
           <Input.Password visibilityToggle={false} />
         </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className='login_btn'>
-            {title}
-          </Button>
+        <Form.Item >
+          <Row >
+            <Col span={16} offset={8}>
+              <Button type="primary" htmlType="submit" className='login_btn' >
+                {title}
+              </Button>
+            </Col>
+          </Row>
         </Form.Item>
       </Form>
       <div className='selected'>

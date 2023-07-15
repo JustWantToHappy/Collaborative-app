@@ -24,14 +24,14 @@ export const routes: Array<Router> = [
   {
     name: '介绍',
     path: '/',
-    element: <AuthRoute redirect='/'>
-      <About />
-    </AuthRoute>,
+    element: <About />,
     children: [
       {
         name: '实时聊天',
         path: '/chat',
-        element: <Chat />,
+        element: <AuthRoute redirect='/'>
+          <Chat />
+        </AuthRoute>,
         children: [
           {
             name: '通讯录',
@@ -53,23 +53,32 @@ export const routes: Array<Router> = [
       {
         name: '工作台',
         path: '/work',
-        element: <WorkSpace />
+        element: <AuthRoute redirect='/'>
+          <WorkSpace />
+        </AuthRoute>
       },
       {
         name: '云文档',
         path: '/cloud',
-        element: <CloudFile />,
+        element: <AuthRoute redirect='/'>
+          <CloudFile />
+        </AuthRoute>
+        ,
         children: [
           {
             name: '云文件',
             path: 'file/:cloudFileId',
-            element: <CloudFileContent />
+            element: <AuthRoute redirect='/'>
+              <CloudFileContent />
+            </AuthRoute>
           }]
       },
       {
         name: '共享空间',
         path: '/shared',
-        element: <SharedSpace />,
+        element: <AuthRoute redirect='/'>
+          <SharedSpace />
+        </AuthRoute>,
         children: [
           {
             name: '云文件',
@@ -83,9 +92,7 @@ export const routes: Array<Router> = [
   {
     name: '',
     path: '/admin',
-    element: <AuthRoute redirect='/'>
-      <Test />
-    </AuthRoute>,
+    element: <Test />,
     children: [
       {
         name: '管理员首页',
