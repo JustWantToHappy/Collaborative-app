@@ -1,16 +1,13 @@
 import styled from 'styled-components';
 
 const StyleDiv = styled('div')`
-  .login_btn{
-    /*float:right;*/
-    width:100%;
-  }
-  @media screen and (min-width:580px){
-    .login_btn{
-      width:80%;
-    }
+  @media screen and (max-width:576px){
+   .login_btn{
+    margin-top:1rem;
+    } 
   }
   .selected{
+    /*background-color: red;*/
     display: flex;
     justify-content: flex-end;
     letter-spacing: 1px;

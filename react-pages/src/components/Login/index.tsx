@@ -73,7 +73,7 @@ const Index: React.FC<IProps> = (props) => {
     footer={null}
     onCancel={handleCancel}
     mask={false}
-    style={{ maxWidth: '340px' }}
+    style={{ maxWidth: '300px' }}
   >
     {contextHolder}
     <StyleDiv>
@@ -110,8 +110,12 @@ const Index: React.FC<IProps> = (props) => {
 
         <Form.Item >
           <Row >
-            <Col span={16} offset={8}>
-              <Button type="primary" htmlType="submit" className='login_btn' >
+            <Col sm={{ offset: 8, span: 16 }} xs={{ offset: 0, span: 24 }} >
+              <Button
+                style={{ width: '100%' }}
+                type="primary"
+                htmlType="submit"
+                className='login_btn' >
                 {title}
               </Button>
             </Col>
@@ -124,6 +128,7 @@ const Index: React.FC<IProps> = (props) => {
           <Button
             onClick={() => setTitle('注册')}
             type='link'
+            size='small'
             style={{ padding: '0' }}
           >
             <span style={{ textDecoration: 'underline', textUnderlineOffset: '3px' }}>注册</span>
@@ -132,6 +137,7 @@ const Index: React.FC<IProps> = (props) => {
         {title === '注册' && <p>
           已有账号?前往
           <Button
+            size='small'
             onClick={() => setTitle('登录')}
             type='link'
             style={{ padding: '0' }}
