@@ -2,7 +2,7 @@ import React from 'react';
 import PubSub from 'pubsub-js';
 import { FileType } from '@/enum';
 import { StyleDiv } from '@/common';
-import { useDebouce } from '@/hooks';
+import { useDebouce, useTitle } from '@/hooks';
 import type { CloudFile } from '@/types';
 import Badges from '@/components/Badges';
 import AddFileModal from '@/components/AddFileModal';
@@ -17,6 +17,7 @@ import { DeleteOutlined, EditOutlined, ShareAltOutlined, WarningOutlined } from 
 const { DirectoryTree } = Tree;
 
 export default function Index() {
+  useTitle('云文档');
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { cloudFileId = '0' } = useParams();

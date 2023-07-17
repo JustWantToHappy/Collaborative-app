@@ -1,17 +1,18 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
+import { useTitle } from '@/hooks';
 import { StyleDiv } from '@/common';
 import { useLocation, Outlet } from 'react-router-dom';
 import MyJoin from '@/components/MyJoin';
 import ChatHeader from '@/components/ChatHeader';
 import ChatAside from '@/components/ChatAside';
 import ChatTools from '@/components/ChatTools';
-
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 
 
 export default function Index() {
+  useTitle('聊天');
   const { pathname } = useLocation();
   const [wide, setWide] = React.useState(true);
   const [key, setKey] = React.useState('1');

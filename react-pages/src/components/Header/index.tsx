@@ -3,7 +3,7 @@ import StyleDiv from './style';
 import { chatRoomSocket } from '@/utils';
 import Bell from '@/components/Bell';
 import UserInfoModal from '../UserInfoModal';
-import { routes } from '@/layout';
+import { routes } from '@/routes';
 import { useLocalStorage } from '@/hooks';
 import { defaultCssStyles } from '@/utils';
 import LogoSvg from '@/assets/logo/logo.svg';

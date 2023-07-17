@@ -1,5 +1,6 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Tabs } from 'antd';
+import { useTitle } from '@/hooks';
 import { StyleDiv } from '@/common';
 import Report from '@/components/Report';
 import ApprovalCenter from '@/components/ApprovalCenter';
@@ -9,12 +10,13 @@ import { ApartmentOutlined, SnippetsOutlined } from '@ant-design/icons';
 type Item = {
   path: string;
   title: string;
-  icon: ReactNode,
-  header?: ReactNode,
-  container?: ReactNode
+  icon: React.ReactNode,
+  header?: React.ReactNode,
+  container?: React.ReactNode
 }
 
 export default function Index() {
+  useTitle('工作台');
   const [active, setActive] = React.useState('approve');
   const [items] = React.useState<Item[]>([
     {

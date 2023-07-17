@@ -2,7 +2,7 @@ import React from 'react';
 import { User } from '@/types';
 import StyleDiv from './style';
 import { login, register } from '@/api';
-import { useLocalStorage } from '@/hooks';
+import { useLocalStorage, useTitle } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorageKey, Role } from '@/enum';
 import type { FormInstance } from 'antd/es/form';
@@ -14,6 +14,7 @@ type IProps = {
 }
 
 const Index: React.FC<IProps> = (props) => {
+  useTitle('首页');
   const navigate = useNavigate();
   const formRef = React.useRef<FormInstance>(null);
   const { show, handleCancel } = props;

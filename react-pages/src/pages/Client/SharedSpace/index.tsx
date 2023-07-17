@@ -1,12 +1,12 @@
 import React from 'react';
 import PubSub from 'pubsub-js';
-import type { EditPerson, SharedCloudFile } from '@/types';
 import { StyleDiv } from '@/common';
 import Badges from '@/components/Badges';
 import TopSvg from '@/assets/logo/top.svg';
 import AddUserSvg from '@/assets/logo/addUser.svg';
-import { useDebouce, useLocalStorage } from '@/hooks';
 import { getSharedCloudFilesTree } from '@/api';
+import type { EditPerson, SharedCloudFile } from '@/types';
+import { useDebouce, useLocalStorage, useTitle } from '@/hooks';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import CollaboratorPopoverContent from '@/components/CollaboratorPopoverContent';
 import { useParams, useNavigate, Outlet, useLocation } from 'react-router-dom';
@@ -17,6 +17,7 @@ import { FileType, LocalStorageKey } from '@/enum';
 const { DirectoryTree } = Tree;
 
 export default function Index() {
+  useTitle('共享空间');
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [user] = useLocalStorage(LocalStorageKey.User_Info, {});

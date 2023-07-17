@@ -1,5 +1,6 @@
 import React from 'react';
 import StyleDiv from './style';
+import { useTitle } from '@/hooks';
 import { messageSocket } from '@/utils';
 import type { Message } from '@/types';
 import { Avatar, Button, message } from 'antd';
@@ -8,6 +9,7 @@ import { getAllPendingMessages, updateMessage } from '@/api';
 import { useLocation } from 'react-router-dom';
 
 export default function Index() {
+  useTitle('最新通知');
   const { state } = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
   const [messages, setMessages] = React.useState<Array<Message>>(state);
