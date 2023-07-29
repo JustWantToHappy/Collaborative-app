@@ -26,7 +26,7 @@ import { deleteFile } from 'src/common/utils';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) {}
 
   @Public()
@@ -46,7 +46,7 @@ export class UserController {
   update(
     @UploadedFile() file: Express.Multer.File,
     @Request() request,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto
   ) {
     updateUserDto.avatar = file.path;
     return this.userService.update(request.user.id, updateUserDto);

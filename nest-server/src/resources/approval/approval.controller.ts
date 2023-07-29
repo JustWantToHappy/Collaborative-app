@@ -42,7 +42,7 @@ export class ApprovalController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateApprovalDto: UpdateApprovalDto,
+    @Body() updateApprovalDto: UpdateApprovalDto
   ) {
     return this.approvalService.update(+id, updateApprovalDto);
   }

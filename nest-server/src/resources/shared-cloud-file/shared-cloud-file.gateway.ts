@@ -19,7 +19,7 @@ export class SharedCloudFileGateway {
 
   constructor(
     private readonly userService: UserService,
-    private readonly editingPeopleService: EditingPeopleService,
+    private readonly editingPeopleService: EditingPeopleService
   ) {}
 
   //用户断开连接时
@@ -28,7 +28,7 @@ export class SharedCloudFileGateway {
     const success = this.editingPeopleService.leave(documentId, userId);
     console.info(
       this.editingPeopleService.editingPeopleCount(documentId),
-      'leave',
+      'leave'
     );
     if (success) {
       const user = await this.userService.findOne(userId);
@@ -43,7 +43,7 @@ export class SharedCloudFileGateway {
   @SubscribeMessage('join')
   async handleJoin(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { userId: string; documentId: string },
+    @MessageBody() body: { userId: string; documentId: string }
   ) {
     const { documentId, userId } = body;
     client.data = body;
@@ -53,7 +53,7 @@ export class SharedCloudFileGateway {
     client.in(documentId).emit('join', { userId, name: user.name });
     console.info(
       this.editingPeopleService.editingPeopleCount(documentId),
-      'join',
+      'join'
     );
     return this.editingPeopleService.editingPeopleCount(documentId);
   }
@@ -62,7 +62,7 @@ export class SharedCloudFileGateway {
   @SubscribeMessage('leave')
   async handleLeave(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { userId: string; documentId: string },
+    @MessageBody() body: { userId: string; documentId: string }
   ) {
     const { documentId, userId } = body;
     client.leave(documentId);

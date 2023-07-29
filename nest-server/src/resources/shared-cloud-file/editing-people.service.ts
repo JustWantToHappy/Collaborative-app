@@ -24,7 +24,7 @@ export class EditingPeopleService {
   public leave(documentId: string, userId: string) {
     if (this.isEditing(documentId, userId)) {
       this.documentRoom[documentId] = this.documentRoom[documentId].filter(
-        (id) => id !== userId,
+        (id) => id !== userId
       );
       return true;
     }
@@ -55,7 +55,7 @@ export class EditingPeopleService {
           email: user.email,
           avatar: user.avatar,
         };
-      }),
+      })
     );
   }
 }

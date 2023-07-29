@@ -16,13 +16,13 @@ import { MoveToSharedCloudFileDto } from './dto/moveTo-shared-cloud-file.dto';
 @Controller('sharedCloudFile')
 export class SharedCloudFileController {
   constructor(
-    private readonly sharedCloudFileService: SharedCloudFileService,
+    private readonly sharedCloudFileService: SharedCloudFileService
   ) {}
 
   @Post()
   create(
     @Request() requeset,
-    @Body() createSharedCloudFileDto: CreateSharedCloudFileDto,
+    @Body() createSharedCloudFileDto: CreateSharedCloudFileDto
   ) {
     return this.sharedCloudFileService.create(createSharedCloudFileDto);
   }
@@ -30,11 +30,11 @@ export class SharedCloudFileController {
   @Post('move')
   moveToSharedCloudFile(
     @Request() request,
-    @Body() moveToSharedCloudFileDto: MoveToSharedCloudFileDto,
+    @Body() moveToSharedCloudFileDto: MoveToSharedCloudFileDto
   ) {
     return this.sharedCloudFileService.moveToSharedCloudFile(
       request.user.id,
-      moveToSharedCloudFileDto,
+      moveToSharedCloudFileDto
     );
   }
 
@@ -47,7 +47,7 @@ export class SharedCloudFileController {
   findFolderAndFirstLevelFiles(@Param('id') id: string, @Request() request) {
     return this.sharedCloudFileService.findFolderAndFirstLevelFiles(
       id,
-      request.user.id,
+      request.user.id
     );
   }
 
@@ -65,7 +65,7 @@ export class SharedCloudFileController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateSharedCloudFileDto: UpdateSharedCloudFileDto,
+    @Body() updateSharedCloudFileDto: UpdateSharedCloudFileDto
   ) {
     return this.sharedCloudFileService.update(id, updateSharedCloudFileDto);
   }

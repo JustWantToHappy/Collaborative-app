@@ -9,7 +9,7 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 export class GroupService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly chatRoomService: ChatroomService,
+    private readonly chatRoomService: ChatroomService
   ) {}
   async create(createGroupDto: CreateGroupDto) {
     const group = await this.prisma.group.findUnique({
@@ -18,7 +18,7 @@ export class GroupService {
     if (group) {
       throw new HttpException(
         `${createGroupDto.name} 已被注册！`,
-        HttpStatus.CONFLICT,
+        HttpStatus.CONFLICT
       );
     }
     //创建群组的同时创建一个房间，事务操作
@@ -35,7 +35,7 @@ export class GroupService {
       },
     });
     const chatRoomId = await this.chatRoomService.findChatRoomByGroupName(
-      createGroupDto.name,
+      createGroupDto.name
     );
     return chatRoomId;
   }

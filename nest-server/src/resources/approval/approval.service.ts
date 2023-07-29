@@ -8,7 +8,7 @@ import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/paginati
 export class ApprovalService {
   constructor(private readonly prisma: PrismaService) {}
   async create(
-    createApprovalDto: CreateApprovalDto & { startTime: Date; endTime: Date },
+    createApprovalDto: CreateApprovalDto & { startTime: Date; endTime: Date }
   ) {
     await this.prisma.approval.create({ data: createApprovalDto });
     return 'create success';

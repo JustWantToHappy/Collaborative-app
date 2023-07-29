@@ -25,7 +25,7 @@ export class CloudFileController {
   create(
     @Body() createCloudFileDto: CreateCloudFileDto,
     @Request() request,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File
   ) {
     createCloudFileDto.path = file?.path ?? '';
     createCloudFileDto.userId = request.user.id;
@@ -42,14 +42,14 @@ export class CloudFileController {
   findFolderAndFirstLevelFiles(@Param('id') id: string, @Request() request) {
     return this.cloudFileService.findFolderAndFirstLevelFiles(
       id,
-      request.user.id,
+      request.user.id
     );
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateCloudFileDto: UpdateCloudFileDto,
+    @Body() updateCloudFileDto: UpdateCloudFileDto
   ) {
     return this.cloudFileService.update(id, updateCloudFileDto);
   }

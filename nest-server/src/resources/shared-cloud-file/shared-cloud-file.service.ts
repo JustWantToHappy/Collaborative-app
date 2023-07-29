@@ -15,7 +15,7 @@ export class SharedCloudFileService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cloudFileService: CloudFileService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   create(createSharedCloudFileDto: CreateSharedCloudFileDto) {
@@ -25,11 +25,11 @@ export class SharedCloudFileService {
   //移动云文档中的文件到共享空间
   async moveToSharedCloudFile(
     userId: string,
-    moveToSharedCloudFileDto: MoveToSharedCloudFileDto,
+    moveToSharedCloudFileDto: MoveToSharedCloudFileDto
   ) {
     const ans: CloudFile[] = [];
     const root = await this.cloudFileService.findOne(
-      moveToSharedCloudFileDto.cloudFileId,
+      moveToSharedCloudFileDto.cloudFileId
     );
     //修改原来的文件的父级为根目录
     root.parentId = '0';
@@ -39,12 +39,12 @@ export class SharedCloudFileService {
     this.cloudFileService.buildFilesList(
       files,
       ans,
-      moveToSharedCloudFileDto.cloudFileId,
+      moveToSharedCloudFileDto.cloudFileId
     );
     //事务:将文件从私人空间中移除，同时添加到共享空间
     this.prisma.$transaction([
       ...ans.map((cloudFile) =>
-        this.prisma.cloudFile.delete({ where: { id: cloudFile.id } }),
+        this.prisma.cloudFile.delete({ where: { id: cloudFile.id } })
       ),
       ...ans.map((cloudFile) => {
         delete cloudFile.userId;
@@ -61,7 +61,7 @@ export class SharedCloudFileService {
     files: SharedCloudFile[],
     ans: SharedCloudFileTreeDto[],
     parentId = '0',
-    set = new Set(),
+    set = new Set()
   ) {
     for (let i = 0; i < files.length; i++) {
       if (!set.has(files[i].id) && files[i].parentId === parentId) {
@@ -86,7 +86,7 @@ export class SharedCloudFileService {
     files: SharedCloudFile[],
     ans: SharedCloudFile[],
     parentId = '0',
-    visited = new Set(),
+    visited = new Set()
   ) {
     for (let i = 0; i < files.length; i++) {
       if (!visited.has(files[i].id) && files[i].parentId === parentId) {
@@ -158,7 +158,7 @@ export class SharedCloudFileService {
           avatar: user.avatar,
           name: user.name,
         };
-      }),
+      })
     );
   }
 
@@ -198,8 +198,8 @@ export class SharedCloudFileService {
       ans.map((sharedCloudFile) =>
         this.prisma.sharedCloudFile.delete({
           where: { id: sharedCloudFile.id },
-        }),
-      ),
+        })
+      )
     );
   }
 }

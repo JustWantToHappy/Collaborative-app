@@ -9,7 +9,7 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 export class ChatroomService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
   create(createChatroomDto: CreateChatroomDto) {
     return this.prisma.chatRoom.create({ data: createChatroomDto });
@@ -66,7 +66,7 @@ export class ChatroomService {
           };
         }
         return value;
-      }),
+      })
     );
     //按照时间顺序对聊天列表进行排序
     result.sort((a: any, b: any) => {
@@ -101,7 +101,7 @@ export class ChatroomService {
               email: true,
             },
           });
-        }),
+        })
     );
     return { users, leaderId: chatroom.Group?.leaderId };
   }

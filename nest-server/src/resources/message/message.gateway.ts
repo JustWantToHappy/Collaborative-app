@@ -17,7 +17,7 @@ export class MessageGateway {
   @WebSocketServer() private ws: Server;
   constructor(
     private readonly messageService: MessageService,
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaService
   ) {}
   /**
    * 根据用户id获取当前用户的实时通知

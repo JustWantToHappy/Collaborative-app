@@ -28,7 +28,7 @@ export class CloudFileService {
     files: CloudFile[],
     ans: CloudFileTreeDto[],
     parentId = '0',
-    visited = new Set(), //判断某个文件是否遍历过
+    visited = new Set() //判断某个文件是否遍历过
   ) {
     for (let i = 0; i < files.length; i++) {
       if (!visited.has(files[i].id) && files[i].parentId === parentId) {
@@ -53,7 +53,7 @@ export class CloudFileService {
     files: CloudFile[],
     ans: CloudFile[],
     parentId = '0',
-    visited = new Set(),
+    visited = new Set()
   ) {
     for (let i = 0; i < files.length; i++) {
       if (!visited.has(files[i].id) && files[i].parentId === parentId) {
@@ -122,8 +122,8 @@ export class CloudFileService {
     });
     this.prisma.$transaction(
       ans.map((cloudFile) =>
-        this.prisma.cloudFile.delete({ where: { id: cloudFile.id } }),
-      ),
+        this.prisma.cloudFile.delete({ where: { id: cloudFile.id } })
+      )
     );
   }
 }

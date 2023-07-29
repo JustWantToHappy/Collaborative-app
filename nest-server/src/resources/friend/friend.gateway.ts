@@ -15,7 +15,7 @@ import { FriendService } from './friend.service';
 export class FriendGateway {
   constructor(
     private readonly friendService: FriendService,
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaService
   ) {}
   /**
    * 好友申请

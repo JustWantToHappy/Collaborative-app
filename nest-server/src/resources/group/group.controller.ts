@@ -25,7 +25,7 @@ export class GroupController {
   create(
     @Request() request,
     @UploadedFile() file: Express.Multer.File,
-    @Body() createGroupDto: CreateGroupDto,
+    @Body() createGroupDto: CreateGroupDto
   ) {
     createGroupDto.leaderId = request.user.id;
     createGroupDto.avatar = file.path;

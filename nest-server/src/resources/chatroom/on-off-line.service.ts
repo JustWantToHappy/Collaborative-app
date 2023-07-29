@@ -38,7 +38,7 @@ export class OnOffLineService {
   //获取某个房间的所有在线人员
   public async getChatRoomOnlines(chatRoomId: string) {
     const userIds = await this.chatRoomService.findUsersByChatRoomId(
-      chatRoomId,
+      chatRoomId
     );
     return userIds.users
       .map((user) => user.id)

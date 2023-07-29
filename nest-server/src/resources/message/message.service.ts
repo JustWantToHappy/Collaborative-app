@@ -11,7 +11,7 @@ export class MessageService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly groupService: GroupService,
-    private readonly chatroomService: ChatroomService,
+    private readonly chatroomService: ChatroomService
   ) {}
   create(createMessageDto: CreateMessageDto) {
     return this.prisma.message.create({ data: createMessageDto });
@@ -31,7 +31,7 @@ export class MessageService {
     senderId: string,
     receiverId: string,
     type: MessageType,
-    state?: State,
+    state?: State
   ) {
     return this.prisma.message.findFirst({
       where: { senderId, receiverId, type, state },

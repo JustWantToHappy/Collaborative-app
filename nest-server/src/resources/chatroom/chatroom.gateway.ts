@@ -41,7 +41,7 @@ export class ChatRoomGateway implements OnGatewayConnection {
     private readonly messageService: MessageService,
     private readonly userService: UserService,
     private readonly onOffLineService: OnOffLineService,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
   //通知用户加入的所有的房间内所有其他用户
   async notifyAllUser(client: Socket, userId: string) {
@@ -87,7 +87,7 @@ export class ChatRoomGateway implements OnGatewayConnection {
   @SubscribeMessage(Chat.JoinOne)
   async onJoinOneRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { userId: string; roomId: string },
+    @MessageBody() body: { userId: string; roomId: string }
   ) {
     client.join(body.roomId);
     client.to(body.roomId).emit(Chat.Join, body.roomId, body.userId);
@@ -110,7 +110,7 @@ export class ChatRoomGateway implements OnGatewayConnection {
       chatRoomId: string;
       text: string;
       fileType: FileType;
-    },
+    }
   ) {
     const user = await this.userService.findOne(body.senderId);
     const chatroom = await this.chatRoomService.findOne(body?.chatRoomId);

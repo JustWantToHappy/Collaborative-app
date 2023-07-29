@@ -15,7 +15,7 @@ export class FriendService {
     private readonly userService: UserService,
     private readonly messageService: MessageService,
     private readonly chatRoomService: ChatroomService,
-    private readonly groupService: GroupService,
+    private readonly groupService: GroupService
   ) {}
   async create(id: string, email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
@@ -26,7 +26,7 @@ export class FriendService {
       id,
       user.id,
       MessageType.ApplyFriend,
-      State.Pending,
+      State.Pending
     );
     if (message1) {
       return '你已邀请此用户';
@@ -35,7 +35,7 @@ export class FriendService {
       user.id,
       id,
       MessageType.ApplyFriend,
-      State.Pending,
+      State.Pending
     );
     if (message2) {
       return '对方已对你发出好友申请';
@@ -95,7 +95,7 @@ export class FriendService {
             } else {
               return null;
             }
-          }),
+          })
         )
       ).filter((user) => user !== null);
       return result;
@@ -191,7 +191,7 @@ export class FriendService {
       });
     });
     const users = await Promise.all(
-      userIds.map((userId) => this.userService.findOne(userId)),
+      userIds.map((userId) => this.userService.findOne(userId))
     );
     const set = new Set();
     chatrooms.forEach((chatroom) => {
