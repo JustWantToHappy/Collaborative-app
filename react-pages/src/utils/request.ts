@@ -33,17 +33,17 @@ class Request{
             this.handleAuthorization(config);
             return config;
         }, (err: AxiosError) => {
-            if (err.response?.status === 401) {
-                console.info(401);
-                //window.localStorage.removeItem(LocalStorageKey.User_Info);
-                //history.replaceState('','','/');
-            }
             return Promise.reject(err.response?.data);
         });
 
         this.instance.interceptors.response.use((res: AxiosResponse) => {
             return res.data;
         }, (err: AxiosError) => {
+            //可以在此处处理各种错误状态码
+            if (err.response?.status === 401) {
+                location.href='/';
+                window.localStorage.removeItem(LocalStorageKey.User_Info);
+            }
             return Promise.resolve(err.response?.data);
         });
     }

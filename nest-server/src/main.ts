@@ -29,7 +29,7 @@ async function bootstrap() {
         //默认为false,如果设置为true，nestjs会根据参数的装饰器和参数类型进行类型转换，即自动将请求参数转换为相应的类型。
         enableImplicitConversion: true,
       },
-    }),
+    })
   );
   //使用全局异常过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -37,7 +37,7 @@ async function bootstrap() {
     //使用全局拦截器，对请求响应的数据进行一些处理
     new WrapResponseInterceptor(),
     //使用超时拦截器
-    new TimeoutInterceptor(),
+    new TimeoutInterceptor()
   );
 
   const options = new DocumentBuilder()

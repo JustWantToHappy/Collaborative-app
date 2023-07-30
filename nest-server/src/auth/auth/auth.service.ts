@@ -6,7 +6,7 @@ import { UserService } from 'src/resources/user/user.service';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   async signIn(email: string, password: string) {

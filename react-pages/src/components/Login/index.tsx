@@ -48,7 +48,7 @@ const Index: React.FC<IProps> = (props) => {
     try {
       const { statusCode, msg } = await register(Object.assign(user, { roles: JSON.stringify([Role.User]) }));
       if (statusCode === 200) {
-        message.success({ content: '注册成功!' });
+        messageApi.success({ content: '注册成功!' });
         handleCancel();
         setTitle('登录');
         formRef.current?.resetFields();
