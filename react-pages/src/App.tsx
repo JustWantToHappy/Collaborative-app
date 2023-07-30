@@ -1,7 +1,9 @@
 import React from 'react';
 import Quill from 'quill';
-import QuillCursors from 'quill-cursors';
 import { routes } from './routes';
+//import { LocalStorageKey } from './enum';
+//import { useLocalStorage } from './hooks';
+import QuillCursors from 'quill-cursors';
 import { useRoutes } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
@@ -19,9 +21,15 @@ function App() {
         token: {
           colorPrimary: data.colorPrimary,
           borderRadius: data.borderRadius,
-          colorLink: data.colorLink,
           colorLinkActive: data.colorPrimary,
           colorLinkHover: data.colorPrimary,
+          //黑夜白天模式下需要切换的样式
+          colorLink: data.colorLink,
+          //colorBgBase: '#000',
+          //colorTextBase: '#fff',
+          //colorBgContainer: '#000',
+          //colorTextDisabled: 'gray',
+          //colorTextPlaceholder: 'gray',
         }
       }}
     >

@@ -4,4 +4,8 @@ export type ThemeData = {
   colorLink: string;
   colorLinkActive: string;
   colorLinkHover: string;
+  colorBgBase: string;
+  colorText: string;
+  colorBgDark: string;
+  colorTextDark: string;
 };

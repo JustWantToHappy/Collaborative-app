@@ -2,7 +2,6 @@
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color-scheme: light dark;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -36,6 +35,9 @@
   --ab-black-300:#212529;
   
   --ab-theme:var(--ab-green-600);
+
+  --ab-light-color:#fff;
+  --ab-dark-color:#000;
   
   --ab-padding-x:2rem;
   --ab-nav-height:3.5rem;
@@ -52,8 +54,16 @@ body {
   position: relative;
   overflow-x: hidden;
   scroll-behavior: smooth;
- /* background-color: #000;
-  color: #fff;*/
+}
+
+body.light{
+  --default-bg:var(--ab-light-color);
+  --default-text-color:var(--ab-dark-color);
+}
+
+body.dark{
+  --default-bg:var(--ab-dark-color);
+  --defualt-text-color:var(--ab-light-color);
 }
 
 ul{

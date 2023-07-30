@@ -1,7 +1,5 @@
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
-import { Awareness } from 'y-protocols/awareness';
-
 
 class SingleWebrtcProvider{
   //多个协同文档对应一个房间,key值就是roomId
