@@ -8,7 +8,7 @@ const StyleDiv = styled('div')<{mode?:string}>`
 
   header{
     height:var(--ab-nav-height);
-    box-shadow:${props=>props.mode==='dark'?'rgba(149, 157, 165, 1) 0px 1px 2px':'rgba(149, 157, 165, 0.2) 0px 8px 24px'};
+    box-shadow:${props=>props.mode==='dark'?'var(--ab-black-200) 0px 1px 1px':'rgba(149, 157, 165, 0.2) 0px 8px 24px'};
     display: flex;
     align-items: center;
     padding:0  var(--ab-padding-x);

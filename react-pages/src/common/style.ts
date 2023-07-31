@@ -18,7 +18,7 @@ export const StyleDiv = styled('div') <Props>`
     display: block;
     position: fixed;
     height:calc(100vh - var(--ab-nav-height));
-    border-right:1px solid var(--ab-gray-200);
+    border-right:${props=>props.mode==='dark'?'1px solid var(--ab-black-200)':'1px solid var(--ab-gray-100)'};
   }
   main{
     left:var(--aside-width);
@@ -32,8 +32,8 @@ export const StyleDiv = styled('div') <Props>`
     position: fixed;
     z-index:999;
     height: var(--ab-main-header-height);
-    background-color: ${props=>props.mode==='dark'?'var(--ab-dark-color)':'var(--ab-light-color)'};
-    border-bottom:${props=>props.showHeaderBorder?'1px solid var(--ab-gray-200)':'0'};
+    background-color: ${props => props.mode === 'dark' ? 'var(--ab-dark-color)' : 'var(--ab-light-color)'};
+    border-bottom:${props=>props.showHeaderBorder?props.mode==='dark'?'1px solid var(--ab-black-200)':'1px solid var(--ab-gray-200)':'0'};
   }
   .container{
     padding:0 2rem;

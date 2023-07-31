@@ -44,7 +44,7 @@
 
 *{
   box-sizing: border-box;
-  transition: background-color 300ms linear !important;
+  transition: background-color,border-color 200ms linear !important;
 }
 
 /*@media (prefers-color-schema:dark) {

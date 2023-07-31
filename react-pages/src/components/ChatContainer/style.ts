@@ -12,7 +12,7 @@ const StyleDiv = styled('div') <Props>`
   margin:1rem auto;
   margin-bottom:calc(var(--chat-tool-height) + 2rem);
   padding:0 1rem;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  box-shadow: ${props=>props.mode==='dark'?'rgba(99, 99, 99, 1) 0px 2px 8px 0px':'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px'};
   position: relative;
 
   @media screen and (max-width:900px) {
@@ -97,7 +97,6 @@ const StyleDiv = styled('div') <Props>`
       }
     }
   }
-  /*  */
   .chat_record_tool{
     display: flex;
     overflow: auto;
@@ -111,7 +110,7 @@ const StyleDiv = styled('div') <Props>`
     padding:1rem;
     background-color: ${props=>props.mode==='dark'?'var(--ab-dark-color)':'var(--ab-light-color)'};
     column-gap:1rem;
-    border-top:1px solid var(--ab-gray-200);
+    border-top:${props=>props.mode==='dark'?'1px solid var(--ab-black-200)':'1px solid var(--ab-gray-200)'};
   }
 
   .chat_record_btns{

@@ -33,7 +33,7 @@ const StyleDiv = styled('div')<Props>`
     height:var(--quill-toolbar-height);
     display: ${props => props.showToolBar ? 'flex' : 'none'};
     align-items: center;
-    background-color:${props=>props.mode==='dark'?'var(--ab-light-color)':'var(--ab-dark-color)'};
+    background-color:${props => props.mode === 'dark' ? 'var(--ab-dark-color)' : 'var(--ab-light-color)'};
   }
 
   .ql-container{
