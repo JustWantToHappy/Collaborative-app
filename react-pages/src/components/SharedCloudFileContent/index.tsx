@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import React from 'react';
-import PubSub from 'pubsub-js';
+
 import StyleDiv from './style';
 import type { SharedCloudFile } from '@/types';
 import { useParams } from 'react-router-dom';

@@ -1,5 +1,5 @@
 import React from 'react';
-import PubSub from 'pubsub-js';
+
 import type { TreeNode } from '@/types';
 import { useParams } from 'react-router-dom';
 import { Form, Modal, TreeSelect, message } from 'antd';

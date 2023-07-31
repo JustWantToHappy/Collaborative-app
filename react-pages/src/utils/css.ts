@@ -6,8 +6,5 @@ export const defaultCssStyles: ThemeData = {
   colorLink: '#212529',
   colorLinkActive: '#00B96B',
   colorLinkHover: '#212529',
-  colorBgBase: '#fff',
-  colorText: '#000000',
-  colorBgDark: '',
-  colorTextDark:''
+  colorLinkDark:'#fff'
 };

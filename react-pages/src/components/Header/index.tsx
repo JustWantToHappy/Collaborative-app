@@ -1,27 +1,29 @@
 import React from 'react';
 import StyleDiv from './style';
-import { chatRoomSocket } from '@/utils';
 import Bell from '@/components/Bell';
-import UserInfoModal from '../UserInfoModal';
 import { routes } from '@/routes';
+import { ThemeModeContext } from '@/context';
 import { useLocalStorage } from '@/hooks';
-import { defaultCssStyles } from '@/utils';
+import { Chat, LocalStorageKey } from '@/enum';
+import UserInfoModal from '../UserInfoModal';
 import LogoSvg from '@/assets/logo/logo.svg';
 import SunSvg from '@/assets/logo/sun.svg';
 import MoonSvg from '@/assets/logo/moon.svg';
 import type { Router, ChatRecord } from '@/types';
 import { Avatar, Button, Popover, Switch } from 'antd';
-import { Chat, LocalStorageKey } from '@/enum';
+import { defaultCssStyles, chatRoomSocket } from '@/utils';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [dark, setDark] = React.useState(false);
+  const context = React.useContext(ThemeModeContext);
   const [show, setShow] = React.useState(false);
   const lists = routes[0].children as Array<Router>;
   const [active, setActive] = React.useState(pathname);
   const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
+  const [config] = useLocalStorage(LocalStorageKey.System_Config, {});
+  const [dark, setDark] = React.useState(config.mode === 'dark');
 
   const loginOut = () => {
     removeUserInfo();
@@ -33,7 +35,10 @@ export default function Index() {
 
   const closeUserInfoModal = () => setShow(false);
 
-  const shiftTheme = (value: boolean) => setDark(value);
+  const shiftTheme = (value: boolean) => {
+    setDark(value);
+    context.switchMode?.(value ? 'dark' : 'light');
+  };
 
   React.useEffect(() => {
     if (!chatRoomSocket.connected) {
@@ -69,7 +74,6 @@ export default function Index() {
                 onClick={() => setActive(route.path)}
                 style={{
                   color: active.includes(route.path) ? defaultCssStyles.colorPrimary : '',
-                  //fontWeight: 550
                 }}>
                 {route.name}
               </Button>
@@ -92,7 +96,7 @@ export default function Index() {
                 退出登录
               </Button>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Switch onChange={shiftTheme} size='small' />
+                <Switch onChange={shiftTheme} size='small' checked={dark} />
                 <img src={dark ? MoonSvg : SunSvg} style={{ width: '1.2rem', marginLeft: '.5rem' }} />
               </div>
             </div>} >

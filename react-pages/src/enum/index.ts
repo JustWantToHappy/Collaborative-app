@@ -1,6 +1,6 @@
 export enum LocalStorageKey{
   User_Info = 'user_info',
-  System_Info='system_config'
+  System_Config='system_config'
 }
 
 export enum Role{

@@ -1,5 +1,4 @@
 import React from 'react';
-import PubSub from 'pubsub-js';
 import StyleDiv from './style';
 import dayjs from 'dayjs';
 import MembersSvg from '../MembersSvg';

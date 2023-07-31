@@ -1,5 +1,5 @@
 import React from 'react';
-import PubSub from 'pubsub-js';
+
 import { useTitle } from '@/hooks';
 import { StyleDiv } from '@/common';
 import { useLocation, Outlet } from 'react-router-dom';

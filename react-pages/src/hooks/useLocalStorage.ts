@@ -17,20 +17,20 @@ export function useLocalStorage<T>(key: string, initValue: T | null = null) {
     }
   });
 
-  const setValue = (value: T) => {
+  const setValue =React.useCallback( (value: T) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       const stringValue=JSON.stringify(valueToStore);
-      setStoredValue(stringValue);
+      setStoredValue(valueToStore);
       window.localStorage.setItem(key,stringValue);
       return true;
     } catch (err) {
       console.info(err);
       return false;
     }
-  };
+  },[key,storedValue]);
 
-  const removeValue = () => {
+  const removeValue = React.useCallback(() => {
     try {
       window.localStorage.removeItem(key);
       setStoredValue(null);
@@ -39,7 +39,7 @@ export function useLocalStorage<T>(key: string, initValue: T | null = null) {
       console.info(err);
       return false;
     }
-  };
+  },[key]);
 
   return [storedValue,setValue,removeValue];
 }

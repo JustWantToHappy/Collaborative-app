@@ -1,5 +1,4 @@
 import React from 'react';
-import PubSub from 'pubsub-js';
 import { messageSocket } from '@/utils';
 import StyleDiv from './style';
 import { Badge, message } from 'antd';

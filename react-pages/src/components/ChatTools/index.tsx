@@ -1,5 +1,5 @@
 import React from 'react';
-import PubSub from 'pubsub-js';
+
 import StyleDiv from './style';
 import { friendSocket } from '@/utils';
 import { LocalStorageKey } from '@/enum';
@@ -65,7 +65,7 @@ export default function Index() {
         </Button>
       </div>
       <div className='apply_team'>
-      <span>申请加群</span>
+        <span>申请加群</span>
         <Input
           placeholder='请输入群组名称'
           onChange={e => setGroup(e.target.value)}

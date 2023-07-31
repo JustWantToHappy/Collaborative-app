@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import React from 'react';
-import PubSub from 'pubsub-js';
+
 import StyleDiv from './style';
 import type { CloudFile } from '@/types';
 import { Config, FileType } from '@/enum';

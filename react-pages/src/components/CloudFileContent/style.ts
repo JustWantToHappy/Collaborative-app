@@ -20,11 +20,6 @@ const StyleDiv = styled('div')`
     cursor: pointer;
   }
 
-  .rowClassName{
-    background-color: #000;
-    color: #fff;
-  }
-
 `;
 
 export default StyleDiv;
