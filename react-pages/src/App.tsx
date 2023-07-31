@@ -23,16 +23,26 @@ function App() {
       : 'dark';
   };
 
-  const changeThemeMode = (mode: 'dark' | 'light') => setConfig({ mode });
+  const changeThemeMode = React.useCallback((mode: 'dark' | 'light') => setConfig({ mode }), []);
 
   React.useEffect(() => {
-    const handleThemeModeChange = () => setConfig(getThemeMode());
+    if (config.mode === 'light') {
+      document.body.classList.add('light');
+      document.body.classList.remove('dark');
+    } else {
+      document.body.classList.add('dark');
+      document.body.classList.remove('light');
+    }
+  }, [config.mode]);
+
+  React.useEffect(() => {
+    const handleThemeModeChange = () => changeThemeMode(getThemeMode());
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', handleThemeModeChange);
 
     return function () {
       window.matchMedia('(prefers-color-scheme: light)').removeEventListener('change', handleThemeModeChange);
     };
-  }, [setConfig]);
+  }, [changeThemeMode]);
 
   return (
     <ThemeModeContext.Provider value={{ mode: config.mode, switchMode: changeThemeMode }}>

@@ -3,6 +3,7 @@ import PubSub from 'pubsub-js';
 import { StyleDiv } from '@/common';
 import Badges from '@/components/Badges';
 import TopSvg from '@/assets/logo/top.svg';
+import { ThemeModeContext } from '@/context';
 import AddUserSvg from '@/assets/logo/addUser.svg';
 import { getSharedCloudFilesTree } from '@/api';
 import type { EditPerson, SharedCloudFile } from '@/types';
@@ -20,6 +21,7 @@ export default function Index() {
   useTitle('共享空间');
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const context = React.useContext(ThemeModeContext);
   const [user] = useLocalStorage(LocalStorageKey.User_Info, {});
   const { sharedCloudFileId = '0' } = useParams();
   const [treeData, setTreeData] = React.useState<DataNode[]>([]);
@@ -85,7 +87,7 @@ export default function Index() {
   }, [sharedCloudFileId, user.id]);
 
   return (
-    <StyleDiv asideWidth={'15rem'}>
+    <StyleDiv asideWidth={'15rem'} mode={context.mode}>
       <aside >
         <div className='cloud_tool'>
           <h4>目录</h4>

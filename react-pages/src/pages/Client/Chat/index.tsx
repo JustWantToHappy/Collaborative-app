@@ -1,7 +1,7 @@
 import React from 'react';
-
 import { useTitle } from '@/hooks';
 import { StyleDiv } from '@/common';
+import { ThemeModeContext } from '@/context';
 import { useLocation, Outlet } from 'react-router-dom';
 import MyJoin from '@/components/MyJoin';
 import ChatHeader from '@/components/ChatHeader';
@@ -16,6 +16,7 @@ export default function Index() {
   const { pathname } = useLocation();
   const [wide, setWide] = React.useState(true);
   const [key, setKey] = React.useState('1');
+  const context = React.useContext(ThemeModeContext);
 
   const changeWide = () => {
     setWide(wide => !wide);
@@ -44,7 +45,7 @@ export default function Index() {
   }, [wide]);
 
   return (
-    <StyleDiv asideWidth={asideWidth} showHeaderBorder>
+    <StyleDiv asideWidth={asideWidth} showHeaderBorder mode={context.mode}>
       <aside >
         <ChatAside wide={wide} changeWide={changeWide} asideWidth={asideWidth} />
       </aside>

@@ -1,10 +1,10 @@
 import React from 'react';
-
 import { FileType } from '@/enum';
 import { StyleDiv } from '@/common';
 import { useDebouce, useTitle } from '@/hooks';
 import type { CloudFile } from '@/types';
 import Badges from '@/components/Badges';
+import { ThemeModeContext } from '@/context';
 import AddFileModal from '@/components/AddFileModal';
 import ShareFileModal from '@/components/ShareFileModal';
 import { getCloudFilesTree, deleteCloudFolder } from '@/api';
@@ -21,6 +21,7 @@ export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { cloudFileId = '0' } = useParams();
+  const context = React.useContext(ThemeModeContext);
   const [messageApi, contextHolder] = message.useMessage();
   const [tree, setTree] = React.useState<DataNode[]>([]);
   const [cloudFile, setCloudFile] = React.useState<CloudFile>();
@@ -111,7 +112,7 @@ export default function Index() {
   }, []);
 
   return (
-    <StyleDiv asideWidth={'15rem'}>
+    <StyleDiv asideWidth={'15rem'} mode={context.mode}>
       {contextHolder}
       <AddFileModal
         open={state.openAddFileModal}

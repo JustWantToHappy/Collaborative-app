@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
-const StyleDiv = styled('div')`
+const StyleDiv = styled('div')<{mode?:string}>`
   width:100%;
   position: fixed;
   z-index:1000;
-  background-color: #fff;
+  background-color: ${props=>props.mode==='dark'?'var(--ab-dark-color)':'var(--ab-light-color)'};
 
   header{
     height:var(--ab-nav-height);
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    box-shadow:${props=>props.mode==='dark'?'rgba(149, 157, 165, 1) 0px 1px 2px':'rgba(149, 157, 165, 0.2) 0px 8px 24px'};
     display: flex;
     align-items: center;
     padding:0  var(--ab-padding-x);

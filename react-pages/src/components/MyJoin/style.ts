@@ -44,7 +44,7 @@ const StyleDiv = styled('div')`
       display: none;
     }
     &:hover{
-      background-color: var(--ab-grey-200);
+      background-color: var(--ab-gray-200);
       &>small{
         display: inline;
       }

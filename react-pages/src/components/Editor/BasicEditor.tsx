@@ -1,10 +1,11 @@
 import React from 'react';
 import StyleDiv from './style';
-import { Button, message, notification, Space } from 'antd';
 import Delta from 'quill-delta';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Delta as TypeDelta } from 'quill';
+import { ThemeModeContext } from '@/context';
+import { Button, message, notification, Space } from 'antd';
 import { updateSharedCloudFile, updateCloudFile, getSharedCloudFileVersion } from '@/api';
 
 
@@ -34,6 +35,7 @@ export interface Props {
 
 export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQuill | null>) => {
   const [edit, setEdit] = React.useState(false);
+  const context = React.useContext(ThemeModeContext);
   const [notifyApi, nofityContextHolder] = notification.useNotification();
   const [messageApi, messageContextHolder] = message.useMessage();
   const editorRef = React.useRef<ReactQuill | null>(null);
@@ -148,7 +150,7 @@ export const BasicEditor = React.forwardRef((props: Props, ref: React.Ref<ReactQ
   React.useImperativeHandle(ref, () => editorRef.current);
 
   return (
-    <StyleDiv showToolBar={edit}>
+    <StyleDiv showToolBar={edit} mode={context.mode}>
       {messageContextHolder}
       {nofityContextHolder}
       <ReactQuill

@@ -3,6 +3,7 @@ import { chatRoomSocket } from '@/utils';
 import { Avatar, message } from 'antd';
 import StyleDiv from './style';
 import type { User } from '@/types';
+import { ThemeModeContext } from '@/context';
 import { useParams } from 'react-router-dom';
 import { getGroupAllUsers } from '@/api';
 import CloseSvg from '@/assets/logo/close.svg';
@@ -16,14 +17,15 @@ type Props = {
 const Index: React.FC<Props> = (props) => {
   const { show } = props;
   const { chatRoomId } = useParams();
-  const [messageApi, contextHolder] = message.useMessage();
   const [leader, setLeader] = React.useState('');
+  const context = React.useContext(ThemeModeContext);
+  const [messageApi, contextHolder] = message.useMessage();
   const [onlines, setOnlines] = React.useState<string[]>([]); //在线用户
   const [members, setMembers] = React.useState<User[]>([]);
 
   React.useEffect(() => {
     setTimeout(async () => {
-      const { statusCode, data, msg } = await getGroupAllUsers(chatRoomId!);
+      const { statusCode, data, msg } = await getGroupAllUsers(chatRoomId as string);
       if (statusCode === 200) {
         setMembers(data?.users ?? []);
         setLeader(data?.leaderId ?? '');
@@ -52,7 +54,7 @@ const Index: React.FC<Props> = (props) => {
   }, [onlines, show]);
 
   return (
-    <StyleDiv show={show}>
+    <StyleDiv show={show} mode={context.mode}>
       {contextHolder}
       <p className='member_header'>
         <small>成员({members.length})</small>

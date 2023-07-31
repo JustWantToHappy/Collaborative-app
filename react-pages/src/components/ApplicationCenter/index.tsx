@@ -1,6 +1,7 @@
 import React from 'react';
 import StyleDiv from './style';
 import { applyApproval } from '@/api';
+import { ThemeModeContext } from '@/context';
 import { DesktopOutlined, HomeOutlined, SendOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal, Select, DatePicker, message } from 'antd';
 
@@ -9,6 +10,7 @@ const { RangePicker } = DatePicker;
 const Index = () => {
   const [form] = Form.useForm();
   const [selected, setSelected] = React.useState('');
+  const context = React.useContext(ThemeModeContext);
   const [messageApi, contextHolder] = message.useMessage();
   const [items] = React.useState([
     {
@@ -59,7 +61,7 @@ const Index = () => {
 
 
   return (
-    <StyleDiv>
+    <StyleDiv mode={context.mode}>
       {contextHolder}
       {items.map(item => <div key={item.key}>
         <header style={{ backgroundColor: item.bg }}>

@@ -3,6 +3,7 @@ import { Tabs } from 'antd';
 import { useTitle } from '@/hooks';
 import { StyleDiv } from '@/common';
 import Report from '@/components/Report';
+import { ThemeModeContext } from '@/context';
 import ApprovalCenter from '@/components/ApprovalCenter';
 import ApplicationCenter from '@/components/ApplicationCenter';
 import { ApartmentOutlined, SnippetsOutlined } from '@ant-design/icons';
@@ -17,6 +18,7 @@ type Item = {
 
 export default function Index() {
   useTitle('工作台');
+  const context = React.useContext(ThemeModeContext);
   const [active, setActive] = React.useState('approve');
   const [items] = React.useState<Item[]>([
     {
@@ -47,7 +49,7 @@ export default function Index() {
   ]);
 
   return (
-    <StyleDiv asideWidth={'10rem'}>
+    <StyleDiv asideWidth={'10rem'} mode={context.mode}>
       <aside className='work_aside'>
         <ul>
           {items.map(item => <li

@@ -1,6 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import StyleDiv from './style';
+import { ThemeModeContext } from '@/context';
 import { useLocalStorage } from '@/hooks';
 import { getAllChatRoom } from '@/api';
 import type { ChatRoom } from '@/types';
@@ -21,6 +22,7 @@ export default function Index(props: IProps) {
   const navigate = useNavigate();
   const { chatRoomId } = useParams();
   const { wide, changeWide, asideWidth } = props;
+  const context = React.useContext(ThemeModeContext);
   const chatContainerRef = React.useRef<HTMLUListElement>(null);
   const [active, setActive] = React.useState(chatRoomId);
   const [userInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
@@ -78,7 +80,7 @@ export default function Index(props: IProps) {
   }, []);
 
   return (
-    <StyleDiv wide={wide} >
+    <StyleDiv wide={wide} mode={context.mode}>
       {contextHolder}
       <header >
         <i onClick={changeWide}>
@@ -91,7 +93,7 @@ export default function Index(props: IProps) {
           key={chatroom.id}
           to={`/chat/room/${chatroom.id}`}
           onClick={event => shiftChatRoom(event, chatroom)}
-          style={{ color: active === chatroom.id ? '#fff' : '#000', textDecoration: 'none' }}>
+          style={{ color: (active === chatroom.id || context.mode === 'dark') ? '#fff' : '#000', textDecoration: 'none' }}>
           <li
             className='chat_item'
             onClick={() => setActive(chatroom.id)}

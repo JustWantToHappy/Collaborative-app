@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 type Props = {
   showToolBar?: boolean;
+  mode?: string;
 }
 
 const StyleDiv = styled('div')<Props>`
@@ -32,7 +33,7 @@ const StyleDiv = styled('div')<Props>`
     height:var(--quill-toolbar-height);
     display: ${props => props.showToolBar ? 'flex' : 'none'};
     align-items: center;
-    background-color: var(--ab-white-100);
+    background-color:${props=>props.mode==='dark'?'var(--ab-light-color)':'var(--ab-dark-color)'};
   }
 
   .ql-container{

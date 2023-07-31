@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-
 interface Props{
   asideWidth: string;
   showHeaderBorder?: boolean;
+  mode?: string;
 }
 
 export const StyleDiv = styled('div') <Props>`
@@ -18,7 +18,7 @@ export const StyleDiv = styled('div') <Props>`
     display: block;
     position: fixed;
     height:calc(100vh - var(--ab-nav-height));
-    border-right:1px solid var(--ab-grey-200);
+    border-right:1px solid var(--ab-gray-200);
   }
   main{
     left:var(--aside-width);
@@ -32,8 +32,8 @@ export const StyleDiv = styled('div') <Props>`
     position: fixed;
     z-index:999;
     height: var(--ab-main-header-height);
-    background-color: #fff;
-    border-bottom:${props=>props.showHeaderBorder?'1px solid var(--ab-grey-200)':'0'};
+    background-color: ${props=>props.mode==='dark'?'var(--ab-dark-color)':'var(--ab-light-color)'};
+    border-bottom:${props=>props.showHeaderBorder?'1px solid var(--ab-gray-200)':'0'};
   }
   .container{
     padding:0 2rem;
@@ -128,7 +128,7 @@ export const StyleDiv = styled('div') <Props>`
     }
 
     &:hover{
-      background-color: var(--ab-grey-200);
+      background-color: var(--ab-gray-200);
       border-radius: 5px;
       color:var(--ab-green-600);
     }

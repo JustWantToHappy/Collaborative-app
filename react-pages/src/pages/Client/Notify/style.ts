@@ -6,7 +6,7 @@ const StyleDiv = styled('div')`
   }
   .notify_item{
     &:hover{
-      background-color: var(--ab-grey-200);
+      background-color: var(--ab-gray-200);
     }
     padding:5px 1rem;
     border-radius: 5px;

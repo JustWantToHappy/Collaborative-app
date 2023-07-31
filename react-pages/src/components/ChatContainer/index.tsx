@@ -2,6 +2,7 @@ import React from 'react';
 import StyleDiv from './style';
 import dayjs from 'dayjs';
 import MembersSvg from '../MembersSvg';
+import { ThemeModeContext } from '@/context';
 import { chatRoomSocket } from '@/utils';
 import type { ChatRecord } from '@/types';
 import UploadImg from '@/components/UploadImg';
@@ -17,6 +18,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 export default function Index() {
   const { state, pathname } = useLocation();
   const navigate = useNavigate();
+  const context = React.useContext(ThemeModeContext);
   const { chatRoomId } = useParams();
   const [text, setText] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -121,7 +123,7 @@ export default function Index() {
   }, [state]);
 
   return (
-    <StyleDiv asideWidth={asideWidth}>
+    <StyleDiv asideWidth={asideWidth} mode={context.mode}>
       {contextHolder}
       <MemberList show={open} hide={hide} />
       <div className='chat_record_header'>

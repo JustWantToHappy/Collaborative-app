@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const StyleDiv = styled('div')<{show:boolean}>`
+const StyleDiv = styled('div')<{show:boolean,mode?:string}>`
   position: absolute;
   top:0;
   right: 0;
@@ -9,8 +9,8 @@ const StyleDiv = styled('div')<{show:boolean}>`
   opacity: ${props=>props.show?1:0};
   z-index:${props=>props.show?1:-1};
   border-radius: 1rem;
-  background-color: var(--ab-white-100);
-  box-shadow: rgba(0, 0, 0, 0.2) -4px 9px 25px -6px;
+  background-color:${props=>props.mode==='dark'?'var(--ab-dark-color)':'var(--ab-light-color)'};
+  box-shadow: ${props=>props.mode==='dark'?'var(--ab-green-800) -4px 9px 25px -6px':'rgba(0, 0, 0, 0.2) -4px 9px 25px -6px'};
 
   .member_header{
     padding:1rem 1rem 0 1rem;
@@ -45,7 +45,7 @@ const StyleDiv = styled('div')<{show:boolean}>`
       border-radius: .5rem;
       transition: background-color 200ms ease;
       &:hover{
-        background-color: var(--ab-grey-200);
+        background-color: ${props=>props.mode==='dark'?'var(--ab-gray-500)':'var(--ab-gray-200)'};
       }
     }
   }

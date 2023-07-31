@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import {ellipsis } from '@/common';
 
 interface Props{
-  wide:boolean
+  wide: boolean,
+  mode?: string;
 }
 
 const StyleDiv = styled('div')<Props>`
@@ -83,7 +84,8 @@ const StyleDiv = styled('div')<Props>`
       }
 
       &:hover{
-        background-color: var(--ab-grey-200);
+        background-color: ${props=>props.mode==='dark'?'var(--ab-gray-400)':'var(--ab-gray-200)'};
+
         cursor: pointer;
       }
       &:hover>span{

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const StyleDiv = styled('div')`
+const StyleDiv = styled('div')<{mode?:string}>`
   height:75vh;
   overflow: auto;
   padding-bottom: 3rem;
@@ -31,7 +31,7 @@ const StyleDiv = styled('div')`
   &>div{
     width:270px;
     cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    box-shadow: ${props=>props.mode==='dark'?'rgba(255, 255, 255, 0.35) 0px 5px 15px':'rgba(0, 0, 0, 0.35) 0px 5px 15px'};
     transition: transform ease 300ms;
     border-radius: .5rem;
     header{

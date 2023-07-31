@@ -22,8 +22,7 @@ export default function Index() {
   const lists = routes[0].children as Array<Router>;
   const [active, setActive] = React.useState(pathname);
   const [userInfo, , removeUserInfo] = useLocalStorage(LocalStorageKey.User_Info, {});
-  const [config] = useLocalStorage(LocalStorageKey.System_Config, {});
-  const [dark, setDark] = React.useState(config.mode === 'dark');
+  const [dark, setDark] = React.useState(context.mode === 'dark');
 
   const loginOut = () => {
     removeUserInfo();
@@ -60,7 +59,7 @@ export default function Index() {
   }, [userInfo.id]);
 
   return (
-    <StyleDiv>
+    <StyleDiv mode={context.mode}>
       <UserInfoModal
         show={show}
         close={closeUserInfoModal}

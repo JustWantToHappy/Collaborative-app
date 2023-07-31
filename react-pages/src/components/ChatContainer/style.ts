@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 interface Props{
-  asideWidth:string
+  asideWidth: string,
+  mode?: string;
 }
 
 const StyleDiv = styled('div') <Props>`
@@ -13,7 +14,6 @@ const StyleDiv = styled('div') <Props>`
   padding:0 1rem;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   position: relative;
-  /*overflow-x: hidden;*/
 
   @media screen and (max-width:900px) {
     min-width:320px;
@@ -77,7 +77,7 @@ const StyleDiv = styled('div') <Props>`
       }
       &>span{
         display: inline-block;
-        background-color: var(--ab-grey-100);
+        background-color: ${props=>props.mode==='dark'?'var(--ab-gray-400)':'var(--ab-gray-200)'};
         padding:1rem;
         border-radius: 5px;
       }
@@ -93,7 +93,7 @@ const StyleDiv = styled('div') <Props>`
     }
     .highlight{
       &>span{
-        background:var(--ab-green-200);
+        background:${props=>props.mode==='dark'?'var(--ab-green-600)':'var(--ab-green-200)'};
       }
     }
   }
@@ -109,9 +109,9 @@ const StyleDiv = styled('div') <Props>`
     width:calc(100vw - var(--chat-aside-width));
     left:var(--chat-aside-width);
     padding:1rem;
-    background-color: #fff;
+    background-color: ${props=>props.mode==='dark'?'var(--ab-dark-color)':'var(--ab-light-color)'};
     column-gap:1rem;
-    border-top:1px solid var(--ab-grey-200);
+    border-top:1px solid var(--ab-gray-200);
   }
 
   .chat_record_btns{

@@ -3,6 +3,7 @@ import StyleDiv from './style';
 import { buildGroup } from '@/api';
 import type { Group } from '@/types';
 import { defaultCssStyles } from '@/utils';
+import { ThemeModeContext } from '@/context';
 import Badges from '@/components/Badges';
 import UploadImg from '@/components/UploadImg';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -14,6 +15,7 @@ export default function Index() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [form] = Form.useForm();
+  const context = React.useContext(ThemeModeContext);
   const [file, setFile] = React.useState<UploadFile>();
   const [messageApi, contextHolder] = message.useMessage();
   const [showFileList, setShowFileList] = React.useState(true);
@@ -58,7 +60,7 @@ export default function Index() {
     <div>
       <Button
         type='link'
-        style={{ color: pathname === '/chat/address' ? defaultCssStyles.colorPrimary : defaultCssStyles.colorLink }}
+        style={{ color: pathname === '/chat/address' ? defaultCssStyles.colorPrimary : context.mode === 'dark' ? defaultCssStyles.colorLinkDark : '' }}
         onClick={() => navigate('/chat/address')}>
         通讯录
       </Button>
