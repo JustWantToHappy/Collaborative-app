@@ -20,6 +20,7 @@ A web system that can be used to chat with many people and edit documents in rea
 - 共享云文档
 - 协同编辑文档
 - 用户在线离线状态
+- 黑夜模式切换
 
 ## Lib
 - react
@@ -46,6 +47,8 @@ A web system that can be used to chat with many people and edit documents in rea
 ![共享云文档](docs/gif/共享云文档.gif)
 - **协同编辑**
 ![协同编辑](docs/gif/协同编辑.gif)
+- **黑夜模式**
+![黑夜模式](docs/gif/黑夜白天模式.gif)
   
 ## Notice
 > y-webrtc的信令服务器为官方提供的示例

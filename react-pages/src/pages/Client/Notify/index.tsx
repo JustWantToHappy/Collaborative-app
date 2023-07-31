@@ -5,12 +5,14 @@ import { messageSocket } from '@/utils';
 import type { Message } from '@/types';
 import { Avatar, Button, message } from 'antd';
 import { MessageType, State } from '@/enum';
+import { ThemeModeContext } from '@/context';
 import { getAllPendingMessages, updateMessage } from '@/api';
 import { useLocation } from 'react-router-dom';
 
 export default function Index() {
   useTitle('最新通知');
   const { state } = useLocation();
+  const context = React.useContext(ThemeModeContext);
   const [messageApi, contextHolder] = message.useMessage();
   const [messages, setMessages] = React.useState<Array<Message>>(state);
 
@@ -55,7 +57,7 @@ export default function Index() {
   }, []);
 
   return (
-    <StyleDiv >
+    <StyleDiv mode={context.mode}>
       {contextHolder}
       <h4>最近通知</h4>
       <ul>

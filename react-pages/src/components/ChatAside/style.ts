@@ -85,7 +85,6 @@ const StyleDiv = styled('div')<Props>`
 
       &:hover{
         background-color: ${props=>props.mode==='dark'?'var(--ab-gray-400)':'var(--ab-gray-200)'};
-
         cursor: pointer;
       }
       &:hover>span{

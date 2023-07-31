@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-const StyleDiv = styled('div')`
+const StyleDiv = styled('div')<{mode?:string}>`
   h5{
     margin:2px 0;
   }
   .notify_item{
     &:hover{
-      background-color: var(--ab-gray-200);
+      background-color:${props=>props.mode==='dark'?' var(--ab-black-300)':' var(--ab-gray-400)'};
     }
     padding:5px 1rem;
     border-radius: 5px;

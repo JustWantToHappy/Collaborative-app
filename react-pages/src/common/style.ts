@@ -18,7 +18,7 @@ export const StyleDiv = styled('div') <Props>`
     display: block;
     position: fixed;
     height:calc(100vh - var(--ab-nav-height));
-    border-right:${props=>props.mode==='dark'?'1px solid var(--ab-black-200)':'1px solid var(--ab-gray-100)'};
+    border-right:${props=>props.mode==='dark'?'1px solid var(--ab-black-200)':'1px solid var(--ab-gray-200)'};
   }
   main{
     left:var(--aside-width);
