@@ -4,7 +4,7 @@ A web system that can be used to chat with many people and edit documents in rea
 
 ---
 ## Start
-1. nest-server的src下新建.env配置文件，配置格式如下：
+1. nest-server的根目录下新建.env配置文件，配置格式如下：
    - SECRET_KEY=[your secret_key]
    - DATABASE_URL="mysql://用户名:密码@主机:端口号/数据库名称"。
 2. 安装服务端依赖：yarn install
