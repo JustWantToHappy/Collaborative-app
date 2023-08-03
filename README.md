@@ -8,10 +8,11 @@ A web system that can be used to chat with many people and edit documents in rea
    - SECRET_KEY=[your secret_key]
    - DATABASE_URL="mysql://用户名:密码@主机:端口号/数据库名称"。
 2. 安装服务端依赖：yarn install
-3. 启动服务端：yarn run start:dev
-4. 安装客服端依赖：yarn install
-5. 启动客服端：yarn run dev
-6. 访问地址：[127.0.0.1:5000](127.0.0.1:5000)
+3. 运行数据库迁移文件：npx prisma migrate deploy
+4. 启动服务端：yarn run start:dev
+5. 安装客服端依赖：yarn install
+6. 启动客服端：yarn run dev
+7. 访问地址：[127.0.0.1:5000](127.0.0.1:5000)
 
 ## Features
 - 群聊
