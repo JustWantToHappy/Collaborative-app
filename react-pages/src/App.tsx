@@ -29,7 +29,7 @@ function App() {
     if (config.mode === 'light') {
       document.body.classList.add('light');
       document.body.classList.remove('dark');
-    } else {
+    } else if (config.mode === 'dark') {
       document.body.classList.add('dark');
       document.body.classList.remove('light');
     }

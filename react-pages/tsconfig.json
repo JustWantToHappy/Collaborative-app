@@ -12,7 +12,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
+    "isolatedModules": true, //强制将每个文件都成为一个单独的模块，而不会自动将声明放在全局作用域中。
     "noEmit": true,
     "jsx": "react-jsx",
     /* Linting */
